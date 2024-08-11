@@ -1,7 +1,17 @@
 import { useState, useEffect } from 'react';
-import { getAll, login } from './services/blogs';
+import { getAll } from './services/blogs';
+import { login } from './services/login';
 import Blog from './components/Blog';
 import LoginForm from './components/LoginForm';
+
+const BlogList = ({ username, blogs }) => {
+  return (
+    <div>
+      <p>{username} Logged In</p>
+      {blogs.map(blog => <Blog key={blog.id} blog={blog} />)}
+    </div>
+  );
+};
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
@@ -25,7 +35,7 @@ const App = () => {
       {
         user === null
           ? <LoginForm handleLogin={handleLogin} />
-          : blogs.map(blog => <Blog key={blog.id} blog={blog} />)
+          : <BlogList username={user.name} blogs={blogs} />
       }
     </div>
   );
