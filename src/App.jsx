@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getAll } from './services/blogs';
+import { getAll, setToken } from './services/blogs';
 import { login } from './services/login';
 import BlogList from './components/Blog';
 import LoginForm from './components/LoginForm';
@@ -25,6 +25,7 @@ const App = () => {
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON);
       setUser(user);
+      setToken(user.token);
       handleNotification(`${user.name} Has Logged In`, true);
     }
   }, []);
@@ -39,6 +40,7 @@ const App = () => {
       const credentials = await login({ username, password });
       setUser(credentials);
       window.localStorage.setItem('loggedInBlogUser', JSON.stringify(credentials));
+      setToken(credentials.token);
       handleNotification(`${credentials.name} Has Logged In`, true);
     } catch (err) {
       handleNotification(err.message, false);
@@ -49,6 +51,7 @@ const App = () => {
     e.preventDefault();
     window.localStorage.removeItem('loggedInBlogUser');
     setUser(null);
+    setToken(null);
     handleNotification(" Log out Successful", true);
   };
 
