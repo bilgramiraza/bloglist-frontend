@@ -45,10 +45,12 @@ const App = () => {
     }
   };
 
-  // const handleLogout = async (e) => {
-  //   e.preventDefault();
-  //   window.localStorage.removeItem('loggedInBlogUser');
-  // };
+  const handleLogout = async (e) => {
+    e.preventDefault();
+    window.localStorage.removeItem('loggedInBlogUser');
+    setUser(null);
+    handleNotification(" Log out Successful", true);
+  };
 
   return (
     <div>
@@ -57,7 +59,10 @@ const App = () => {
       {
         user === null
           ? <LoginForm handleLogin={handleLogin} />
-          : <BlogList username={user.name} blogs={blogs} />
+          : <>
+            <p>{user.name} Logged In <button onClick={handleLogout}>Logout</button></p>
+            <BlogList blogs={blogs} />
+          </>
       }
     </div>
   );
