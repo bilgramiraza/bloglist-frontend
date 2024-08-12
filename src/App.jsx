@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
-import { getAll, setToken } from './services/blogs';
+import { create, getAll, setToken } from './services/blogs';
 import { login } from './services/login';
 import BlogList from './components/Blog';
 import LoginForm from './components/LoginForm';
 import Notification from './components/Notification';
+import BlogForm from './components/BlogForm';
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
@@ -55,6 +56,16 @@ const App = () => {
     handleNotification(" Log out Successful", true);
   };
 
+  const handleCreation = async newBlog => {
+    try {
+      const savedBlog = await create(newBlog);
+      setBlogs([...blogs, savedBlog]);
+      handleNotification(`Blog(${savedBlog.title}) Created Successfully`, true);
+    } catch (err) {
+      handleNotification(err.message, false);
+    }
+  };
+
   return (
     <div>
       <h2>blogs</h2>
@@ -64,6 +75,7 @@ const App = () => {
           ? <LoginForm handleLogin={handleLogin} />
           : <>
             <p>{user.name} Logged In <button onClick={handleLogout}>Logout</button></p>
+            <BlogForm handleCreation={handleCreation} />
             <BlogList blogs={blogs} />
           </>
       }
