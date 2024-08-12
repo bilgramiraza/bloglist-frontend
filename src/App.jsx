@@ -15,10 +15,14 @@ const App = () => {
   });
 
   useEffect(() => {
-    getAll()
-      .then(blogs =>
-        setBlogs(blogs)
-      );
+    try {
+      getAll()
+        .then(blogs =>
+          setBlogs(blogs)
+        );
+    } catch (err) {
+      handleNotification(err.response.data.error, false);
+    }
   }, []);
 
   useEffect(() => {
@@ -44,7 +48,7 @@ const App = () => {
       setToken(credentials.token);
       handleNotification(`${credentials.name} Has Logged In`, true);
     } catch (err) {
-      handleNotification(err.message, false);
+      handleNotification(err.response.data.error, false);
     }
   };
 
@@ -62,7 +66,7 @@ const App = () => {
       setBlogs([...blogs, savedBlog]);
       handleNotification(`Blog(${savedBlog.title}) Created Successfully`, true);
     } catch (err) {
-      handleNotification(err.message, false);
+      handleNotification(err.response.data.error, false);
     }
   };
 
