@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { create, getAll, setToken } from './services/blogs';
 import { login } from './services/login';
 import BlogList from './components/Blog';
@@ -14,6 +14,8 @@ const App = () => {
     message: null,
     status: false,
   });
+
+  const blogFormRef = useRef();
 
   useEffect(() => {
     try {
@@ -66,6 +68,7 @@ const App = () => {
       const savedBlog = await create(newBlog);
       setBlogs([...blogs, savedBlog]);
       handleNotification(`Blog(${savedBlog.title}) Created Successfully`, true);
+      blogFormRef.current.hideComponent();
     } catch (err) {
       handleNotification(err.response.data.error, false);
     }
@@ -82,7 +85,7 @@ const App = () => {
           </Toggleable>
           : <>
             <p>{user.name} Logged In <button onClick={handleLogout}>Logout</button></p>
-            <Toggleable buttonLabel='Create New Blog'>
+            <Toggleable buttonLabel='Create New Blog' ref={blogFormRef}>
               <BlogForm handleCreation={handleCreation} />
             </Toggleable>
             <BlogList blogs={blogs} />
