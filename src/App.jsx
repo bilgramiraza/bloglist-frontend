@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { create, getAll, setToken } from './services/blogs';
+import { create, getAll, sendLike, setToken } from './services/blogs';
 import { login } from './services/login';
 import BlogList from './components/Blog';
 import LoginForm from './components/LoginForm';
@@ -18,6 +18,8 @@ const App = () => {
   const blogFormRef = useRef();
 
   useEffect(() => {
+    if (blogs.length) return;
+
     try {
       getAll()
         .then(blogs =>
@@ -26,7 +28,7 @@ const App = () => {
     } catch (err) {
       handleNotification(err.response.data.error, false);
     }
-  }, []);
+  }, [blogs]);
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedInBlogUser');
@@ -74,6 +76,17 @@ const App = () => {
     }
   };
 
+  const handleLikes = async blog => {
+    try {
+      const likedBlog = await sendLike(blog);
+      const modifiedBlogList = blogs.map(blog => blog._id === likedBlog._id ? likedBlog : blog);
+      setBlogs(modifiedBlogList);
+      handleNotification(`Blog(${likedBlog.title}) Liked Successfully`, true);
+    } catch (err) {
+      handleNotification(err.response.data.error, false);
+    }
+  };
+
   return (
     <div>
       <h2>blogs</h2>
@@ -88,7 +101,7 @@ const App = () => {
             <Toggleable buttonLabel='Create New Blog' ref={blogFormRef}>
               <BlogForm handleCreation={handleCreation} />
             </Toggleable>
-            <BlogList blogs={blogs} />
+            <BlogList blogs={blogs} handleLikes={handleLikes} />
           </>
       }
     </div>

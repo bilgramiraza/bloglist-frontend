@@ -1,16 +1,16 @@
 import { useState } from "react";
 
-const BlogList = ({ blogs }) => {
+const BlogList = ({ blogs, handleLikes }) => {
   return (
     <div>
       {
-        blogs.map(blog => <Blog key={blog._id} blog={blog} />)
+        blogs.map(blog => <Blog key={blog._id} blog={blog} handleLikes={handleLikes} />)
       }
     </div>
   );
 };
 
-const Blog = ({ blog }) => {
+const Blog = ({ blog, handleLikes }) => {
   const [visible, setVisible] = useState(false);
 
   const toggle = () => setVisible(!visible);
@@ -34,6 +34,10 @@ const Blog = ({ blog }) => {
     display: visible ? '' : 'none',
   };
 
+  const handleClick = () => {
+    handleLikes(blog);
+  };
+
   return (
     <div style={blogStyle}>
       <div style={blogHeaderStyle}>
@@ -43,7 +47,7 @@ const Blog = ({ blog }) => {
       </div>
       <div style={blogBodyStyle}>
         <p>{blog.url}</p>
-        <p>{blog.likes}</p>
+        <button onClick={handleClick}>{blog.likes}</button>
         <p>{blog.user.username}</p>
       </div>
     </div>
