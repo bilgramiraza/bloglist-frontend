@@ -7,6 +7,15 @@ import Notification from './components/Notification';
 import BlogForm from './components/BlogForm';
 import Toggleable from './components/Toggleable';
 
+const getBlogs = async (setBlogs, handleNotification) => {
+  try {
+    const blogs = await getAll();
+    setBlogs(blogs);
+  } catch (err) {
+    handleNotification(err.response.data.error, false);
+  }
+};
+
 const App = () => {
   const [blogs, setBlogs] = useState([]);
   const [user, setUser] = useState(null);
@@ -14,21 +23,20 @@ const App = () => {
     message: null,
     status: false,
   });
+  const [reSortBlogs, setReSortBlogs] = useState(false);
 
   const blogFormRef = useRef();
 
   useEffect(() => {
-    if (blogs.length) return;
-
-    try {
-      getAll()
-        .then(blogs =>
-          setBlogs(blogs)
-        );
-    } catch (err) {
-      handleNotification(err.response.data.error, false);
+    if (!blogs.length) {
+      getBlogs(setBlogs, handleNotification);
+      setReSortBlogs(true);
     }
-  }, [blogs]);
+    if (reSortBlogs) {
+      setBlogs(blogs.toSorted((blogA, blogB) => blogB.likes - blogA.likes));
+      setReSortBlogs(false);
+    }
+  }, [blogs, reSortBlogs]);
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedInBlogUser');
@@ -69,6 +77,7 @@ const App = () => {
     try {
       const savedBlog = await create(newBlog);
       setBlogs([...blogs, savedBlog]);
+      setReSortBlogs(true);
       handleNotification(`Blog(${savedBlog.title}) Created Successfully`, true);
       blogFormRef.current.hideComponent();
     } catch (err) {
@@ -81,6 +90,7 @@ const App = () => {
       const likedBlog = await sendLike(blog);
       const modifiedBlogList = blogs.map(blog => blog._id === likedBlog._id ? likedBlog : blog);
       setBlogs(modifiedBlogList);
+      setReSortBlogs(true);
       handleNotification(`Blog(${likedBlog.title}) Liked Successfully`, true);
     } catch (err) {
       handleNotification(err.response.data.error, false);
