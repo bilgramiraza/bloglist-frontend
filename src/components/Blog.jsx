@@ -1,18 +1,18 @@
 import { useState } from "react";
 
-const BlogList = ({ blogs, handleLikes }) => {
+const BlogList = ({ blogs, handleLikes, handleDeletes, user }) => {
   if (!blogs.length) return null;
 
   return (
     <div>
       {
-        blogs.map(blog => <Blog key={blog._id} blog={blog} handleLikes={handleLikes} />)
+        blogs.map(blog => <Blog key={blog._id} blog={blog} handleLikes={handleLikes} handleDelete={handleDeletes} currentUser={user} />)
       }
     </div>
   );
 };
 
-const Blog = ({ blog, handleLikes }) => {
+const Blog = ({ blog, handleLikes, handleDelete, currentUser }) => {
   const [visible, setVisible] = useState(false);
 
   const toggle = () => setVisible(!visible);
@@ -35,9 +35,16 @@ const Blog = ({ blog, handleLikes }) => {
   const blogBodyStyle = {
     display: visible ? '' : 'none',
   };
+  const deleteButtonStyle = {
+    display: blog.user.username === currentUser.username ? '' : 'none',
+  };
 
-  const handleClick = () => {
+  const handleLikeClick = () => {
     handleLikes(blog);
+  };
+
+  const handleDeleteClick = () => {
+    handleDelete(blog._id);
   };
 
   return (
@@ -49,8 +56,9 @@ const Blog = ({ blog, handleLikes }) => {
       </div>
       <div style={blogBodyStyle}>
         <p>{blog.url}</p>
-        <button onClick={handleClick}>{blog.likes}</button>
+        <button onClick={handleLikeClick}>{blog.likes}</button>
         <p>{blog.user.username}</p>
+        <button style={deleteButtonStyle} onClick={handleDeleteClick}>delete</button>
       </div>
     </div>
   );

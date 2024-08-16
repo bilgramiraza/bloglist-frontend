@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { create, getAll, sendLike, setToken } from './services/blogs';
+import { create, getAll, remove, sendLike, setToken } from './services/blogs';
 import { login } from './services/login';
 import BlogList from './components/Blog';
 import LoginForm from './components/LoginForm';
@@ -97,6 +97,21 @@ const App = () => {
     }
   };
 
+  const handleDeletes = async blogId => {
+    const targetBlog = blogs.find(blog => blog._id === blogId);
+    const deleteConfirm = window.confirm(`Delete ${targetBlog.title} By ${targetBlog.author}?`);
+    if (!deleteConfirm) return;
+    try {
+      await remove(blogId);
+      const modifiedBlogList = blogs.filter(blog => blog._id !== blogId);
+      setBlogs(modifiedBlogList);
+      setReSortBlogs(true);
+      handleNotification(`Blog(${targetBlog.title} By ${targetBlog.author}) Deleted Successfully`, true);
+    } catch (err) {
+      handleNotification(err.response.data.error, false);
+    }
+  };
+
   return (
     <div>
       <h2>blogs</h2>
@@ -111,7 +126,7 @@ const App = () => {
             <Toggleable buttonLabel='Create New Blog' ref={blogFormRef}>
               <BlogForm handleCreation={handleCreation} />
             </Toggleable>
-            <BlogList blogs={blogs} handleLikes={handleLikes} />
+            <BlogList blogs={blogs} handleLikes={handleLikes} handleDeletes={handleDeletes} user={user} />
           </>
       }
     </div>
