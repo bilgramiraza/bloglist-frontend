@@ -1,6 +1,8 @@
 import { useState } from "react";
 
 const BlogList = ({ blogs, handleLikes }) => {
+  if (!blogs.length) return null;
+
   return (
     <div>
       {
