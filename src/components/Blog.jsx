@@ -1,13 +1,17 @@
 import { useState } from "react";
+import PropTypes from 'prop-types';
 
 const BlogList = ({ blogs, handleLikes, handleDeletes, user }) => {
-  if (!blogs.length) return null;
-
+  let listOfBlogs;
+  if (!blogs.length) {
+    listOfBlogs = null;
+  } else {
+    listOfBlogs = blogs
+      .map(blog => <Blog key={blog._id} blog={blog} handleLikes={handleLikes} handleDelete={handleDeletes} currentUser={user} />);
+  }
   return (
     <div>
-      {
-        blogs.map(blog => <Blog key={blog._id} blog={blog} handleLikes={handleLikes} handleDelete={handleDeletes} currentUser={user} />)
-      }
+      {listOfBlogs}
     </div>
   );
 };
@@ -65,3 +69,17 @@ const Blog = ({ blog, handleLikes, handleDelete, currentUser }) => {
 };
 
 export default BlogList;
+
+BlogList.propTypes = {
+  blogs: PropTypes.array,
+  handleLikes: PropTypes.func.isRequired,
+  handleDeletes: PropTypes.func.isRequired,
+  user: PropTypes.object.isRequired,
+};
+
+Blog.protTypes = {
+  blog: PropTypes.object.isRequired,
+  handleLikes: PropTypes.func.isRequired,
+  handleDelete: PropTypes.func.isRequired,
+  currentUser: PropTypes.object.isRequired,
+};

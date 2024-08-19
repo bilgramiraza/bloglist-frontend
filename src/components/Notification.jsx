@@ -1,3 +1,5 @@
+import PropTypes from 'prop-types';
+
 function Notification({ message, status }) {
   if (!message) return null;
 
@@ -13,3 +15,8 @@ function Notification({ message, status }) {
 }
 
 export default Notification;
+
+Notification.propTypes = {
+  message: PropTypes.string,
+  status: PropTypes.bool.isRequired,
+};

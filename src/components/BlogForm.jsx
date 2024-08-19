@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import PropTypes from 'prop-types';
 
 const BlogForm = ({ handleCreation }) => {
   const [url, setUrl] = useState('');
@@ -40,3 +41,7 @@ const BlogForm = ({ handleCreation }) => {
 };
 
 export default BlogForm;
+
+BlogForm.propTypes = {
+  handleCreation: PropTypes.func.isRequired,
+};
