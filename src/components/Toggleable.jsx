@@ -26,7 +26,7 @@ const Toggleable = forwardRef((props, refs) => {
   );
 });
 
-Toggleable.displayName = "Toggleable";
+Toggleable.displayName = 'Toggleable';
 
 export default Toggleable;
 

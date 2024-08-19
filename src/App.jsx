@@ -70,7 +70,7 @@ const App = () => {
     window.localStorage.removeItem('loggedInBlogUser');
     setUser(null);
     setToken(null);
-    handleNotification(" Log out Successful", true);
+    handleNotification('Log out Successful', true);
   };
 
   const handleCreation = async newBlog => {

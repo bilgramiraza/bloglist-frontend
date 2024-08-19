@@ -6,7 +6,7 @@ function Notification({ message, status }) {
   return (
     <div>
       <div>
-        <span style={{ padding: "2px", borderStyle: "solid", borderWidth: "2px", borderColor: status ? "green" : "red", borderRadius: "5px" }}>
+        <span style={{ padding: '2px', borderStyle: 'solid', borderWidth: '2px', borderColor: status ? 'green' : 'red', borderRadius: '5px' }}>
           {message}
         </span>
       </div>
