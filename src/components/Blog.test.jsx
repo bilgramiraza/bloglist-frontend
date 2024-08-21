@@ -34,12 +34,23 @@ describe('<Blog />', () => {
     const authorDiv = await screen.findByText('-tester');
 
     const urlDiv = await screen.findByText('test.com');
-    const likesDiv = await screen.findByText('69');
+    const likesButton = await screen.findByText('69');
 
     expect(titleDiv).toBeVisible();
     expect(authorDiv).toBeVisible();
 
     expect(urlDiv).not.toBeVisible();
-    expect(likesDiv).not.toBeVisible();
+    expect(likesButton).not.toBeVisible();
+  });
+  test('Renders Blog URL and Likes after \'show\' button is clicked', async () => {
+    const urlDiv = await screen.findByText('test.com');
+    const likesButton = await screen.findByText('69');
+    const showButton = await screen.findByText('show');
+
+    const user = userEvent.setup();
+    await user.click(showButton);
+
+    expect(urlDiv).toBeVisible();
+    expect(likesButton).toBeVisible();
   });
 });
