@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, test, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import Blog from './Blog';
 import userEvent from '@testing-library/user-event';
@@ -19,6 +19,7 @@ describe('<Blog />', () => {
   };
 
   const mockHandler = vi.fn();
+  const user = userEvent.setup();
 
   beforeEach(() => {
     container = render(<Blog
@@ -47,7 +48,6 @@ describe('<Blog />', () => {
     const likesButton = await screen.findByText('69');
     const showButton = await screen.findByText('show');
 
-    const user = userEvent.setup();
     await user.click(showButton);
 
     expect(urlDiv).toBeVisible();
@@ -56,10 +56,20 @@ describe('<Blog />', () => {
   test('Checking if the Like Handler is Called Properly', async () => {
     const likesButton = await screen.findByText('69');
 
-    const user = userEvent.setup();
     await user.click(likesButton);
     await user.click(likesButton);
 
     expect(mockHandler.mock.calls).toHaveLength(2);
+  });
+  test('Checking if the Delete Handler is Called Properly', async () => {
+    const deleteButton = await screen.findByText('delete');
+
+    await user.click(deleteButton);
+    await user.click(deleteButton);
+
+    expect(mockHandler.mock.calls).toHaveLength(2);
+  });
+  afterEach(async () => {
+    mockHandler.mockClear();
   });
 });
