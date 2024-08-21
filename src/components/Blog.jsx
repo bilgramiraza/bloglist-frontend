@@ -1,21 +1,6 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
 
-const BlogList = ({ blogs, handleLikes, handleDeletes, user }) => {
-  let listOfBlogs;
-  if (!blogs.length) {
-    listOfBlogs = null;
-  } else {
-    listOfBlogs = blogs
-      .map(blog => <Blog key={blog._id} blog={blog} handleLikes={handleLikes} handleDelete={handleDeletes} currentUser={user} />);
-  }
-  return (
-    <div>
-      {listOfBlogs}
-    </div>
-  );
-};
-
 const Blog = ({ blog, handleLikes, handleDelete, currentUser }) => {
   const [visible, setVisible] = useState(false);
 
@@ -68,14 +53,7 @@ const Blog = ({ blog, handleLikes, handleDelete, currentUser }) => {
   );
 };
 
-export default BlogList;
-
-BlogList.propTypes = {
-  blogs: PropTypes.array,
-  handleLikes: PropTypes.func.isRequired,
-  handleDeletes: PropTypes.func.isRequired,
-  user: PropTypes.object.isRequired,
-};
+export default Blog;
 
 Blog.protTypes = {
   blog: PropTypes.object.isRequired,
