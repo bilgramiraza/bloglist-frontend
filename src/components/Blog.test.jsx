@@ -53,4 +53,13 @@ describe('<Blog />', () => {
     expect(urlDiv).toBeVisible();
     expect(likesButton).toBeVisible();
   });
+  test('Checking if the Like Handler is Called Properly', async () => {
+    const likesButton = await screen.findByText('69');
+
+    const user = userEvent.setup();
+    await user.click(likesButton);
+    await user.click(likesButton);
+
+    expect(mockHandler.mock.calls).toHaveLength(2);
+  });
 });
