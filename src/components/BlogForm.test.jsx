@@ -20,6 +20,7 @@ describe('<BlogForm />', () => {
     />).container;
 
   });
+
   test('Testing If Form Returns Valid Data via the CreationHandler', async () => {
     const titleInput = container.querySelector('input[name=title]');
     const authorInput = container.querySelector('input[name=author]');
@@ -33,8 +34,8 @@ describe('<BlogForm />', () => {
 
     expect(mockHandler.mock.calls[0][0]).toStrictEqual(testBlog);
   });
+
   afterEach(async () => {
     mockHandler.mockClear();
   });
 });
-

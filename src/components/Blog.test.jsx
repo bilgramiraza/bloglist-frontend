@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { cleanup, render, screen } from '@testing-library/react';
 import Blog from './Blog';
 import userEvent from '@testing-library/user-event';
 
@@ -28,8 +28,8 @@ describe('<Blog />', () => {
       handleDelete={mockHandler}
       currentUser={testUser}
     />).container;
-
   });
+
   test('Renders only Blog Title and Author on initial Render', async () => {
     const titleDiv = await screen.findByText('test');
     const authorDiv = await screen.findByText('-tester');
@@ -69,6 +69,35 @@ describe('<Blog />', () => {
 
     expect(mockHandler.mock.calls).toHaveLength(2);
   });
+  test('Checking if the Delete Button is Visible If Username matches CurrentUser', async () => {
+    const deleteButton = await screen.findByText('delete');
+    const showButton = await screen.findByText('show');
+
+    await user.click(showButton);
+
+    expect(deleteButton).toBeVisible();
+  });
+  test('Checking if the Delete Button is hidden If Username doesn\'t match CurrentUser', async () => {
+    cleanup();
+    const wrongTestUser = {
+      username: 'testr',
+    };
+
+    render(<Blog
+      blog={testBlog}
+      handleLikes={mockHandler}
+      handleDelete={mockHandler}
+      currentUser={wrongTestUser}
+    />);
+
+    const deleteButton = await screen.findByText('delete');
+    const showButton = await screen.findByText('show');
+
+    await user.click(showButton);
+
+    expect(deleteButton).not.toBeVisible();
+  });
+
   afterEach(async () => {
     mockHandler.mockClear();
   });
