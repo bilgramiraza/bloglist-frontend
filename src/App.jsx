@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { create, getAll, remove, sendLike, setToken } from './services/blogs';
 import { login } from './services/login';
-import BlogList from './components/Blog';
+import BlogList from './components/BlogList';
 import LoginForm from './components/LoginForm';
 import Notification from './components/Notification';
 import BlogForm from './components/BlogForm';
