@@ -100,5 +100,6 @@ describe('<Blog />', () => {
 
   afterEach(async () => {
     mockHandler.mockClear();
+    cleanup();
   });
 });

@@ -12,6 +12,8 @@ const BlogForm = ({ handleCreation }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    /* c8 ignore next */ //Protection vs Weirdos
+    if (!title || !author || !url) return;
     handleCreation({ title, author, url });
     setTitle('');
     setAuthor('');
@@ -34,7 +36,7 @@ const BlogForm = ({ handleCreation }) => {
           Url:
           <input type="text" name="url" value={url} onChange={handleUrlChange} />
         </label>
-        <button type="submit">Create</button>
+        <button type="submit" disabled={!title || !author || !url}>Create</button>
       </form>
     </div>
   );
