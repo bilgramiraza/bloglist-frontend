@@ -17,7 +17,7 @@ const getBlogs = async (setBlogs, handleNotification) => {
 };
 
 const App = () => {
-  const [blogs, setBlogs] = useState([]);
+  const [blogs, setBlogs] = useState(null);
   const [user, setUser] = useState(null);
   const [notification, setNotification] = useState({
     message: null,
@@ -28,11 +28,11 @@ const App = () => {
   const blogFormRef = useRef();
 
   useEffect(() => {
-    if (!blogs.length) {
+    if (blogs === null) {
       getBlogs(setBlogs, handleNotification);
       setReSortBlogs(true);
     }
-    if (reSortBlogs) {
+    if (reSortBlogs && blogs?.length) {
       setBlogs(blogs.toSorted((blogA, blogB) => blogB.likes - blogA.likes));
       setReSortBlogs(false);
     }

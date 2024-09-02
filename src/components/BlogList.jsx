@@ -3,7 +3,7 @@ import Blog from './Blog';
 
 const BlogList = ({ blogs, handleLikes, handleDeletes, user }) => {
   let listOfBlogs;
-  if (!blogs.length) {
+  if (!blogs || !blogs.length) {
     listOfBlogs = null;
   } else {
     listOfBlogs = blogs
