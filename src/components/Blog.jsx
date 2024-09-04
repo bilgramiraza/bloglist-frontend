@@ -44,10 +44,10 @@ const Blog = ({ blog, handleLikes, handleDelete, currentUser }) => {
         <button onClick={toggle}>{visible ? 'hide' : 'show'}</button>
       </div>
       <div style={blogBodyStyle}>
-        <p>{blog.url}</p>
-        <button onClick={handleLikeClick}>{blog.likes}</button>
-        <p>{blog.user.username}</p>
-        <button style={deleteButtonStyle} onClick={handleDeleteClick}>delete</button>
+        <p data-testid="blogUrl">{blog.url}</p>
+        <button data-testid="blogLike" onClick={handleLikeClick}>{blog.likes}</button>
+        <p data-testid="blogUser">{blog.user.username}</p>
+        <button data-testid="blogDelete" style={deleteButtonStyle} onClick={handleDeleteClick}>delete</button>
       </div>
     </div>
   );

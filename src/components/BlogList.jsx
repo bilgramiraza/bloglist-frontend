@@ -10,7 +10,7 @@ const BlogList = ({ blogs, handleLikes, handleDeletes, user }) => {
       .map(blog => <Blog key={blog._id} blog={blog} handleLikes={handleLikes} handleDelete={handleDeletes} currentUser={user} />);
   }
   return (
-    <div>
+    <div data-testid="bloglist">
       {listOfBlogs}
     </div>
   );
