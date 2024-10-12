@@ -11,23 +11,25 @@ describe('<Blog />', () => {
     url: 'test.com',
     likes: '69',
     user: {
-      username: 'tester',
+      username: 'tester'
     }
   };
   const testUser = {
-    username: 'tester',
+    username: 'tester'
   };
 
   const mockHandler = vi.fn();
   const user = userEvent.setup();
 
   beforeEach(() => {
-    container = render(<Blog
-      blog={testBlog}
-      handleLikes={mockHandler}
-      handleDelete={mockHandler}
-      currentUser={testUser}
-    />).container;
+    container = render(
+      <Blog
+        blog={testBlog}
+        handleLikes={mockHandler}
+        handleDelete={mockHandler}
+        currentUser={testUser}
+      />
+    ).container;
   });
 
   test('Renders only Blog Title and Author on initial Render', async () => {
@@ -80,15 +82,17 @@ describe('<Blog />', () => {
   test('Checking if the Delete Button is hidden If Username doesn\'t match CurrentUser', async () => {
     cleanup();
     const wrongTestUser = {
-      username: 'testr',
+      username: 'testr'
     };
 
-    render(<Blog
-      blog={testBlog}
-      handleLikes={mockHandler}
-      handleDelete={mockHandler}
-      currentUser={wrongTestUser}
-    />);
+    render(
+      <Blog
+        blog={testBlog}
+        handleLikes={mockHandler}
+        handleDelete={mockHandler}
+        currentUser={wrongTestUser}
+      />
+    );
 
     const deleteButton = await screen.findByText('delete');
     const showButton = await screen.findByText('show');

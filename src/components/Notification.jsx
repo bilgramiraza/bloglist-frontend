@@ -5,7 +5,15 @@ function Notification({ message, status }) {
 
   return (
     <div data-testid="notification">
-      <span style={{ padding: '2px', borderStyle: 'solid', borderWidth: '2px', borderColor: status ? 'green' : 'red', borderRadius: '5px' }}>
+      <span
+        style={{
+          padding: '2px',
+          borderStyle: 'solid',
+          borderWidth: '2px',
+          borderColor: status ? 'green' : 'red',
+          borderRadius: '5px'
+        }}
+      >
         {message}
       </span>
     </div>
@@ -16,5 +24,5 @@ export default Notification;
 
 Notification.propTypes = {
   message: PropTypes.string,
-  status: PropTypes.bool.isRequired,
+  status: PropTypes.bool.isRequired
 };

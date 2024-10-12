@@ -6,14 +6,17 @@ const BlogList = ({ blogs, handleLikes, handleDeletes, user }) => {
   if (!blogs || !blogs.length) {
     listOfBlogs = null;
   } else {
-    listOfBlogs = blogs
-      .map(blog => <Blog key={blog._id} blog={blog} handleLikes={handleLikes} handleDelete={handleDeletes} currentUser={user} />);
+    listOfBlogs = blogs.map((blog) => (
+      <Blog
+        key={blog._id}
+        blog={blog}
+        handleLikes={handleLikes}
+        handleDelete={handleDeletes}
+        currentUser={user}
+      />
+    ));
   }
-  return (
-    <div data-testid="bloglist">
-      {listOfBlogs}
-    </div>
-  );
+  return <div data-testid="bloglist">{listOfBlogs}</div>;
 };
 
 export default BlogList;
@@ -22,6 +25,5 @@ BlogList.propTypes = {
   blogs: PropTypes.array,
   handleLikes: PropTypes.func.isRequired,
   handleDeletes: PropTypes.func.isRequired,
-  user: PropTypes.object.isRequired,
+  user: PropTypes.object.isRequired
 };
-

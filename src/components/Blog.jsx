@@ -13,19 +13,19 @@ const Blog = ({ blog, handleLikes, handleDelete, currentUser }) => {
     padding: 2,
     border: 'solid',
     borderWidth: 1,
-    marginBottom: 2,
+    marginBottom: 2
   };
 
   const blogHeaderStyle = {
     display: 'flex',
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'space-between'
   };
   const blogBodyStyle = {
-    display: visible ? '' : 'none',
+    display: visible ? '' : 'none'
   };
   const deleteButtonStyle = {
-    display: blog.user.username === currentUser.username ? '' : 'none',
+    display: blog.user.username === currentUser.username ? '' : 'none'
   };
 
   const handleLikeClick = () => {
@@ -45,9 +45,13 @@ const Blog = ({ blog, handleLikes, handleDelete, currentUser }) => {
       </div>
       <div style={blogBodyStyle}>
         <p data-testid="blogUrl">{blog.url}</p>
-        <button data-testid="blogLike" onClick={handleLikeClick}>{blog.likes}</button>
+        <button data-testid="blogLike" onClick={handleLikeClick}>
+          {blog.likes}
+        </button>
         <p data-testid="blogUser">{blog.user.username}</p>
-        <button data-testid="blogDelete" style={deleteButtonStyle} onClick={handleDeleteClick}>delete</button>
+        <button data-testid="blogDelete" style={deleteButtonStyle} onClick={handleDeleteClick}>
+          delete
+        </button>
       </div>
     </div>
   );
@@ -59,5 +63,5 @@ Blog.protTypes = {
   blog: PropTypes.object.isRequired,
   handleLikes: PropTypes.func.isRequired,
   handleDelete: PropTypes.func.isRequired,
-  currentUser: PropTypes.object.isRequired,
+  currentUser: PropTypes.object.isRequired
 };

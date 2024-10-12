@@ -15,10 +15,10 @@ const Toggleable = forwardRef((props, refs) => {
 
   return (
     <div>
-      <div style={{ display: visible ? 'none' : '' }} >
+      <div style={{ display: visible ? 'none' : '' }}>
         <button onClick={show}>{props.buttonLabel}</button>
       </div>
-      <div style={{ display: visible ? '' : 'none' }} >
+      <div style={{ display: visible ? '' : 'none' }}>
         {props.children}
         <button onClick={hide}>Cancel</button>
       </div>
@@ -31,5 +31,5 @@ Toggleable.displayName = 'Toggleable';
 export default Toggleable;
 
 Toggleable.propTypes = {
-  buttonLabel: PropTypes.string.isRequired,
+  buttonLabel: PropTypes.string.isRequired
 };

@@ -21,7 +21,7 @@ const App = () => {
   const [user, setUser] = useState(null);
   const [notification, setNotification] = useState({
     message: null,
-    status: false,
+    status: false
   });
   const [reSortBlogs, setReSortBlogs] = useState(false);
 
@@ -50,7 +50,7 @@ const App = () => {
 
   const handleNotification = (message, status) => {
     setNotification({ message, status });
-    setTimeout(() => setNotification(notif => ({ ...notif, message: '' })), 5000);
+    setTimeout(() => setNotification((notif) => ({ ...notif, message: '' })), 5000);
   };
 
   const handleLogin = async ({ username, password }) => {
@@ -73,7 +73,7 @@ const App = () => {
     handleNotification('Log out Successful', true);
   };
 
-  const handleCreation = async newBlog => {
+  const handleCreation = async (newBlog) => {
     try {
       const savedBlog = await create(newBlog);
       setBlogs([...blogs, savedBlog]);
@@ -85,10 +85,10 @@ const App = () => {
     }
   };
 
-  const handleLikes = async blog => {
+  const handleLikes = async (blog) => {
     try {
       const likedBlog = await sendLike(blog);
-      const modifiedBlogList = blogs.map(blog => blog._id === likedBlog._id ? likedBlog : blog);
+      const modifiedBlogList = blogs.map((blog) => (blog._id === likedBlog._id ? likedBlog : blog));
       setBlogs(modifiedBlogList);
       setReSortBlogs(true);
       handleNotification(`Blog(${likedBlog.title}) Liked Successfully`, true);
@@ -97,16 +97,19 @@ const App = () => {
     }
   };
 
-  const handleDeletes = async blogId => {
-    const targetBlog = blogs.find(blog => blog._id === blogId);
+  const handleDeletes = async (blogId) => {
+    const targetBlog = blogs.find((blog) => blog._id === blogId);
     const deleteConfirm = window.confirm(`Delete ${targetBlog.title} By ${targetBlog.author}?`);
     if (!deleteConfirm) return;
     try {
       await remove(blogId);
-      const modifiedBlogList = blogs.filter(blog => blog._id !== blogId);
+      const modifiedBlogList = blogs.filter((blog) => blog._id !== blogId);
       setBlogs(modifiedBlogList);
       setReSortBlogs(true);
-      handleNotification(`Blog(${targetBlog.title} By ${targetBlog.author}) Deleted Successfully`, true);
+      handleNotification(
+        `Blog(${targetBlog.title} By ${targetBlog.author}) Deleted Successfully`,
+        true
+      );
     } catch (err) {
       handleNotification(err.response.data.error, false);
     }
@@ -116,19 +119,26 @@ const App = () => {
     <div>
       <h2>blogs</h2>
       <Notification message={notification.message} status={notification.status} />
-      {
-        user === null
-          ? <Toggleable buttonLabel='Login'>
-            <LoginForm handleLogin={handleLogin} />
+      {user === null ? (
+        <Toggleable buttonLabel="Login">
+          <LoginForm handleLogin={handleLogin} />
+        </Toggleable>
+      ) : (
+        <>
+          <p>
+            {user.name} Logged In <button onClick={handleLogout}>Logout</button>
+          </p>
+          <Toggleable buttonLabel="Create New Blog" ref={blogFormRef}>
+            <BlogForm handleCreation={handleCreation} />
           </Toggleable>
-          : <>
-            <p>{user.name} Logged In <button onClick={handleLogout}>Logout</button></p>
-            <Toggleable buttonLabel='Create New Blog' ref={blogFormRef}>
-              <BlogForm handleCreation={handleCreation} />
-            </Toggleable>
-            <BlogList blogs={blogs} handleLikes={handleLikes} handleDeletes={handleDeletes} user={user} />
-          </>
-      }
+          <BlogList
+            blogs={blogs}
+            handleLikes={handleLikes}
+            handleDeletes={handleDeletes}
+            user={user}
+          />
+        </>
+      )}
     </div>
   );
 };

@@ -2,7 +2,7 @@ module.exports = {
   root: true,
   env: {
     browser: true,
-    es2020: true,
+    es2020: true
   },
   extends: [
     'eslint:recommended',
@@ -10,58 +10,42 @@ module.exports = {
     'plugin:react/jsx-runtime',
     'plugin:react-hooks/recommended',
     'plugin:vitest-globals/recommended',
+    'prettier'
   ],
-  ignorePatterns: [
-    'dist',
-    '.eslintrc.cjs',
-  ],
+  ignorePatterns: ['dist', '.eslintrc.cjs'],
   parserOptions: {
     ecmaVersion: 'latest',
-    sourceType: 'module',
+    sourceType: 'module'
   },
   settings: {
     react: {
-      version: '18.2',
-    },
+      version: '18.2'
+    }
   },
-  plugins: [
-    'react-refresh',
-  ],
+  plugins: ['react-refresh'],
   rules: {
-    "indent": [
-      "error",
-      2,
-    ],
-    "linebreak-style": [
-      "error",
-      "unix",
-    ],
-    "quotes": [
-      "error",
-      "single",
-    ],
-    "eqeqeq": "error",
-    "no-trailing-spaces": "error",
-    "object-curly-spacing": [
-      "error",
-      "always",
-    ],
-    "arrow-spacing": [
-      "error",
+    indent: ['error', 2],
+    'linebreak-style': ['error', 'unix'],
+    quotes: ['error', 'single'],
+    eqeqeq: 'error',
+    'no-trailing-spaces': 'error',
+    'object-curly-spacing': ['error', 'always'],
+    'arrow-spacing': [
+      'error',
       {
-        "before": true,
-        "after": true,
+        before: true,
+        after: true
       }
     ],
-    "no-console": 0,
-    "react/react-in-jsx-scope": "off",
-    "react/prop-types": 0,
-    "no-unused-vars": 0,
-    "react-refresh/only-export-components": [
-      "warn",
+    'no-console': 0,
+    'react/react-in-jsx-scope': 'off',
+    'react/prop-types': 0,
+    'no-unused-vars': 0,
+    'react-refresh/only-export-components': [
+      'warn',
       {
-        allowConstantExport: true,
-      },
-    ],
-  },
-}
+        allowConstantExport: true
+      }
+    ]
+  }
+};

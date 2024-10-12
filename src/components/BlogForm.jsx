@@ -26,17 +26,31 @@ const BlogForm = ({ handleCreation }) => {
       <form onSubmit={handleSubmit}>
         <label>
           Title:
-          <input data-testid="title" type="text" name="title" value={title} onChange={handleTitleChange} />
+          <input
+            data-testid="title"
+            type="text"
+            name="title"
+            value={title}
+            onChange={handleTitleChange}
+          />
         </label>
         <label>
           Author:
-          <input data-testid="author" type="text" name="author" value={author} onChange={handleAuthorChange} />
+          <input
+            data-testid="author"
+            type="text"
+            name="author"
+            value={author}
+            onChange={handleAuthorChange}
+          />
         </label>
         <label>
           Url:
           <input data-testid="url" type="text" name="url" value={url} onChange={handleUrlChange} />
         </label>
-        <button data-testid="create" type="submit" disabled={!title || !author || !url}>Create</button>
+        <button data-testid="create" type="submit" disabled={!title || !author || !url}>
+          Create
+        </button>
       </form>
     </div>
   );
@@ -45,5 +59,5 @@ const BlogForm = ({ handleCreation }) => {
 export default BlogForm;
 
 BlogForm.propTypes = {
-  handleCreation: PropTypes.func.isRequired,
+  handleCreation: PropTypes.func.isRequired
 };

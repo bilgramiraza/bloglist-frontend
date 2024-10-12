@@ -8,18 +8,16 @@ describe('<BlogForm />', () => {
   const testBlog = {
     title: 'test',
     author: 'tester',
-    url: 'test.com',
+    url: 'test.com'
   };
 
   const mockHandler = vi.fn();
   const user = userEvent.setup();
 
   beforeEach(() => {
-    container = render(<BlogForm
-      handleCreation={mockHandler}
-      handleNotification={mockHandler}
-    />).container;
-
+    container = render(
+      <BlogForm handleCreation={mockHandler} handleNotification={mockHandler} />
+    ).container;
   });
 
   test('Testing If Form\'s Submit Button is Disabled on Initial Render', async () => {
@@ -31,7 +29,7 @@ describe('<BlogForm />', () => {
     const submitButton = screen.getByRole('button');
 
     await user.click(submitButton);
-    expect(mockHandler).not.toHaveBeenCalled()
+    expect(mockHandler).not.toHaveBeenCalled();
   });
   test('Testing If Form Blocks Submission if Only Title is provided', async () => {
     const titleInput = container.querySelector('input[name=title]');
@@ -40,7 +38,7 @@ describe('<BlogForm />', () => {
     await user.type(titleInput, testBlog.title);
     expect(submitButton).toBeDisabled();
     await user.click(submitButton);
-    expect(mockHandler).not.toHaveBeenCalled()
+    expect(mockHandler).not.toHaveBeenCalled();
   });
   test('Testing If Form Blocks Submission if Only Author is provided', async () => {
     const authorInput = container.querySelector('input[name=author]');
@@ -49,7 +47,7 @@ describe('<BlogForm />', () => {
     await user.type(authorInput, testBlog.author);
     expect(submitButton).toBeDisabled();
     await user.click(submitButton);
-    expect(mockHandler).not.toHaveBeenCalled()
+    expect(mockHandler).not.toHaveBeenCalled();
   });
   test('Testing If Form Blocks Submission if Only URL is provided', async () => {
     const urlInput = container.querySelector('input[name=url]');
@@ -58,7 +56,7 @@ describe('<BlogForm />', () => {
     await user.type(urlInput, testBlog.url);
     expect(submitButton).toBeDisabled();
     await user.click(submitButton);
-    expect(mockHandler).not.toHaveBeenCalled()
+    expect(mockHandler).not.toHaveBeenCalled();
   });
   test('Testing If Form Blocks Submission if Only Title and Author is provided', async () => {
     const titleInput = container.querySelector('input[name=title]');
@@ -69,7 +67,7 @@ describe('<BlogForm />', () => {
     await user.type(authorInput, testBlog.author);
     expect(submitButton).toBeDisabled();
     await user.click(submitButton);
-    expect(mockHandler).not.toHaveBeenCalled()
+    expect(mockHandler).not.toHaveBeenCalled();
   });
   test('Testing If Form Blocks Submission if Only Author and URL is provided', async () => {
     const authorInput = container.querySelector('input[name=author]');
@@ -80,7 +78,7 @@ describe('<BlogForm />', () => {
     await user.type(urlInput, testBlog.url);
     expect(submitButton).toBeDisabled();
     await user.click(submitButton);
-    expect(mockHandler).not.toHaveBeenCalled()
+    expect(mockHandler).not.toHaveBeenCalled();
   });
   test('Testing If Form Blocks Submission if Only Title and URL is provided', async () => {
     const titleInput = container.querySelector('input[name=title]');
@@ -91,7 +89,7 @@ describe('<BlogForm />', () => {
     await user.type(urlInput, testBlog.url);
     expect(submitButton).toBeDisabled();
     await user.click(submitButton);
-    expect(mockHandler).not.toHaveBeenCalled()
+    expect(mockHandler).not.toHaveBeenCalled();
   });
   test('Testing If Form Blocks Submission if Title, Author and URL is provided but isn\'t Submitted', async () => {
     const titleInput = container.querySelector('input[name=title]');
@@ -103,13 +101,13 @@ describe('<BlogForm />', () => {
     await user.type(authorInput, testBlog.author);
     await user.type(urlInput, testBlog.url);
     expect(submitButton).toBeEnabled();
-    expect(mockHandler).not.toHaveBeenCalled()
+    expect(mockHandler).not.toHaveBeenCalled();
   });
   test('Testing If Form Blocks Submission if None of the Fields are filled, Via Keyboard', async () => {
     const titleInput = container.querySelector('input[name=title]');
 
     await user.type(titleInput, '{Enter}');
-    expect(mockHandler).not.toHaveBeenCalled()
+    expect(mockHandler).not.toHaveBeenCalled();
   });
   test('Testing If Form Blocks Submission if Only Title is provided, Via Keyboard', async () => {
     const titleInput = container.querySelector('input[name=title]');
@@ -118,7 +116,7 @@ describe('<BlogForm />', () => {
     await user.type(titleInput, testBlog.title);
     expect(submitButton).toBeDisabled();
     await user.type(titleInput, '{Enter}');
-    expect(mockHandler).not.toHaveBeenCalled()
+    expect(mockHandler).not.toHaveBeenCalled();
   });
   test('Testing If Form Blocks Submission if Only Author is provided, Via Keyboard', async () => {
     const authorInput = container.querySelector('input[name=author]');
@@ -127,7 +125,7 @@ describe('<BlogForm />', () => {
     await user.type(authorInput, testBlog.author);
     expect(submitButton).toBeDisabled();
     await user.type(authorInput, '{Enter}');
-    expect(mockHandler).not.toHaveBeenCalled()
+    expect(mockHandler).not.toHaveBeenCalled();
   });
   test('Testing If Form Blocks Submission if Only URL is provided, Via Keyboard', async () => {
     const urlInput = container.querySelector('input[name=url]');
@@ -136,7 +134,7 @@ describe('<BlogForm />', () => {
     await user.type(urlInput, testBlog.url);
     expect(submitButton).toBeDisabled();
     await user.type(urlInput, '{Enter}');
-    expect(mockHandler).not.toHaveBeenCalled()
+    expect(mockHandler).not.toHaveBeenCalled();
   });
   test('Testing If Form Blocks Submission if Only Title and Author is provided, Via Keyboard', async () => {
     const titleInput = container.querySelector('input[name=title]');
@@ -147,7 +145,7 @@ describe('<BlogForm />', () => {
     await user.type(authorInput, testBlog.author);
     expect(submitButton).toBeDisabled();
     await user.type(authorInput, '{Enter}');
-    expect(mockHandler).not.toHaveBeenCalled()
+    expect(mockHandler).not.toHaveBeenCalled();
   });
   test('Testing If Form Blocks Submission if Only Author and URL is provided, Via Keyboard', async () => {
     const authorInput = container.querySelector('input[name=author]');
@@ -158,7 +156,7 @@ describe('<BlogForm />', () => {
     await user.type(urlInput, testBlog.url);
     expect(submitButton).toBeDisabled();
     await user.type(urlInput, '{Enter}');
-    expect(mockHandler).not.toHaveBeenCalled()
+    expect(mockHandler).not.toHaveBeenCalled();
   });
   test('Testing If Form Blocks Submission if Only Title and URL is provided, Via Keyboard', async () => {
     const titleInput = container.querySelector('input[name=title]');
@@ -169,7 +167,7 @@ describe('<BlogForm />', () => {
     await user.type(urlInput, testBlog.url);
     expect(submitButton).toBeDisabled();
     await user.type(urlInput, '{Enter}');
-    expect(mockHandler).not.toHaveBeenCalled()
+    expect(mockHandler).not.toHaveBeenCalled();
   });
   test('Testing If Form Blocks Submission if Title, Author and URL is provided but isn\'t Submitted, Via Keyboard', async () => {
     const titleInput = container.querySelector('input[name=title]');
@@ -181,7 +179,7 @@ describe('<BlogForm />', () => {
     await user.type(authorInput, testBlog.author);
     await user.type(urlInput, testBlog.url);
     expect(submitButton).toBeEnabled();
-    expect(mockHandler).not.toHaveBeenCalled()
+    expect(mockHandler).not.toHaveBeenCalled();
   });
   test('Testing If Form Allows Submission if all items are filled in', async () => {
     const titleInput = container.querySelector('input[name=title]');
@@ -196,7 +194,7 @@ describe('<BlogForm />', () => {
     expect(submitButton).toBeEnabled();
     await user.click(submitButton);
 
-    expect(mockHandler).toHaveBeenCalled()
+    expect(mockHandler).toHaveBeenCalled();
     expect(mockHandler.mock.calls).toHaveLength(1);
   });
   test('Testing If Form Allows Submission if all items are filled in, Via Keyboard', async () => {
@@ -212,7 +210,7 @@ describe('<BlogForm />', () => {
     expect(submitButton).toBeEnabled();
     await user.type(urlInput, '{Enter}');
 
-    expect(mockHandler).toHaveBeenCalled()
+    expect(mockHandler).toHaveBeenCalled();
     expect(mockHandler.mock.calls).toHaveLength(1);
   });
   test('Testing If Form Returns Valid Data via the CreationHandler', async () => {
@@ -228,7 +226,7 @@ describe('<BlogForm />', () => {
     expect(submitButton).toBeEnabled();
     await user.click(submitButton);
 
-    expect(mockHandler).toHaveBeenCalled()
+    expect(mockHandler).toHaveBeenCalled();
     expect(mockHandler.mock.calls[0][0]).toStrictEqual(testBlog);
   });
 
