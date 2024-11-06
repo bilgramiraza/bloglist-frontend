@@ -8,15 +8,7 @@ import BlogForm from './components/BlogForm';
 import Toggleable from './components/Toggleable';
 import { useDispatch } from 'react-redux';
 import { notify } from '../reducers/notificationReducer';
-
-const getBlogs = async (setBlogs, dispatch) => {
-  try {
-    const blogs = await getAll();
-    setBlogs(blogs);
-  } catch (err) {
-    dispatch(notify(err.response.data.error, false, 3));
-  }
-};
+import { initializeBlogs } from '../reducers/blogsReducer';
 
 const App = () => {
   const [blogs, setBlogs] = useState(null);
@@ -28,15 +20,8 @@ const App = () => {
   const blogFormRef = useRef();
 
   useEffect(() => {
-    if (blogs === null) {
-      getBlogs(setBlogs, dispatch);
-      setReSortBlogs(true);
-    }
-    if (reSortBlogs && blogs?.length) {
-      setBlogs(blogs.toSorted((blogA, blogB) => blogB.likes - blogA.likes));
-      setReSortBlogs(false);
-    }
-  }, [blogs, reSortBlogs]);
+    dispatch(initializeBlogs());
+  }, []);
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedInBlogUser');
@@ -124,7 +109,6 @@ const App = () => {
             <BlogForm handleCreation={handleCreation} />
           </Toggleable>
           <BlogList
-            blogs={blogs}
             handleLikes={handleLikes}
             handleDeletes={handleDeletes}
             user={user}
