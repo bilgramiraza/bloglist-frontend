@@ -1,7 +1,7 @@
 import { getAll } from "../src/services/blogs";
-const { createSlice } = require("@reduxjs/toolkit");
+import { createSlice, createSelector } from "@reduxjs/toolkit";
 
-const initialState = null;
+const initialState = [];
 
 const blogsSlice = createSlice({
   name: 'blogs',
@@ -16,6 +16,11 @@ const blogsSlice = createSlice({
 export const { setBlogs } = blogsSlice.actions;
 
 export default blogsSlice.reducer;
+
+export const selectSortedBlogs = createSelector(
+  state => state.blogs,
+  blogs => [...blogs].sort((a, b) => b.likes - a.likes)
+);
 
 export const initializeBlogs = () => {
   return async dispatch => {
