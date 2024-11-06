@@ -1,7 +1,10 @@
 import PropTypes from 'prop-types';
 import Blog from './Blog';
+import { useSelector } from 'react-redux';
+import { selectSortedBlogs } from '../../reducers/blogsReducer';
 
-const BlogList = ({ blogs, handleLikes, handleDeletes, user }) => {
+const BlogList = ({ handleLikes, handleDeletes, user }) => {
+  const blogs = useSelector(selectSortedBlogs);
   let listOfBlogs;
   if (!blogs || !blogs.length) {
     listOfBlogs = null;
@@ -16,13 +19,16 @@ const BlogList = ({ blogs, handleLikes, handleDeletes, user }) => {
       />
     ));
   }
-  return <div data-testid="bloglist">{listOfBlogs}</div>;
+  return (
+    <div data-testid="bloglist">
+      {listOfBlogs}
+    </div>
+  );
 };
 
 export default BlogList;
 
 BlogList.propTypes = {
-  blogs: PropTypes.array,
   handleLikes: PropTypes.func.isRequired,
   handleDeletes: PropTypes.func.isRequired,
   user: PropTypes.object.isRequired
