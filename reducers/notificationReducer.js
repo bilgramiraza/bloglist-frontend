@@ -27,7 +27,7 @@ export const notify = (message, status = true, time = 5) => {
   return async dispatch => {
     dispatch(setNotify({ message, status }));
 
-    setTimeout(() => dispatch(clearNotify(), time * 1000));
+    setTimeout(() => dispatch(clearNotify()), time * 1000);
   };
 }
 
