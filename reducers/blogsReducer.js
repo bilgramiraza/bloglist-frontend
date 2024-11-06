@@ -1,3 +1,4 @@
+import { getAll } from "../src/services/blogs";
 const { createSlice } = require("@reduxjs/toolkit");
 
 const initialState = null;
@@ -15,3 +16,10 @@ const blogsSlice = createSlice({
 export const { setBlogs } = blogsSlice.actions;
 
 export default blogsSlice.reducer;
+
+export const initializeBlogs = () => {
+  return async dispatch => {
+    const blogs = await getAll();
+    dispatch(setBlogs(blogs));
+  };
+};
