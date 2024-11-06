@@ -6,30 +6,30 @@ import LoginForm from './components/LoginForm';
 import Notification from './components/Notification';
 import BlogForm from './components/BlogForm';
 import Toggleable from './components/Toggleable';
+import { useDispatch } from 'react-redux';
+import { notify } from '../reducers/notificationReducer';
 
-const getBlogs = async (setBlogs, handleNotification) => {
+const getBlogs = async (setBlogs, dispatch) => {
   try {
     const blogs = await getAll();
     setBlogs(blogs);
   } catch (err) {
-    handleNotification(err.response.data.error, false);
+    dispatch(notify(err.response.data.error, false, 3));
   }
 };
 
 const App = () => {
   const [blogs, setBlogs] = useState(null);
   const [user, setUser] = useState(null);
-  const [notification, setNotification] = useState({
-    message: null,
-    status: false
-  });
   const [reSortBlogs, setReSortBlogs] = useState(false);
+
+  const dispatch = useDispatch();
 
   const blogFormRef = useRef();
 
   useEffect(() => {
     if (blogs === null) {
-      getBlogs(setBlogs, handleNotification);
+      getBlogs(setBlogs, dispatch);
       setReSortBlogs(true);
     }
     if (reSortBlogs && blogs?.length) {
@@ -44,14 +44,9 @@ const App = () => {
       const user = JSON.parse(loggedUserJSON);
       setUser(user);
       setToken(user.token);
-      handleNotification(`${user.name} Has Logged In`, true);
+      dispatch(notify(`${user.name} Has Logged In`));
     }
   }, []);
-
-  const handleNotification = (message, status) => {
-    setNotification({ message, status });
-    setTimeout(() => setNotification((notif) => ({ ...notif, message: '' })), 5000);
-  };
 
   const handleLogin = async ({ username, password }) => {
     try {
@@ -59,9 +54,9 @@ const App = () => {
       setUser(credentials);
       window.localStorage.setItem('loggedInBlogUser', JSON.stringify(credentials));
       setToken(credentials.token);
-      handleNotification(`${credentials.name} Has Logged In`, true);
+      dispatch(notify(`${credentials.name} Has Logged In`));
     } catch (err) {
-      handleNotification(err.response.data.error, false);
+      dispatch(notify(err.response.data.error, false, 3));
     }
   };
 
@@ -70,7 +65,7 @@ const App = () => {
     window.localStorage.removeItem('loggedInBlogUser');
     setUser(null);
     setToken(null);
-    handleNotification('Log out Successful', true);
+    dispatch(notify('Log out Successful'));
   };
 
   const handleCreation = async (newBlog) => {
@@ -78,10 +73,10 @@ const App = () => {
       const savedBlog = await create(newBlog);
       setBlogs([...blogs, savedBlog]);
       setReSortBlogs(true);
-      handleNotification(`Blog(${savedBlog.title}) Created Successfully`, true);
+      dispatch(notify(`Blog(${savedBlog.title}) Created Successfully`));
       blogFormRef.current.hideComponent();
     } catch (err) {
-      handleNotification(err.response.data.error, false);
+      dispatch(notify(err.response.data.error, false, 3));
     }
   };
 
@@ -91,9 +86,9 @@ const App = () => {
       const modifiedBlogList = blogs.map((blog) => (blog._id === likedBlog._id ? likedBlog : blog));
       setBlogs(modifiedBlogList);
       setReSortBlogs(true);
-      handleNotification(`Blog(${likedBlog.title}) Liked Successfully`, true);
+      dispatch(notify(`Blog(${likedBlog.title}) Liked Successfully`));
     } catch (err) {
-      handleNotification(err.response.data.error, false);
+      dispatch(notify(err.response.data.error, false, 3));
     }
   };
 
@@ -106,19 +101,16 @@ const App = () => {
       const modifiedBlogList = blogs.filter((blog) => blog._id !== blogId);
       setBlogs(modifiedBlogList);
       setReSortBlogs(true);
-      handleNotification(
-        `Blog(${targetBlog.title} By ${targetBlog.author}) Deleted Successfully`,
-        true
-      );
+      dispatch(notify(`Blog(${targetBlog.title} By ${targetBlog.author}) Deleted Successfully`));
     } catch (err) {
-      handleNotification(err.response.data.error, false);
+      dispatch(notify(err.response.data.error, false, 3));
     }
   };
 
   return (
     <div>
       <h2>blogs</h2>
-      <Notification message={notification.message} status={notification.status} />
+      <Notification />
       {user === null ? (
         <Toggleable buttonLabel="Login">
           <LoginForm handleLogin={handleLogin} />
