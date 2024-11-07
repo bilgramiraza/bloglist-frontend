@@ -64,21 +64,6 @@ const App = () => {
     }
   };
 
-  const handleDeletes = async (blogId) => {
-    const targetBlog = blogs.find((blog) => blog._id === blogId);
-    const deleteConfirm = window.confirm(`Delete ${targetBlog.title} By ${targetBlog.author}?`);
-    if (!deleteConfirm) return;
-    try {
-      await remove(blogId);
-      const modifiedBlogList = blogs.filter((blog) => blog._id !== blogId);
-      setBlogs(modifiedBlogList);
-      setReSortBlogs(true);
-      dispatch(notify(`Blog(${targetBlog.title} By ${targetBlog.author}) Deleted Successfully`));
-    } catch (err) {
-      dispatch(notify(err.response.data.error, false, 3));
-    }
-  };
-
   return (
     <div>
       <h2>blogs</h2>
@@ -97,7 +82,6 @@ const App = () => {
           </Toggleable>
           <BlogList
             handleLikes={handleLikes}
-            handleDeletes={handleDeletes}
             user={user}
           />
         </>

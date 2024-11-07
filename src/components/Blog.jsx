@@ -1,8 +1,13 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
+import { useDispatch } from 'react-redux';
+import { deleteBlog } from '../../reducers/blogsReducer';
+import { notify } from '../../reducers/notificationReducer';
 
-const Blog = ({ blog, handleLikes, handleDelete, currentUser }) => {
+const Blog = ({ blog, handleLikes, currentUser }) => {
   const [visible, setVisible] = useState(false);
+
+  const dispatch = useDispatch();
 
   const toggle = () => setVisible(!visible);
 
@@ -33,7 +38,10 @@ const Blog = ({ blog, handleLikes, handleDelete, currentUser }) => {
   };
 
   const handleDeleteClick = () => {
-    handleDelete(blog._id);
+    const deleteConfirm = window.confirm(`Delete ${blog.title} By ${blog.author}?`);
+    if (!deleteConfirm) return;
+    dispatch(deleteBlog(blog._id));
+    dispatch(notify(`Blog(${blog.title} By ${blog.author}) Deleted Successfully`));
   };
 
   return (
@@ -62,6 +70,5 @@ export default Blog;
 Blog.propTypes = {
   blog: PropTypes.object.isRequired,
   handleLikes: PropTypes.func.isRequired,
-  handleDelete: PropTypes.func.isRequired,
   currentUser: PropTypes.object.isRequired
 };
