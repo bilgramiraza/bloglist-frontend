@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { create, getAll, remove, sendLike, setToken } from './services/blogs';
+import { remove, sendLike, setToken } from './services/blogs';
 import { login } from './services/login';
 import BlogList from './components/BlogList';
 import LoginForm from './components/LoginForm';
@@ -16,7 +16,6 @@ const App = () => {
   const [reSortBlogs, setReSortBlogs] = useState(false);
 
   const dispatch = useDispatch();
-
   const blogFormRef = useRef();
 
   useEffect(() => {
@@ -51,18 +50,6 @@ const App = () => {
     setUser(null);
     setToken(null);
     dispatch(notify('Log out Successful'));
-  };
-
-  const handleCreation = async (newBlog) => {
-    try {
-      const savedBlog = await create(newBlog);
-      setBlogs([...blogs, savedBlog]);
-      setReSortBlogs(true);
-      dispatch(notify(`Blog(${savedBlog.title}) Created Successfully`));
-      blogFormRef.current.hideComponent();
-    } catch (err) {
-      dispatch(notify(err.response.data.error, false, 3));
-    }
   };
 
   const handleLikes = async (blog) => {
@@ -106,7 +93,7 @@ const App = () => {
             {user.name} Logged In <button onClick={handleLogout}>Logout</button>
           </p>
           <Toggleable buttonLabel="Create New Blog" ref={blogFormRef}>
-            <BlogForm handleCreation={handleCreation} />
+            <BlogForm onClose={() => blogFormRef.current.hideComponent()} />
           </Toggleable>
           <BlogList
             handleLikes={handleLikes}

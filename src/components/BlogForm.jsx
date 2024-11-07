@@ -1,10 +1,15 @@
 import { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { newBlog } from '../../reducers/blogsReducer';
+import { notify } from '../../reducers/notificationReducer';
 import PropTypes from 'prop-types';
 
-const BlogForm = ({ handleCreation }) => {
+const BlogForm = ({ onClose }) => {
   const [url, setUrl] = useState('');
   const [title, setTitle] = useState('');
   const [author, setAuthor] = useState('');
+
+  const dispatch = useDispatch();
 
   const handleAuthorChange = (e) => setAuthor(e.target.value);
   const handleTitleChange = (e) => setTitle(e.target.value);
@@ -14,10 +19,12 @@ const BlogForm = ({ handleCreation }) => {
     e.preventDefault();
     /* c8 ignore next */ //Protection vs Weirdos
     if (!title || !author || !url) return;
-    handleCreation({ title, author, url });
+    dispatch(newBlog({ title, author, url }));
     setTitle('');
     setAuthor('');
     setUrl('');
+    dispatch(notify(`Blog(${title}) Created Successfully`));
+    onClose();
   };
 
   return (
@@ -59,5 +66,5 @@ const BlogForm = ({ handleCreation }) => {
 export default BlogForm;
 
 BlogForm.propTypes = {
-  handleCreation: PropTypes.func.isRequired
+  onClose: PropTypes.func.isRequired,
 };
