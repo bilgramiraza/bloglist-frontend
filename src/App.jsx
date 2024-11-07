@@ -17,7 +17,11 @@ const App = () => {
   const blogFormRef = useRef();
 
   useEffect(() => {
-    dispatch(initializeBlogs());
+    try {
+      dispatch(initializeBlogs());
+    } catch (err) {
+      dispatch(notify(err.message || 'An Error Occured', false));
+    }
   }, []);
 
   useEffect(() => {

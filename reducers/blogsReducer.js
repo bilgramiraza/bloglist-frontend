@@ -1,5 +1,6 @@
 import { create, getAll, remove as removeBlog, sendLike } from "../src/services/blogs";
 import { createSlice, createSelector } from "@reduxjs/toolkit";
+import { notify } from "./notificationReducer";
 
 const initialState = [];
 
@@ -17,7 +18,7 @@ const blogsSlice = createSlice({
       return state.filter(blogs => blogs._id !== action.payload);
     },
     like(state, action) {
-      state.forEach((blog) => blog._id === action.payload._id ? action.payload : blog);
+      return state.map((blog) => blog._id === action.payload._id ? action.payload : blog);
     },
   },
 });
@@ -31,30 +32,38 @@ export const selectSortedBlogs = createSelector(
   blogs => [...blogs].sort((a, b) => b.likes - a.likes)
 );
 
-export const initializeBlogs = () => {
-  return async dispatch => {
+export const initializeBlogs = () => async dispatch => {
+  try {
     const blogs = await getAll();
     dispatch(setBlogs(blogs));
-  };
+  } catch (err) {
+    dispatch(notify(err.response?.data?.error || 'Failed to Get Blogs'));
+  }
 };
 
-export const newBlog = blog => {
-  return async dispatch => {
+export const newBlog = blog => async dispatch => {
+  try {
     const newBlog = await create(blog);
     dispatch(add(newBlog));
-  };
+  } catch (err) {
+    dispatch(notify(err.response?.data?.error || 'Failed to Create Blog'));
+  }
 };
 
-export const deleteBlog = blogId => {
-  return async dispatch => {
+export const deleteBlog = blogId => async dispatch => {
+  try {
     await removeBlog(blogId);
     dispatch(remove(blogId));
-  };
+  } catch (err) {
+    dispatch(notify(err.response?.data?.error || 'Failed to Delete Blog'));
+  }
 };
 
-export const likeBlog = blog => {
-  return async dispatch => {
+export const likeBlog = blog => async dispatch => {
+  try {
     const likedBlog = await sendLike(blog);
     dispatch(like(likedBlog));
-  };
+  } catch (err) {
+    dispatch(notify(err.response?.data?.error || 'Failed to Like Blog'));
+  }
 };

@@ -33,16 +33,24 @@ const Blog = ({ blog, currentUser }) => {
     display: blog.user.username === currentUser.username ? '' : 'none'
   };
 
-  const handleLikeClick = () => {
-    dispatch(likeBlog(blog));
-    dispatch(notify(`Blog(${blog.title}) Liked Successfully`));
+  const handleLikeClick = async () => {
+    try {
+      await dispatch(likeBlog(blog));
+      dispatch(notify(`Blog(${blog.title}) Liked Successfully`));
+    } catch (err) {
+      dispatch(notify(err.message || 'An Error Occured', false));
+    }
   };
 
-  const handleDeleteClick = () => {
+  const handleDeleteClick = async () => {
     const deleteConfirm = window.confirm(`Delete ${blog.title} By ${blog.author}?`);
     if (!deleteConfirm) return;
-    dispatch(deleteBlog(blog._id));
-    dispatch(notify(`Blog(${blog.title} By ${blog.author}) Deleted Successfully`));
+    try {
+      await dispatch(deleteBlog(blog._id));
+      dispatch(notify(`Blog(${blog.title} By ${blog.author}) Deleted Successfully`));
+    } catch (err) {
+      dispatch(notify(err.message || 'An Error Occured', false));
+    }
   };
 
   return (

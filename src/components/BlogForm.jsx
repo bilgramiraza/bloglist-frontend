@@ -15,16 +15,20 @@ const BlogForm = ({ onClose }) => {
   const handleTitleChange = (e) => setTitle(e.target.value);
   const handleUrlChange = (e) => setUrl(e.target.value);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     /* c8 ignore next */ //Protection vs Weirdos
     if (!title || !author || !url) return;
-    dispatch(newBlog({ title, author, url }));
-    setTitle('');
-    setAuthor('');
-    setUrl('');
-    dispatch(notify(`Blog(${title}) Created Successfully`));
-    onClose();
+    try {
+      await dispatch(newBlog({ title, author, url }));
+      setTitle('');
+      setAuthor('');
+      setUrl('');
+      dispatch(notify(`Blog(${title}) Created Successfully`));
+      onClose();
+    } catch (err) {
+      dispatch(notify(err.message || 'An Error Occured', false));
+    }
   };
 
   return (
