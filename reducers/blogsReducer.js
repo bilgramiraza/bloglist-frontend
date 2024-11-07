@@ -1,4 +1,4 @@
-import { create, getAll, remove as removeBlog } from "../src/services/blogs";
+import { create, getAll, remove as removeBlog, sendLike } from "../src/services/blogs";
 import { createSlice, createSelector } from "@reduxjs/toolkit";
 
 const initialState = [];
@@ -16,10 +16,13 @@ const blogsSlice = createSlice({
     remove(state, action) {
       return state.filter(blogs => blogs._id !== action.payload);
     },
+    like(state, action) {
+      state.forEach((blog) => blog._id === action.payload._id ? action.payload : blog);
+    },
   },
 });
 
-export const { setBlogs, add, remove } = blogsSlice.actions;
+export const { setBlogs, add, remove, like } = blogsSlice.actions;
 
 export default blogsSlice.reducer;
 
@@ -46,5 +49,12 @@ export const deleteBlog = blogId => {
   return async dispatch => {
     await removeBlog(blogId);
     dispatch(remove(blogId));
+  };
+};
+
+export const likeBlog = blog => {
+  return async dispatch => {
+    const likedBlog = await sendLike(blog);
+    dispatch(like(likedBlog));
   };
 };
