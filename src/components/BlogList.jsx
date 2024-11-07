@@ -3,7 +3,7 @@ import Blog from './Blog';
 import { useSelector } from 'react-redux';
 import { selectSortedBlogs } from '../../reducers/blogsReducer';
 
-const BlogList = ({ handleLikes, user }) => {
+const BlogList = ({ user }) => {
   const blogs = useSelector(selectSortedBlogs);
   let listOfBlogs;
   if (!blogs || !blogs.length) {
@@ -13,7 +13,6 @@ const BlogList = ({ handleLikes, user }) => {
       <Blog
         key={blog._id}
         blog={blog}
-        handleLikes={handleLikes}
         currentUser={user}
       />
     ));
@@ -28,6 +27,5 @@ const BlogList = ({ handleLikes, user }) => {
 export default BlogList;
 
 BlogList.propTypes = {
-  handleLikes: PropTypes.func.isRequired,
   user: PropTypes.object.isRequired
 };

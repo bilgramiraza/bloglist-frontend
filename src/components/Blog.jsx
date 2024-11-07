@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
-import { deleteBlog } from '../../reducers/blogsReducer';
+import { deleteBlog, likeBlog } from '../../reducers/blogsReducer';
 import { notify } from '../../reducers/notificationReducer';
 
-const Blog = ({ blog, handleLikes, currentUser }) => {
+const Blog = ({ blog, currentUser }) => {
   const [visible, setVisible] = useState(false);
 
   const dispatch = useDispatch();
@@ -34,7 +34,8 @@ const Blog = ({ blog, handleLikes, currentUser }) => {
   };
 
   const handleLikeClick = () => {
-    handleLikes(blog);
+    dispatch(likeBlog(blog));
+    dispatch(notify(`Blog(${blog.title}) Liked Successfully`));
   };
 
   const handleDeleteClick = () => {
@@ -69,6 +70,5 @@ export default Blog;
 
 Blog.propTypes = {
   blog: PropTypes.object.isRequired,
-  handleLikes: PropTypes.func.isRequired,
   currentUser: PropTypes.object.isRequired
 };

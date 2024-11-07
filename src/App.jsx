@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { remove, sendLike, setToken } from './services/blogs';
+import { setToken } from './services/blogs';
 import { login } from './services/login';
 import BlogList from './components/BlogList';
 import LoginForm from './components/LoginForm';
@@ -11,9 +11,7 @@ import { notify } from '../reducers/notificationReducer';
 import { initializeBlogs } from '../reducers/blogsReducer';
 
 const App = () => {
-  const [blogs, setBlogs] = useState(null);
   const [user, setUser] = useState(null);
-  const [reSortBlogs, setReSortBlogs] = useState(false);
 
   const dispatch = useDispatch();
   const blogFormRef = useRef();
@@ -52,18 +50,6 @@ const App = () => {
     dispatch(notify('Log out Successful'));
   };
 
-  const handleLikes = async (blog) => {
-    try {
-      const likedBlog = await sendLike(blog);
-      const modifiedBlogList = blogs.map((blog) => (blog._id === likedBlog._id ? likedBlog : blog));
-      setBlogs(modifiedBlogList);
-      setReSortBlogs(true);
-      dispatch(notify(`Blog(${likedBlog.title}) Liked Successfully`));
-    } catch (err) {
-      dispatch(notify(err.response.data.error, false, 3));
-    }
-  };
-
   return (
     <div>
       <h2>blogs</h2>
@@ -81,7 +67,6 @@ const App = () => {
             <BlogForm onClose={() => blogFormRef.current.hideComponent()} />
           </Toggleable>
           <BlogList
-            handleLikes={handleLikes}
             user={user}
           />
         </>
