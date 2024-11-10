@@ -20,7 +20,7 @@ const App = () => {
     try {
       dispatch(initializeBlogs());
     } catch (err) {
-      dispatch(notify(err.message || 'An Error Occured', false));
+      dispatch(notify(err.message || 'An Error Occured'));
     }
   }, []);
 
