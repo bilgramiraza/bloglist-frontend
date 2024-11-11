@@ -9,7 +9,9 @@ const initialState = {
 const userSlice = createSlice({
   name: 'user',
   initialState,
-  reducers: {},
+  reducers: {
+
+  },
 });
 
 export const { } = userSlice.actions;
