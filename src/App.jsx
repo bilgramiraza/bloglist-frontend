@@ -31,11 +31,11 @@ const App = () => {
     }
   }, []);
 
-  const handleLogin = async ({ username, password }) => {
+  const handleLogin = async (username, password) => {
     try {
-      await dispatch(loginUser({ username, password }));
-      window.localStorage.setItem('loggedInBlogUser', JSON.stringify(user));
-      dispatch(notify(`${user.name} Has Logged In`));
+      const credentials = await dispatch(loginUser(username, password));
+      window.localStorage.setItem('loggedInBlogUser', JSON.stringify(credentials));
+      dispatch(notify(`${credentials.name} Has Logged In`));
     } catch (err) {
       dispatch(notify(err.message || 'An Error Occured', false, 3));
     }

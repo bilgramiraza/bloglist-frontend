@@ -32,6 +32,7 @@ export const loginUser = (username, password) => async dispatch => {
   try {
     const credentials = await login({ username, password });
     dispatch(setUser(credentials));
+    return credentials;
   } catch (err) {
     throw new Error('Failed to Login User');
   }
