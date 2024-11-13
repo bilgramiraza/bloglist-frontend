@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { deleteBlog, likeBlog } from '../../reducers/blogsReducer';
 import { notify } from '../../reducers/notificationReducer';
 
-const Blog = ({ blog, currentUser }) => {
+const Blog = ({ blog }) => {
   const [visible, setVisible] = useState(false);
+  const currentUser = useSelector(state => state.user.username);
 
   const dispatch = useDispatch();
 
@@ -30,7 +31,7 @@ const Blog = ({ blog, currentUser }) => {
     display: visible ? '' : 'none'
   };
   const deleteButtonStyle = {
-    display: blog.user.username === currentUser.username ? '' : 'none'
+    display: blog.user.username === currentUser ? '' : 'none'
   };
 
   const handleLikeClick = async () => {
@@ -78,5 +79,4 @@ export default Blog;
 
 Blog.propTypes = {
   blog: PropTypes.object.isRequired,
-  currentUser: PropTypes.object.isRequired
 };

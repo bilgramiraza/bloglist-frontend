@@ -1,18 +1,16 @@
-import { useState, useEffect, useRef } from 'react';
-import { setToken } from './services/blogs';
-import { login } from './services/login';
+import { useEffect, useRef } from 'react';
 import BlogList from './components/BlogList';
 import LoginForm from './components/LoginForm';
 import Notification from './components/Notification';
 import BlogForm from './components/BlogForm';
 import Toggleable from './components/Toggleable';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { notify } from '../reducers/notificationReducer';
 import { initializeBlogs } from '../reducers/blogsReducer';
+import { clearUser, loginUser, setUser } from '../reducers/userReducer';
 
 const App = () => {
-  const [user, setUser] = useState(null);
-
+  const user = useSelector(state => state.user);
   const dispatch = useDispatch();
   const blogFormRef = useRef();
 
@@ -20,37 +18,33 @@ const App = () => {
     try {
       dispatch(initializeBlogs());
     } catch (err) {
-      dispatch(notify(err.message || 'An Error Occured'));
+      dispatch(notify(err.message || 'An Error Occured', false, 3));
     }
   }, []);
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedInBlogUser');
     if (loggedUserJSON) {
-      const user = JSON.parse(loggedUserJSON);
-      setUser(user);
-      setToken(user.token);
-      dispatch(notify(`${user.name} Has Logged In`));
+      const credentials = JSON.parse(loggedUserJSON);
+      dispatch(setUser(credentials));
+      dispatch(notify(`${credentials.name} Has Logged In`));
     }
   }, []);
 
   const handleLogin = async ({ username, password }) => {
     try {
-      const credentials = await login({ username, password });
-      setUser(credentials);
-      window.localStorage.setItem('loggedInBlogUser', JSON.stringify(credentials));
-      setToken(credentials.token);
-      dispatch(notify(`${credentials.name} Has Logged In`));
+      await dispatch(loginUser({ username, password }));
+      window.localStorage.setItem('loggedInBlogUser', JSON.stringify(user));
+      dispatch(notify(`${user.name} Has Logged In`));
     } catch (err) {
-      dispatch(notify(err.response.data.error, false, 3));
+      dispatch(notify(err.message || 'An Error Occured', false, 3));
     }
   };
 
   const handleLogout = async (e) => {
     e.preventDefault();
+    dispatch(clearUser());
     window.localStorage.removeItem('loggedInBlogUser');
-    setUser(null);
-    setToken(null);
     dispatch(notify('Log out Successful'));
   };
 
@@ -58,7 +52,7 @@ const App = () => {
     <div>
       <h2>blogs</h2>
       <Notification />
-      {user === null ? (
+      {user.name === null ? (
         <Toggleable buttonLabel="Login">
           <LoginForm handleLogin={handleLogin} />
         </Toggleable>
@@ -70,9 +64,7 @@ const App = () => {
           <Toggleable buttonLabel="Create New Blog" ref={blogFormRef}>
             <BlogForm onClose={() => blogFormRef.current.hideComponent()} />
           </Toggleable>
-          <BlogList
-            user={user}
-          />
+          <BlogList />
         </>
       )}
     </div>

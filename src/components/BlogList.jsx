@@ -1,9 +1,8 @@
-import PropTypes from 'prop-types';
 import Blog from './Blog';
 import { useSelector } from 'react-redux';
 import { selectSortedBlogs } from '../../reducers/blogsReducer';
 
-const BlogList = ({ user }) => {
+const BlogList = () => {
   const blogs = useSelector(selectSortedBlogs);
   let listOfBlogs;
   if (!blogs || !blogs.length) {
@@ -13,7 +12,6 @@ const BlogList = ({ user }) => {
       <Blog
         key={blog._id}
         blog={blog}
-        currentUser={user}
       />
     ));
   }
@@ -25,7 +23,3 @@ const BlogList = ({ user }) => {
 };
 
 export default BlogList;
-
-BlogList.propTypes = {
-  user: PropTypes.object.isRequired
-};
