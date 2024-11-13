@@ -27,7 +27,7 @@ const BlogForm = ({ onClose }) => {
       dispatch(notify(`Blog(${title}) Created Successfully`));
       onClose();
     } catch (err) {
-      dispatch(notify(err.message || 'An Error Occured', false));
+      dispatch(notify(err.message || 'An Error Occured', false, 5));
     }
   };
 

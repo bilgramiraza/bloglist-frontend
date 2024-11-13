@@ -39,7 +39,7 @@ const Blog = ({ blog }) => {
       await dispatch(likeBlog(blog));
       dispatch(notify(`Blog(${blog.title}) Liked Successfully`));
     } catch (err) {
-      dispatch(notify(err.message || 'An Error Occured', false));
+      dispatch(notify(err.message || 'An Error Occured', false, 5));
     }
   };
 
@@ -50,7 +50,7 @@ const Blog = ({ blog }) => {
       await dispatch(deleteBlog(blog._id));
       dispatch(notify(`Blog(${blog.title} By ${blog.author}) Deleted Successfully`));
     } catch (err) {
-      dispatch(notify(err.message || 'An Error Occured', false));
+      dispatch(notify(err.message || 'An Error Occured', false, 5));
     }
   };
 

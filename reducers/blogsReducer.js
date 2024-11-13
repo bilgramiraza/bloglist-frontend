@@ -36,7 +36,7 @@ export const initializeBlogs = () => async dispatch => {
     const blogs = await getAll();
     dispatch(setBlogs(blogs));
   } catch (err) {
-    throw new Error('Failed to Get Blogs');
+    throw new Error(err.message || 'Failed to Get Blogs');
   }
 };
 
@@ -46,7 +46,7 @@ export const newBlog = blog => async (dispatch, getState) => {
     const newBlog = await create(blog, token);
     dispatch(add(newBlog));
   } catch (err) {
-    throw new Error('Failed to Create Blog');
+    throw new Error(err.message || 'Failed to Create Blog');
   }
 };
 
@@ -56,7 +56,7 @@ export const deleteBlog = blogId => async (dispatch, getState) => {
     await removeBlog(blogId, token);
     dispatch(remove(blogId));
   } catch (err) {
-    throw new Error('Failed to Delete Blog');
+    throw new Error(err.message || 'Failed to Delete Blog');
   }
 };
 
@@ -66,6 +66,6 @@ export const likeBlog = blog => async (dispatch, getState) => {
     const likedBlog = await sendLike(blog, token);
     dispatch(like(likedBlog));
   } catch (err) {
-    throw new Error('Failed to Like Blog');
+    throw new Error(err.message || 'Failed to Like Blog');
   }
 };

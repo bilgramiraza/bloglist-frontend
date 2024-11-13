@@ -23,7 +23,7 @@ const notifySlice = createSlice({
 
 export const { setNotify, clearNotify } = notifySlice.actions;
 
-export const notify = (message, status = true, time = 5) => {
+export const notify = (message, status = true, time = 3) => {
   return async dispatch => {
     dispatch(setNotify({ message, status }));
 

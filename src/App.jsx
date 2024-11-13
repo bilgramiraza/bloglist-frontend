@@ -37,7 +37,7 @@ const App = () => {
       window.localStorage.setItem('loggedInBlogUser', JSON.stringify(credentials));
       dispatch(notify(`${credentials.name} Has Logged In`));
     } catch (err) {
-      dispatch(notify(err.message || 'An Error Occured', false, 3));
+      dispatch(notify(err.message || 'An Error Occured', false, 5));
     }
   };
 
