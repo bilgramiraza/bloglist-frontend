@@ -40,28 +40,30 @@ export const initializeBlogs = () => async dispatch => {
   }
 };
 
-export const newBlog = blog => async dispatch => {
+export const newBlog = blog => async (dispatch, getState) => {
   try {
-    const newBlog = await create(blog);
+    const token = getState().user.token;
+    const newBlog = await create(blog, token);
     dispatch(add(newBlog));
-    return Promise.resolve();
   } catch (err) {
     throw new Error('Failed to Create Blog');
   }
 };
 
-export const deleteBlog = blogId => async dispatch => {
+export const deleteBlog = blogId => async (dispatch, getState) => {
   try {
-    await removeBlog(blogId);
+    const token = getState().user.token;
+    await removeBlog(blogId, token);
     dispatch(remove(blogId));
   } catch (err) {
     throw new Error('Failed to Delete Blog');
   }
 };
 
-export const likeBlog = blog => async dispatch => {
+export const likeBlog = blog => async (dispatch, getState) => {
   try {
-    const likedBlog = await sendLike(blog);
+    const token = getState().user.token;
+    const likedBlog = await sendLike(blog, token);
     dispatch(like(likedBlog));
   } catch (err) {
     throw new Error('Failed to Like Blog');
