@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 import { useNotificationValue } from '../reducers/notificationReducer';
 
 function Notification() {
@@ -23,8 +22,3 @@ function Notification() {
 }
 
 export default Notification;
-
-Notification.propTypes = {
-  message: PropTypes.string,
-  status: PropTypes.bool.isRequired
-};
