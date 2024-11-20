@@ -109,7 +109,7 @@ const App = () => {
   return (
     <div>
       <h2>blogs</h2>
-      <Notification message={notification.message} status={notification.status} />
+      <Notification />
       {user === null ? (
         <Toggleable buttonLabel="Login">
           <LoginForm handleLogin={handleLogin} />

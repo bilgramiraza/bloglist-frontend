@@ -1,6 +1,8 @@
 import PropTypes from 'prop-types';
+import { useNotificationValue } from '../reducers/notificationReducer';
 
-function Notification({ message, status }) {
+function Notification() {
+  const { message, status } = useNotificationValue();
   if (!message) return null;
 
   return (
