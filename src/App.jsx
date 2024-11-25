@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { getAll, remove, sendLike, setToken } from './services/blogs';
+import { remove, sendLike, setToken } from './services/blogs';
 import { login } from './services/login';
 import BlogList from './components/BlogList';
 import LoginForm from './components/LoginForm';
@@ -7,15 +7,6 @@ import Notification from './components/Notification';
 import BlogForm from './components/BlogForm';
 import Toggleable from './components/Toggleable';
 import { notify, useNotificationDispatch } from './reducers/notificationReducer';
-
-const getBlogs = async (setBlogs, dispatch) => {
-  try {
-    const blogs = await getAll();
-    setBlogs(blogs);
-  } catch (err) {
-    notify(dispatch, err.response.data.error, false, 5);
-  }
-};
 
 const App = () => {
   const [blogs, setBlogs] = useState(null);
@@ -25,17 +16,6 @@ const App = () => {
   const blogFormRef = useRef();
 
   const dispatch = useNotificationDispatch();
-
-  useEffect(() => {
-    if (blogs === null) {
-      getBlogs(setBlogs, dispatch);
-      setReSortBlogs(true);
-    }
-    if (reSortBlogs && blogs?.length) {
-      setBlogs(blogs.toSorted((blogA, blogB) => blogB.likes - blogA.likes));
-      setReSortBlogs(false);
-    }
-  }, [blogs, reSortBlogs]);
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedInBlogUser');
