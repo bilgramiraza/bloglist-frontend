@@ -123,7 +123,6 @@ const App = () => {
             <BlogForm handleCreation={handleCreation} />
           </Toggleable>
           <BlogList
-            blogs={blogs}
             handleLikes={handleLikes}
             handleDeletes={handleDeletes}
             user={user}
