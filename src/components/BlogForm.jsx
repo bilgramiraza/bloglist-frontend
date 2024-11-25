@@ -1,10 +1,25 @@
 import { useState } from 'react';
-import PropTypes from 'prop-types';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { create } from '../services/blogs';
+import { notify, useNotificationDispatch } from '../reducers/notificationReducer';
 
-const BlogForm = ({ handleCreation }) => {
+const BlogForm = () => {
   const [url, setUrl] = useState('');
   const [title, setTitle] = useState('');
   const [author, setAuthor] = useState('');
+
+  const queryClient = useQueryClient();
+  const dispatch = useNotificationDispatch();
+
+  const newBlogMutation = useMutation({
+    mutationFn: create,
+    onSuccess: newBlog => {
+      const blogs = queryClient.getQueryData(['blogList']);
+      queryClient.setQueryData(['blogList'], blogs.concat(newBlog));
+      notify(dispatch, `Blog(${newBlog.title}) Created Successfully`);
+    },
+    onError: err => notify(dispatch, err.response.data.error, false, 5),
+  });
 
   const handleAuthorChange = (e) => setAuthor(e.target.value);
   const handleTitleChange = (e) => setTitle(e.target.value);
@@ -14,7 +29,7 @@ const BlogForm = ({ handleCreation }) => {
     e.preventDefault();
     /* c8 ignore next */ //Protection vs Weirdos
     if (!title || !author || !url) return;
-    handleCreation({ title, author, url });
+    newBlogMutation.mutate({ title, author, url });
     setTitle('');
     setAuthor('');
     setUrl('');
@@ -57,7 +72,3 @@ const BlogForm = ({ handleCreation }) => {
 };
 
 export default BlogForm;
-
-BlogForm.propTypes = {
-  handleCreation: PropTypes.func.isRequired
-};
