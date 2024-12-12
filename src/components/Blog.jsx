@@ -2,9 +2,9 @@ import { useState } from 'react';
 import PropTypes from 'prop-types';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { notify, useNotificationDispatch } from '../reducers/notificationReducer';
-import { sendLike } from '../services/blogs';
+import { remove, sendLike } from '../services/blogs';
 
-const Blog = ({ blog, handleDelete, currentUser }) => {
+const Blog = ({ blog, currentUser }) => {
   const [visible, setVisible] = useState(false);
 
   const toggle = () => setVisible(!visible);
@@ -21,6 +21,22 @@ const Blog = ({ blog, handleDelete, currentUser }) => {
         blogs.map(blog => blog._id === likedBlog._id ? likedBlog : blog)
       );
       notify(dispatch, `Blog(${likedBlog.title}) Liked Successfully`);
+    },
+    onError: err => {
+      notify(dispatch, err?.response?.data?.error, false, 5);
+    },
+    retry: false,
+  });
+
+  const deleteBlogMutation = useMutation({
+    mutationFn: remove,
+    onSuccess: deletedBlog => {
+      const blogs = queryClient.getQueryData(['blogList']);
+      queryClient.setQueryData(
+        ['blogList'],
+        blogs.filter((blog) => blog._id !== deletedBlog._id)
+      );
+      notify(dispatch, `Blog(${deletedBlog.title} By ${deletedBlog.author}) Deleted Successfully`);
     },
     onError: err => {
       notify(dispatch, err?.response?.data?.error, false, 5);
@@ -55,7 +71,10 @@ const Blog = ({ blog, handleDelete, currentUser }) => {
   };
 
   const handleDeleteClick = () => {
-    handleDelete(blog._id);
+    const deleteConfirm = window.confirm(`Delete ${blog.title} By ${blog.author}?`);
+    if (!deleteConfirm) return;
+
+    deleteBlogMutation.mutate(blog);
   };
 
   return (
@@ -83,6 +102,5 @@ export default Blog;
 
 Blog.protTypes = {
   blog: PropTypes.object.isRequired,
-  handleDelete: PropTypes.func.isRequired,
   currentUser: PropTypes.object.isRequired
 };

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { remove, setToken } from './services/blogs';
+import { setToken } from './services/blogs';
 import { login } from './services/login';
 import BlogList from './components/BlogList';
 import LoginForm from './components/LoginForm';
@@ -9,9 +9,7 @@ import Toggleable from './components/Toggleable';
 import { notify, useNotificationDispatch } from './reducers/notificationReducer';
 
 const App = () => {
-  const [blogs, setBlogs] = useState(null);
   const [user, setUser] = useState(null);
-  const [reSortBlogs, setReSortBlogs] = useState(false);
 
   const blogFormRef = useRef();
 
@@ -47,21 +45,6 @@ const App = () => {
     notify(dispatch, 'Log out Successful');
   };
 
-  const handleDeletes = async (blogId) => {
-    const targetBlog = blogs.find((blog) => blog._id === blogId);
-    const deleteConfirm = window.confirm(`Delete ${targetBlog.title} By ${targetBlog.author}?`);
-    if (!deleteConfirm) return;
-    try {
-      await remove(blogId);
-      const modifiedBlogList = blogs.filter((blog) => blog._id !== blogId);
-      setBlogs(modifiedBlogList);
-      setReSortBlogs(true);
-      notify(dispatch, `Blog(${targetBlog.title} By ${targetBlog.author}) Deleted Successfully`);
-    } catch (err) {
-      notify(dispatch, err.response.data.error, false, 5);
-    }
-  };
-
   return (
     <div>
       <h2>blogs</h2>
@@ -79,7 +62,6 @@ const App = () => {
             <BlogForm />
           </Toggleable>
           <BlogList
-            handleDeletes={handleDeletes}
             user={user}
           />
         </>
