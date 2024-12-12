@@ -18,7 +18,10 @@ const BlogForm = () => {
       queryClient.setQueryData(['blogList'], blogs.concat(newBlog));
       notify(dispatch, `Blog(${newBlog.title}) Created Successfully`);
     },
-    onError: err => notify(dispatch, err.response.data.error, false, 5),
+    onError: err => {
+      notify(dispatch, err?.response?.data?.error, false, 5);
+    },
+    retry: false,
   });
 
   const handleAuthorChange = (e) => setAuthor(e.target.value);

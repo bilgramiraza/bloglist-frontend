@@ -3,8 +3,10 @@ import Blog from './Blog';
 import { getAll } from '../services/blogs';
 import { useQuery } from '@tanstack/react-query';
 import { notify, useNotificationDispatch } from '../reducers/notificationReducer';
+import { useEffect } from 'react';
 
 const BlogList = ({ handleLikes, handleDeletes, user }) => {
+  let listOfBlogs = null;
   const dispatch = useNotificationDispatch();
 
   const blogsQuery = useQuery({
@@ -12,25 +14,23 @@ const BlogList = ({ handleLikes, handleDeletes, user }) => {
     queryFn: getAll,
     retry: false,
     select: blogs => blogs.toSorted((blogA, blogB) => blogB.likes - blogA.likes),
-    throwOnError: (err) => notify(dispatch, err.response.data.error, false, 5),
+    throwOnError: false,
   });
 
+  useEffect(() => {
+    if (blogsQuery.isError) {
+      notify(dispatch, blogsQuery.error?.response?.data?.error, false, 5);
+    }
+  }, [dispatch, notify, blogsQuery.error]);
+
   if (blogsQuery.isLoading) {
-    return (
-      <div data-testid="bloglist">
-        <p>Loading Blogs</p>
-      </div>
-    );
-  };
+    listOfBlogs = <p>Loading Blogs</p>;
+  }
   if (blogsQuery.isError) {
-    return (
-      <div data-testid="bloglist">
-        <p>Error Getting Blogs</p>
-      </div>
-    );
+    listOfBlogs = <p>Error Getting Blogs</p>;
   }
   if (blogsQuery.isSuccess) {
-    const listOfBlogs = blogsQuery.data.map((blog) => (
+    listOfBlogs = blogsQuery.data.map((blog) => (
       <Blog
         key={blog._id}
         blog={blog}
@@ -39,12 +39,13 @@ const BlogList = ({ handleLikes, handleDeletes, user }) => {
         currentUser={user}
       />
     ));
-    return (
-      <div data-testid="bloglist">
-        {listOfBlogs}
-      </div>
-    );
   }
+
+  return (
+    <div data-testid="bloglist">
+      {listOfBlogs}
+    </div>
+  );
 };
 
 export default BlogList;
