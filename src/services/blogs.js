@@ -37,13 +37,14 @@ const sendLike = async (blog) => {
   return response.data;
 };
 
-const remove = async (blogId) => {
+const remove = async (blog) => {
   const config = {
     headers: {
       Authorization: token
     }
   };
-  await axios.delete(`${baseUrl}/${blogId}`, config);
+  await axios.delete(`${baseUrl}/${blog._id}`, config);
+  return blog;
 };
 
 export { getAll, token, setToken, create, sendLike, remove };
