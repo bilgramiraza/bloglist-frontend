@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { remove, sendLike, setToken } from './services/blogs';
+import { remove, setToken } from './services/blogs';
 import { login } from './services/login';
 import BlogList from './components/BlogList';
 import LoginForm from './components/LoginForm';
@@ -47,18 +47,6 @@ const App = () => {
     notify(dispatch, 'Log out Successful');
   };
 
-  const handleLikes = async (blog) => {
-    try {
-      const likedBlog = await sendLike(blog);
-      const modifiedBlogList = blogs.map((blog) => (blog._id === likedBlog._id ? likedBlog : blog));
-      setBlogs(modifiedBlogList);
-      setReSortBlogs(true);
-      notify(dispatch, `Blog(${likedBlog.title}) Liked Successfully`);
-    } catch (err) {
-      notify(dispatch, err.response.data.error, false, 5);
-    }
-  };
-
   const handleDeletes = async (blogId) => {
     const targetBlog = blogs.find((blog) => blog._id === blogId);
     const deleteConfirm = window.confirm(`Delete ${targetBlog.title} By ${targetBlog.author}?`);
@@ -91,7 +79,6 @@ const App = () => {
             <BlogForm />
           </Toggleable>
           <BlogList
-            handleLikes={handleLikes}
             handleDeletes={handleDeletes}
             user={user}
           />

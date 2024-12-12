@@ -5,7 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import { notify, useNotificationDispatch } from '../reducers/notificationReducer';
 import { useEffect } from 'react';
 
-const BlogList = ({ handleLikes, handleDeletes, user }) => {
+const BlogList = ({ handleDeletes, user }) => {
   let listOfBlogs = null;
   const dispatch = useNotificationDispatch();
 
@@ -34,7 +34,6 @@ const BlogList = ({ handleLikes, handleDeletes, user }) => {
       <Blog
         key={blog._id}
         blog={blog}
-        handleLikes={handleLikes}
         handleDelete={handleDeletes}
         currentUser={user}
       />
@@ -51,7 +50,6 @@ const BlogList = ({ handleLikes, handleDeletes, user }) => {
 export default BlogList;
 
 BlogList.propTypes = {
-  handleLikes: PropTypes.func.isRequired,
   handleDeletes: PropTypes.func.isRequired,
   user: PropTypes.object.isRequired
 };

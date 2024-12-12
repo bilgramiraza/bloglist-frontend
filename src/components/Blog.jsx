@@ -1,10 +1,32 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { notify, useNotificationDispatch } from '../reducers/notificationReducer';
+import { sendLike } from '../services/blogs';
 
-const Blog = ({ blog, handleLikes, handleDelete, currentUser }) => {
+const Blog = ({ blog, handleDelete, currentUser }) => {
   const [visible, setVisible] = useState(false);
 
   const toggle = () => setVisible(!visible);
+
+  const queryClient = useQueryClient();
+  const dispatch = useNotificationDispatch();
+
+  const likeBlogMutation = useMutation({
+    mutationFn: sendLike,
+    onSuccess: likedBlog => {
+      const blogs = queryClient.getQueryData(['blogList']);
+      queryClient.setQueryData(
+        ['blogList'],
+        blogs.map(blog => blog._id === likedBlog._id ? likedBlog : blog)
+      );
+      notify(dispatch, `Blog(${likedBlog.title}) Liked Successfully`);
+    },
+    onError: err => {
+      notify(dispatch, err?.response?.data?.error, false, 5);
+    },
+    retry: false,
+  });
 
   const blogStyle = {
     width: '15%',
@@ -29,7 +51,7 @@ const Blog = ({ blog, handleLikes, handleDelete, currentUser }) => {
   };
 
   const handleLikeClick = () => {
-    handleLikes(blog);
+    likeBlogMutation.mutate(blog);
   };
 
   const handleDeleteClick = () => {
@@ -61,7 +83,6 @@ export default Blog;
 
 Blog.protTypes = {
   blog: PropTypes.object.isRequired,
-  handleLikes: PropTypes.func.isRequired,
   handleDelete: PropTypes.func.isRequired,
   currentUser: PropTypes.object.isRequired
 };
