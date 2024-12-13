@@ -1,69 +1,53 @@
-import { useState, useEffect, useRef } from 'react';
-import { setToken } from './services/blogs';
-import { login } from './services/login';
+import { useEffect, useRef } from 'react';
 import BlogList from './components/BlogList';
 import LoginForm from './components/LoginForm';
 import Notification from './components/Notification';
 import BlogForm from './components/BlogForm';
 import Toggleable from './components/Toggleable';
 import { notify, useNotificationDispatch } from './reducers/notificationReducer';
+import { clearUser, setUser, useUserDispatch, useUserValue } from './reducers/userReducer';
 
 const App = () => {
-  const [user, setUser] = useState(null);
+  const { name, username } = useUserValue();
 
   const blogFormRef = useRef();
 
-  const dispatch = useNotificationDispatch();
+  const notifyDispatch = useNotificationDispatch();
+  const userDispatch = useUserDispatch();
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedInBlogUser');
     if (loggedUserJSON) {
-      const user = JSON.parse(loggedUserJSON);
-      setUser(user);
-      setToken(user.token);
-      notify(dispatch, `${user.name} Has Logged In`);
+      const credentials = JSON.parse(loggedUserJSON);
+      setUser(userDispatch, credentials);
+      notify(notifyDispatch, `${credentials.name} Has Logged In`);
     }
   }, []);
-
-  const handleLogin = async ({ username, password }) => {
-    try {
-      const credentials = await login({ username, password });
-      setUser(credentials);
-      window.localStorage.setItem('loggedInBlogUser', JSON.stringify(credentials));
-      setToken(credentials.token);
-      notify(dispatch, `${credentials.name} Has Logged In`);
-    } catch (err) {
-      notify(dispatch, err.response.data.error, false, 5);
-    }
-  };
 
   const handleLogout = async (e) => {
     e.preventDefault();
     window.localStorage.removeItem('loggedInBlogUser');
-    setUser(null);
-    setToken(null);
-    notify(dispatch, 'Log out Successful');
+    clearUser(userDispatch);
+    notify(notifyDispatch, 'Log out Successful');
   };
 
   return (
     <div>
       <h2>blogs</h2>
       <Notification />
-      {user === null ? (
+      {username === null ? (
         <Toggleable buttonLabel="Login">
-          <LoginForm handleLogin={handleLogin} />
+          <LoginForm />
         </Toggleable>
       ) : (
         <>
           <p>
-            {user.name} Logged In <button onClick={handleLogout}>Logout</button>
+            {name} Logged In <button onClick={handleLogout}>Logout</button>
           </p>
           <Toggleable buttonLabel="Create New Blog" ref={blogFormRef}>
             <BlogForm onClose={() => blogFormRef.current.hideComponent()} />
           </Toggleable>
-          <BlogList
-            user={user}
-          />
+          <BlogList />
         </>
       )}
     </div>
