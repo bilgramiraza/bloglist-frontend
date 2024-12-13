@@ -2,8 +2,9 @@ import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { create } from '../services/blogs';
 import { notify, useNotificationDispatch } from '../reducers/notificationReducer';
+import PropTypes from 'prop-types';
 
-const BlogForm = () => {
+const BlogForm = ({ onClose }) => {
   const [url, setUrl] = useState('');
   const [title, setTitle] = useState('');
   const [author, setAuthor] = useState('');
@@ -17,6 +18,7 @@ const BlogForm = () => {
       const blogs = queryClient.getQueryData(['blogList']);
       queryClient.setQueryData(['blogList'], blogs.concat(newBlog));
       notify(dispatch, `Blog(${newBlog.title}) Created Successfully`);
+      onClose();
     },
     onError: err => {
       notify(dispatch, err?.response?.data?.error, false, 5);
@@ -75,3 +77,7 @@ const BlogForm = () => {
 };
 
 export default BlogForm;
+
+BlogForm.propTypes = {
+  onClose: PropTypes.func.isRequired,
+};
