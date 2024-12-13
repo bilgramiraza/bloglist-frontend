@@ -3,11 +3,14 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { create } from '../services/blogs';
 import { notify, useNotificationDispatch } from '../reducers/notificationReducer';
 import PropTypes from 'prop-types';
+import { useUserValue } from '../reducers/userReducer';
 
 const BlogForm = ({ onClose }) => {
   const [url, setUrl] = useState('');
   const [title, setTitle] = useState('');
   const [author, setAuthor] = useState('');
+
+  const { token } = useUserValue();
 
   const queryClient = useQueryClient();
   const dispatch = useNotificationDispatch();
@@ -34,7 +37,8 @@ const BlogForm = ({ onClose }) => {
     e.preventDefault();
     /* c8 ignore next */ //Protection vs Weirdos
     if (!title || !author || !url) return;
-    newBlogMutation.mutate({ title, author, url });
+    const newBlog = { title, author, url };
+    newBlogMutation.mutate({ token, newBlog });
     setTitle('');
     setAuthor('');
     setUrl('');

@@ -1,11 +1,10 @@
-import PropTypes from 'prop-types';
 import Blog from './Blog';
 import { getAll } from '../services/blogs';
 import { useQuery } from '@tanstack/react-query';
 import { notify, useNotificationDispatch } from '../reducers/notificationReducer';
 import { useEffect } from 'react';
 
-const BlogList = ({ user }) => {
+const BlogList = () => {
   let listOfBlogs = null;
   const dispatch = useNotificationDispatch();
 
@@ -34,7 +33,6 @@ const BlogList = ({ user }) => {
       <Blog
         key={blog._id}
         blog={blog}
-        currentUser={user}
       />
     ));
   }
@@ -47,7 +45,3 @@ const BlogList = ({ user }) => {
 };
 
 export default BlogList;
-
-BlogList.propTypes = {
-  user: PropTypes.object.isRequired
-};

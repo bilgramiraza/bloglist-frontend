@@ -3,11 +3,14 @@ import PropTypes from 'prop-types';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { notify, useNotificationDispatch } from '../reducers/notificationReducer';
 import { remove, sendLike } from '../services/blogs';
+import { useUserValue } from '../reducers/userReducer';
 
-const Blog = ({ blog, currentUser }) => {
+const Blog = ({ blog }) => {
   const [visible, setVisible] = useState(false);
 
   const toggle = () => setVisible(!visible);
+
+  const { username, token } = useUserValue();
 
   const queryClient = useQueryClient();
   const dispatch = useNotificationDispatch();
@@ -63,18 +66,18 @@ const Blog = ({ blog, currentUser }) => {
     display: visible ? '' : 'none'
   };
   const deleteButtonStyle = {
-    display: blog.user.username === currentUser.username ? '' : 'none'
+    display: blog.user.username === username ? '' : 'none'
   };
 
   const handleLikeClick = () => {
-    likeBlogMutation.mutate(blog);
+    likeBlogMutation.mutate({ token, blog });
   };
 
   const handleDeleteClick = () => {
     const deleteConfirm = window.confirm(`Delete ${blog.title} By ${blog.author}?`);
     if (!deleteConfirm) return;
 
-    deleteBlogMutation.mutate(blog);
+    deleteBlogMutation.mutate({ token, blog });
   };
 
   return (
@@ -102,5 +105,4 @@ export default Blog;
 
 Blog.protTypes = {
   blog: PropTypes.object.isRequired,
-  currentUser: PropTypes.object.isRequired
 };
