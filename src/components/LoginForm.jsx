@@ -21,7 +21,7 @@ const LoginForm = () => {
       setUsername('');
       setPassword('');
     } catch (err) {
-      notify(notifyDispatch, err?.response?.data?.error, false, 5);
+      notify(notifyDispatch, err.message || 'An Error Occured', false, 5);
     }
   };
 

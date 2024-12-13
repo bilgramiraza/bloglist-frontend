@@ -18,7 +18,7 @@ const BlogList = () => {
 
   useEffect(() => {
     if (blogsQuery.isError) {
-      notify(dispatch, blogsQuery.error?.response?.data?.error, false, 5);
+      notify(dispatch, blogsQuery.error.message || 'An Error Occured', false, 5);
     }
   }, [dispatch, notify, blogsQuery.error]);
 

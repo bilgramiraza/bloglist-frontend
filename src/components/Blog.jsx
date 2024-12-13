@@ -26,7 +26,7 @@ const Blog = ({ blog }) => {
       notify(dispatch, `Blog(${likedBlog.title}) Liked Successfully`);
     },
     onError: err => {
-      notify(dispatch, err?.response?.data?.error, false, 5);
+      notify(dispatch, err.message || 'An Error Occured', false, 5);
     },
     retry: false,
   });
@@ -42,7 +42,7 @@ const Blog = ({ blog }) => {
       notify(dispatch, `Blog(${deletedBlog.title} By ${deletedBlog.author}) Deleted Successfully`);
     },
     onError: err => {
-      notify(dispatch, err?.response?.data?.error, false, 5);
+      notify(dispatch, err.message || 'An Error Occured', false, 5);
     },
     retry: false,
   });

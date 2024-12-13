@@ -24,7 +24,7 @@ const BlogForm = ({ onClose }) => {
       onClose();
     },
     onError: err => {
-      notify(dispatch, err?.response?.data?.error, false, 5);
+      notify(dispatch, err.message || 'An Error Occured', false, 5);
     },
     retry: false,
   });
