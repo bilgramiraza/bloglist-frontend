@@ -47,9 +47,9 @@ const App = () => {
           <Toggleable buttonLabel="Create New Blog" ref={blogFormRef}>
             <BlogForm onClose={() => blogFormRef.current.hideComponent()} />
           </Toggleable>
-          <BlogList />
         </>
       )}
+      <BlogList />
     </div>
   );
 };
