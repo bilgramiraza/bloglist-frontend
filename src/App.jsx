@@ -1,11 +1,13 @@
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
+import { Routes, Route } from 'react-router-dom';
 import { notify } from '../reducers/notificationReducer';
 import { initializeBlogs } from '../reducers/blogsReducer';
 import { setUser } from '../reducers/userReducer';
 import Notification from './components/Notification';
 import Login from './components/Login';
 import Blogs from './components/Blogs';
+import Users from './components/Users';
 
 const App = () => {
   const dispatch = useDispatch();
@@ -32,7 +34,10 @@ const App = () => {
       <h2>blogs</h2>
       <Notification />
       <Login />
-      <Blogs />
+      <Routes>
+        <Route path='/' element={<Blogs />} />
+        <Route path='/users' element={<Users />} />
+      </Routes>
     </div >
   );
 };
