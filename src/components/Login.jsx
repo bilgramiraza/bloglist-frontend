@@ -1,12 +1,22 @@
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from "react-redux";
+import { notify } from "../../reducers/notificationReducer";
+import { setUser, clearUser, loginUser } from "../../reducers/authReducer";
 import Toggleable from "./Toggleable";
 import LoginForm from "./LoginForm";
-import { notify } from "../../reducers/notificationReducer";
-import { clearUser, loginUser } from "../../reducers/authReducer";
-import { useDispatch, useSelector } from "react-redux";
 
 function Login() {
   const user = useSelector(state => state.auth);
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    const loggedUserJSON = window.localStorage.getItem('loggedInBlogUser');
+    if (loggedUserJSON) {
+      const credentials = JSON.parse(loggedUserJSON);
+      dispatch(setUser(credentials));
+      dispatch(notify(`${credentials.name} Has Logged In`));
+    }
+  }, []);
 
   const handleLogin = async (username, password) => {
     try {

@@ -1,24 +1,10 @@
-import { useEffect } from 'react';
-import { useDispatch } from 'react-redux';
 import { Routes, Route } from 'react-router-dom';
-import { notify } from '../reducers/notificationReducer';
-import { setUser } from '../reducers/authReducer';
 import Notification from './components/Notification';
 import Login from './components/Login';
 import Blogs from './components/Blogs';
 import Users from './components/Users';
 
 const App = () => {
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    const loggedUserJSON = window.localStorage.getItem('loggedInBlogUser');
-    if (loggedUserJSON) {
-      const credentials = JSON.parse(loggedUserJSON);
-      dispatch(setUser(credentials));
-      dispatch(notify(`${credentials.name} Has Logged In`));
-    }
-  }, []);
 
   return (
     <div>
