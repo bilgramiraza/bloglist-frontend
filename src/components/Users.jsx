@@ -1,31 +1,28 @@
-import { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
-import { getAll } from "../services/users";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { notify } from "../../reducers/notificationReducer";
+import { initializeUsers } from "../../reducers/usersReducer";
 
 function Users() {
-  const [users, setUsers] = useState(null);
+  const users = useSelector(state => state.users);
 
   const dispatch = useDispatch();
 
   useEffect(() => {
-    (async () => {
-      try {
-        const data = await getAll();
-        setUsers(data);
-      } catch (err) {
-        dispatch(notify(err.message || 'An Error Occured', false, 3));
-      }
-    })();
+    try {
+      dispatch(initializeUsers());
+    } catch (err) {
+      dispatch(notify(err.message || 'An Error Occured', false, 3));
+    }
   }, []);
 
   const userTable = users === null
     ? (<tr></tr>)
     : users.map(user => {
       return (
-        <tr key={user._id}>
+        <tr key={user.id}>
           <td>{user.username}</td>
-          <td>{user.blogs}</td>
+          <td>{user.blogs.length}</td>
         </tr>);
     });
 
