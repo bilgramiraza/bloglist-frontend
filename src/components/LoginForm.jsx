@@ -1,18 +1,28 @@
 import { useState } from 'react';
-import PropTypes from 'prop-types';
+import { useDispatch } from 'react-redux';
+import { notify } from '../../reducers/notificationReducer';
+import { loginUser } from '../../reducers/authReducer';
 
-const LoginForm = ({ handleLogin }) => {
+const LoginForm = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+
+  const dispatch = useDispatch();
 
   const handleUsernameChange = (e) => setUsername(e.target.value);
   const handlePasswordChange = (e) => setPassword(e.target.value);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    handleLogin(username, password);
-    setUsername('');
-    setPassword('');
+    try {
+      const credentials = await dispatch(loginUser(username, password));
+      window.localStorage.setItem('loggedInBlogUser', JSON.stringify(credentials));
+      dispatch(notify(`${credentials.name} Has Logged In`));
+      setUsername('');
+      setPassword('');
+    } catch (err) {
+      dispatch(notify(err.message || 'An Error Occured', false, 5));
+    }
   };
 
   return (
@@ -48,7 +58,3 @@ const LoginForm = ({ handleLogin }) => {
 };
 
 export default LoginForm;
-
-LoginForm.propTypes = {
-  handleLogin: PropTypes.func.isRequired
-};
