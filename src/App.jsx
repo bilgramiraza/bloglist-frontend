@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import { Routes, Route } from 'react-router-dom';
 import { notify } from '../reducers/notificationReducer';
 import { initializeBlogs } from '../reducers/blogsReducer';
-import { setUser } from '../reducers/userReducer';
+import { setUser } from '../reducers/authReducer';
 import Notification from './components/Notification';
 import Login from './components/Login';
 import Blogs from './components/Blogs';

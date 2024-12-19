@@ -5,7 +5,7 @@ import BlogForm from "./BlogForm";
 import BlogList from "./BlogList";
 
 function Blogs() {
-  const user = useSelector(state => state.user);
+  const user = useSelector(state => state.auth);
   const blogFormRef = useRef();
 
   return (

@@ -1,11 +1,11 @@
 import Toggleable from "./Toggleable";
 import LoginForm from "./LoginForm";
 import { notify } from "../../reducers/notificationReducer";
-import { clearUser, loginUser } from "../../reducers/userReducer";
+import { clearUser, loginUser } from "../../reducers/authReducer";
 import { useDispatch, useSelector } from "react-redux";
 
 function Login() {
-  const user = useSelector(state => state.user);
+  const user = useSelector(state => state.auth);
   const dispatch = useDispatch();
 
   const handleLogin = async (username, password) => {

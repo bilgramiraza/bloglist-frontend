@@ -6,7 +6,7 @@ import { notify } from '../../reducers/notificationReducer';
 
 const Blog = ({ blog }) => {
   const [visible, setVisible] = useState(false);
-  const currentUser = useSelector(state => state.user.username);
+  const currentUser = useSelector(state => state.auth.username);
 
   const dispatch = useDispatch();
 
