@@ -1,11 +1,10 @@
 import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { notify } from "../../reducers/notificationReducer";
 import { initializeUsers } from "../../reducers/usersReducer";
+import UsersSummary from "./UsersSummary";
 
 function Users() {
-  const users = useSelector(state => state.users);
-
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -16,30 +15,10 @@ function Users() {
     }
   }, []);
 
-  const userTable = users === null
-    ? (<tr></tr>)
-    : users.map(user => {
-      return (
-        <tr key={user.id}>
-          <td>{user.username}</td>
-          <td>{user.blogs.length}</td>
-        </tr>);
-    });
-
   return (
     <div>
       <h3>Users</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>User</th>
-            <th>Blogs Created</th>
-          </tr>
-        </thead>
-        <tbody>
-          {userTable}
-        </tbody>
-      </table>
+      <UsersSummary />
     </div>
   );
 }
