@@ -2,7 +2,9 @@ import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { notify } from "../../reducers/notificationReducer";
 import { initializeUsers } from "../../reducers/usersReducer";
+import { Routes, Route } from 'react-router-dom';
 import UsersSummary from "./UsersSummary";
+import UserBlogList from "./UserBlogList";
 
 function Users() {
   const dispatch = useDispatch();
@@ -18,7 +20,10 @@ function Users() {
   return (
     <div>
       <h3>Users</h3>
-      <UsersSummary />
+      <Routes>
+        <Route path='/:id' element={<UserBlogList />} />
+        <Route path='/' element={<UsersSummary />} />
+      </Routes>
     </div>
   );
 }
