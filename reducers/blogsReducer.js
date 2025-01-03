@@ -31,6 +31,11 @@ export const selectSortedBlogs = createSelector(
   (blogs) => [...blogs].sort((a, b) => b.likes - a.likes)
 );
 
+export const selectBlogById = createSelector(
+  [(state) => state.blogs, (_state, targetBlogId) => targetBlogId],
+  (blogs, targetBlogId) => blogs.find((blog) => blog._id === targetBlogId)
+);
+
 export const initializeBlogs = () => async (dispatch) => {
   try {
     const blogs = await getAll();
