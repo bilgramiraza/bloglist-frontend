@@ -1,11 +1,11 @@
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { selectBlogsById } from "../../reducers/usersReducer";
+import { selectBlogsByUserId } from "../../reducers/usersReducer";
 
 function UserBlogList() {
   const id = useParams().id;
 
-  const userBlogs = useSelector(state => selectBlogsById(state, id));
+  const userBlogs = useSelector(state => selectBlogsByUserId(state, id));
 
   if (!userBlogs)
     return null;

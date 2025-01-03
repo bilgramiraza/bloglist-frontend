@@ -17,7 +17,7 @@ export const { setUsers } = usersSlice.actions;
 
 export default usersSlice.reducer;
 
-export const selectBlogsById = createSelector(
+export const selectBlogsByUserId = createSelector(
   [(state) => state.users, (_state, userId) => userId],
   (users, userId) => users.find((user) => user.id === userId)
 );
