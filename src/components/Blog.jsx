@@ -1,35 +1,17 @@
-import { useState } from 'react';
-import PropTypes from 'prop-types';
+import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { deleteBlog, likeBlog } from '../../reducers/blogsReducer';
+import { deleteBlog, likeBlog, selectBlogById } from '../../reducers/blogsReducer';
 import { notify } from '../../reducers/notificationReducer';
 
-const Blog = ({ blog }) => {
-  const [visible, setVisible] = useState(false);
+const Blog = () => {
+  const id = useParams().id;
+
+  const blog = useSelector(state => selectBlogById(state, id));
+
   const currentUser = useSelector(state => state.auth.username);
 
   const dispatch = useDispatch();
 
-  const toggle = () => setVisible(!visible);
-
-  const blogStyle = {
-    width: '15%',
-    display: 'flex',
-    flexDirection: 'column',
-    padding: 2,
-    border: 'solid',
-    borderWidth: 1,
-    marginBottom: 2
-  };
-
-  const blogHeaderStyle = {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-between'
-  };
-  const blogBodyStyle = {
-    display: visible ? '' : 'none'
-  };
   const deleteButtonStyle = {
     display: blog.user.username === currentUser ? '' : 'none'
   };
@@ -55,18 +37,15 @@ const Blog = ({ blog }) => {
   };
 
   return (
-    <div style={blogStyle}>
-      <div style={blogHeaderStyle}>
-        <h4>{blog.title}</h4>
-        <p>{`-${blog.author}`}</p>
-        <button onClick={toggle}>{visible ? 'hide' : 'show'}</button>
-      </div>
-      <div style={blogBodyStyle}>
+    <div>
+      <h4>{blog.title}</h4>
+      <p>{`-${blog.author}`}</p>
+      <div>
         <p data-testid="blogUrl">{blog.url}</p>
         <button data-testid="blogLike" onClick={handleLikeClick}>
           {blog.likes}
         </button>
-        <p data-testid="blogUser">{blog.user.username}</p>
+        <p data-testid="blogUser">Submitted By {blog.user.username}</p>
         <button data-testid="blogDelete" style={deleteButtonStyle} onClick={handleDeleteClick}>
           delete
         </button>
@@ -76,7 +55,3 @@ const Blog = ({ blog }) => {
 };
 
 export default Blog;
-
-Blog.propTypes = {
-  blog: PropTypes.object.isRequired,
-};
