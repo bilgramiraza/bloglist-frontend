@@ -12,7 +12,7 @@ const App = () => {
       <Notification />
       <Login />
       <Routes>
-        <Route path='/' element={<Blogs />} />
+        <Route path='/*' element={<Blogs />} />
         <Route path='/users/*' element={<Users />} />
       </Routes>
     </div >

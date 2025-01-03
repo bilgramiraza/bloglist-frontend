@@ -1,10 +1,12 @@
 import { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { Routes, Route } from 'react-router-dom';
 import { notify } from "../../reducers/notificationReducer";
 import { initializeBlogs } from '../../reducers/blogsReducer';
 import Toggleable from "./Toggleable";
 import BlogForm from "./BlogForm";
 import BlogList from "./BlogList";
+import Blog from "./Blog";
 
 function Blogs() {
   const user = useSelector(state => state.auth);
@@ -28,7 +30,10 @@ function Blogs() {
           <BlogForm onClose={() => blogFormRef.current.hideComponent()} />
         </Toggleable>
       )}
-      <BlogList />
+      <Routes>
+        <Route path='/blogs/:id' element={<Blog />} />
+        <Route path='/' element={<BlogList />} />
+      </Routes>
     </div>
   );
 }
