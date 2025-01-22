@@ -16,6 +16,7 @@ const blogsSlice = createSlice({
     remove(state, action) {
       return state.filter((blogs) => blogs._id !== action.payload);
     },
+    //Replaces the Liked Blog Object
     like(state, action) {
       return state.map((blog) => (blog._id === action.payload._id ? action.payload : blog));
     }
