@@ -3,14 +3,14 @@ import PropTypes from 'prop-types';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { notify, useNotificationDispatch } from '../reducers/notificationReducer';
 import { remove, sendLike } from '../services/blogs';
-import { useUserValue } from '../reducers/userReducer';
+import { useAuthValue } from '../reducers/authReducer';
 
 const Blog = ({ blog }) => {
   const [visible, setVisible] = useState(false);
 
   const toggle = () => setVisible(!visible);
 
-  const { username, token } = useUserValue();
+  const { username, token } = useAuthValue();
 
   const queryClient = useQueryClient();
   const dispatch = useNotificationDispatch();

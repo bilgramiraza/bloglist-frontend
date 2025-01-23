@@ -3,14 +3,14 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { create } from '../services/blogs';
 import { notify, useNotificationDispatch } from '../reducers/notificationReducer';
 import PropTypes from 'prop-types';
-import { useUserValue } from '../reducers/userReducer';
+import { useAuthValue } from '../reducers/authReducer';
 
 const BlogForm = ({ onClose }) => {
   const [url, setUrl] = useState('');
   const [title, setTitle] = useState('');
   const [author, setAuthor] = useState('');
 
-  const { token } = useUserValue();
+  const { token } = useAuthValue();
 
   const queryClient = useQueryClient();
   const dispatch = useNotificationDispatch();

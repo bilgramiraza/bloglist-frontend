@@ -5,21 +5,21 @@ import Notification from './components/Notification';
 import BlogForm from './components/BlogForm';
 import Toggleable from './components/Toggleable';
 import { notify, useNotificationDispatch } from './reducers/notificationReducer';
-import { clearUser, setUser, useUserDispatch, useUserValue } from './reducers/userReducer';
+import { clearAuth, setAuth, useAuthDispatch, useAuthValue } from './reducers/authReducer';
 
 const App = () => {
-  const { name, username } = useUserValue();
+  const { name, username } = useAuthValue();
 
   const blogFormRef = useRef();
 
   const notifyDispatch = useNotificationDispatch();
-  const userDispatch = useUserDispatch();
+  const authDispatch = useAuthDispatch();
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedInBlogUser');
     if (loggedUserJSON) {
       const credentials = JSON.parse(loggedUserJSON);
-      setUser(userDispatch, credentials);
+      setAuth(authDispatch, credentials);
       notify(notifyDispatch, `${credentials.name} Has Logged In`);
     }
   }, []);
@@ -27,7 +27,7 @@ const App = () => {
   const handleLogout = async (e) => {
     e.preventDefault();
     window.localStorage.removeItem('loggedInBlogUser');
-    clearUser(userDispatch);
+    clearAuth(authDispatch);
     notify(notifyDispatch, 'Log out Successful');
   };
 

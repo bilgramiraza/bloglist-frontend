@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { loginUser, useUserDispatch } from '../reducers/userReducer';
+import { loginUser, useAuthDispatch } from '../reducers/authReducer';
 import { notify, useNotificationDispatch } from '../reducers/notificationReducer';
 
 const LoginForm = () => {
@@ -10,12 +10,12 @@ const LoginForm = () => {
   const handlePasswordChange = (e) => setPassword(e.target.value);
 
   const notifyDispatch = useNotificationDispatch();
-  const userDispatch = useUserDispatch();
+  const authDispatch = useAuthDispatch();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const credentials = await loginUser(userDispatch, username, password);
+      const credentials = await loginUser(authDispatch, username, password);
       window.localStorage.setItem('loggedInBlogUser', JSON.stringify(credentials));
       notify(notifyDispatch, `${credentials.name} Has Logged In`);
       setUsername('');

@@ -7,64 +7,64 @@ const initialState = {
   token: null,
 };
 
-const userReducer = (state, action) => {
+const authReducer = (state, action) => {
   switch (action.type) {
-    case 'setUser':
+    case 'login':
       return {
         name: action.payload.name,
         username: action.payload.username,
         token: `Bearer ${action.payload.token}`,
       };
-    case 'clearUser':
+    case 'logout':
       return initialState;
     default:
       return state;
   }
 };
 
-const UserContext = createContext();
+const AuthContext = createContext();
 
-export const UserContextProvider = (props) => {
-  const [user, dispatch] = useReducer(userReducer, initialState);
+export const AuthContextProvider = (props) => {
+  const [auth, dispatch] = useReducer(authReducer, initialState);
 
   return (
-    <UserContext.Provider value={[user, dispatch]}>
+    <AuthContext.Provider value={[auth, dispatch]}>
       {props.children}
-    </UserContext.Provider>
+    </AuthContext.Provider>
   );
 };
 
-export const useUserValue = () => {
-  const userAndDispatch = useContext(UserContext);
-  return userAndDispatch[0];
+export const useAuthValue = () => {
+  const authAndDispatch = useContext(AuthContext);
+  return authAndDispatch[0];
 };
 
-export const useUserDispatch = () => {
-  const userAndDispatch = useContext(UserContext);
-  return userAndDispatch[1];
+export const useAuthDispatch = () => {
+  const authAndDispatch = useContext(AuthContext);
+  return authAndDispatch[1];
 };
 
 export const loginUser = async (dispatch, username, password) => {
   try {
     const credentials = await login({ username, password });
-    setUser(dispatch, credentials);
+    setAuth(dispatch, credentials);
     return credentials;
   } catch (err) {
     throw new Error(err.message || 'Failed to Login User');
   }
 };
 
-export const setUser = (dispatch, credentials) => {
+export const setAuth = (dispatch, credentials) => {
   dispatch({
-    type: 'setUser',
+    type: 'login',
     payload: credentials,
   });
 };
 
-export const clearUser = dispatch => {
+export const clearAuth = dispatch => {
   dispatch({
-    type: 'clearUser',
+    type: 'logout',
   });
 };
 
-export default UserContext;
+export default AuthContext;
