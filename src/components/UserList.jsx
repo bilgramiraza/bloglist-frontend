@@ -8,10 +8,11 @@ const UserList = () => {
   const dispatch = useNotificationDispatch();
 
   const usersQuery = useQuery({
-    queryKey: ['userlist'],
+    queryKey: ['users'],
     queryFn: getAll,
     retry: false,
-    throwOnError: false
+    throwOnError: false,
+    staleTime: 60 * 1000,
   });
 
   useEffect(() => {
