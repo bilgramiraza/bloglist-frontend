@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { getAll } from "../services/users";
 import { notify, useNotificationDispatch } from '../reducers/notificationReducer';
+import { Link } from "react-router-dom";
 
 const UserList = () => {
   let userTable = null;
@@ -32,7 +33,7 @@ const UserList = () => {
       ? (<tr></tr>)
       : usersQuery.data?.map(user => (
         <tr key={user.id}>
-          <td>{user.username}</td>
+          <td><Link to={`/users/${user.id}`}>{user.username}</Link></td>
           <td>{user.blogs.length}</td>
         </tr>
       ));
