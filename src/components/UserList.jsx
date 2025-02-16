@@ -1,11 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { getAll } from "../services/users";
 import { notify, useNotificationDispatch } from '../reducers/notificationReducer';
 import { Link } from "react-router-dom";
 
 const UserList = () => {
   let userTable = null;
+  const [prevError, setPrevError] = useState(null);
+
   const dispatch = useNotificationDispatch();
 
   const usersQuery = useQuery({
@@ -17,10 +19,11 @@ const UserList = () => {
   });
 
   useEffect(() => {
-    if (usersQuery.isError) {
+    if (usersQuery.isError && usersQuery.error?.message !== prevError) {
       notify(dispatch, usersQuery.error.message || 'An Error Occured', false, 5);
+      setPrevError(usersQuery.error.message);
     }
-  }, [dispatch, notify, usersQuery.error]);
+  }, [dispatch, usersQuery.isError, usersQuery.error?.message, prevError]);
 
   if (usersQuery.isLoading) {
     userTable = <tr><td>Loading Users</td></tr>;
