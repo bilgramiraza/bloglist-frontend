@@ -1,12 +1,11 @@
-import Blog from './Blog';
 import { getAll } from '../services/blogs';
 import { useQuery } from '@tanstack/react-query';
 import { notify, useNotificationDispatch } from '../reducers/notificationReducer';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 const BlogList = () => {
-  let listOfBlogs = null;
   const dispatch = useNotificationDispatch();
+  const [prevError, setPrevError] = useState(null);
 
   const blogsQuery = useQuery({
     queryKey: ['blogList'],
@@ -14,34 +13,61 @@ const BlogList = () => {
     retry: false,
     select: blogs => blogs.toSorted((blogA, blogB) => blogB.likes - blogA.likes),
     throwOnError: false,
+    staleTime: 60 * 1000,
   });
 
   useEffect(() => {
-    if (blogsQuery.isError) {
+    if (blogsQuery.isError && blogsQuery.error?.message !== prevError) {
       notify(dispatch, blogsQuery.error.message || 'An Error Occured', false, 5);
+      setPrevError(blogsQuery.error.message);
     }
-  }, [dispatch, notify, blogsQuery.error]);
+  }, [dispatch, blogsQuery.isError, blogsQuery.error?.message, prevError]);
 
   if (blogsQuery.isLoading) {
-    listOfBlogs = <p>Loading Blogs</p>;
+    return (
+      <div data-testid="bloglist">
+        <p>Loading Blogs</p>;
+      </div>
+    );
   }
   if (blogsQuery.isError) {
-    listOfBlogs = <p>Error Getting Blogs</p>;
-  }
-  if (blogsQuery.isSuccess) {
-    listOfBlogs = blogsQuery.data.map((blog) => (
-      <Blog
-        key={blog._id}
-        blog={blog}
-      />
-    ));
+    return (
+      <div data-testid="bloglist">
+        <p>Error Getting Blogs</p>;
+      </div>
+    );
   }
 
-  return (
-    <div data-testid="bloglist">
-      {listOfBlogs}
-    </div>
-  );
+  const blogStyle = {
+    width: '15%',
+    display: 'flex',
+    flexDirection: 'column',
+    padding: 2,
+    border: 'solid',
+    borderWidth: 1,
+    marginBottom: 2
+  };
+
+  const blogListStyle = {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between'
+  };
+
+  if (blogsQuery.isSuccess) {
+    return (
+      <div data-testid="bloglist">
+        {blogsQuery.data.map((blog) => (
+          <div style={blogStyle} key={blog._id}>
+            <div style={blogListStyle}>
+              <h4>{blog.title}</h4>
+              <p>{`-${blog.author}`}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  }
 };
 
 export default BlogList;
