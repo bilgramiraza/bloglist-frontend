@@ -2,6 +2,7 @@ import { getAll } from '../services/blogs';
 import { useQuery } from '@tanstack/react-query';
 import { notify, useNotificationDispatch } from '../reducers/notificationReducer';
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 
 const BlogList = () => {
   const dispatch = useNotificationDispatch();
@@ -59,10 +60,10 @@ const BlogList = () => {
       <div data-testid="bloglist">
         {blogsQuery.data.map((blog) => (
           <div style={blogStyle} key={blog._id}>
-            <div style={blogListStyle}>
+            <Link to={`/blogs/${blog._id}`} style={blogListStyle}>
               <h4>{blog.title}</h4>
               <p>{`-${blog.author}`}</p>
-            </div>
+            </Link>
           </div>
         ))}
       </div>

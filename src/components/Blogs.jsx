@@ -1,9 +1,10 @@
 import { useRef } from 'react';
+import { Route, Routes } from 'react-router-dom';
 import { useAuthValue } from '../reducers/authReducer';
 import BlogList from './BlogList';
 import BlogForm from './BlogForm';
 import Toggleable from './Toggleable';
-import { Route, Routes } from 'react-router-dom';
+import BlogSummary from './BlogSummary';
 
 const Blogs = () => {
   const { username } = useAuthValue();
@@ -18,7 +19,7 @@ const Blogs = () => {
         </Toggleable>
       )}
       <Routes>
-        {/* <Route path="/blogs/:id" element={< />} />*/}
+        <Route path="/blogs/:id" element={<BlogSummary />} />
         <Route path="/" element={<BlogList />} />
       </Routes>
     </div>

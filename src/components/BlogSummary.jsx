@@ -1,11 +1,10 @@
 import { useState } from 'react';
-import PropTypes from 'prop-types';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { notify, useNotificationDispatch } from '../reducers/notificationReducer';
 import { remove, sendLike } from '../services/blogs';
 import { useAuthValue } from '../reducers/authReducer';
 
-const Blog = ({ blog }) => {
+const BlogSummary = () => {
   const [visible, setVisible] = useState(false);
 
   const toggle = () => setVisible(!visible);
@@ -101,8 +100,4 @@ const Blog = ({ blog }) => {
   );
 };
 
-export default Blog;
-
-Blog.protTypes = {
-  blog: PropTypes.object.isRequired,
-};
+export default BlogSummary;
