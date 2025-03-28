@@ -78,37 +78,20 @@ const BlogSummary = () => {
     deleteBlogMutation.mutate({ token, blog });
   };
 
-  const blogStyle = {
-    width: '15%',
-    display: 'flex',
-    flexDirection: 'column',
-    padding: 2,
-    border: 'solid',
-    borderWidth: 1,
-    marginBottom: 2
-  };
-
-  const blogHeaderStyle = {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-between'
-  };
   const deleteButtonStyle = {
     display: blog?.user.username === username ? '' : 'none'
   };
 
   return (
-    <div style={blogStyle}>
-      <div style={blogHeaderStyle}>
-        <h4>{blog?.title}</h4>
-        <p>{`-${blog?.author}`}</p>
-      </div>
+    <div>
+      <h4>{blog?.title}</h4>
+      <p>{`-${blog?.author}`}</p>
       <div>
         <p data-testid="blogUrl">{blog?.url}</p>
         <button data-testid="blogLike" onClick={handleLikeClick}>
           {blog?.likes}
         </button>
-        <p data-testid="blogUser">{blog?.user.username}</p>
+        <p data-testid="blogUser">{`Submitted By ${blog?.user.username}`}</p>
         <button data-testid="blogDelete" style={deleteButtonStyle} onClick={handleDeleteClick}>
           delete
         </button>
