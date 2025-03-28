@@ -1,15 +1,15 @@
 import { Route, Routes } from 'react-router-dom';
 import Blogs from './components/Blogs';
-import Login from './components/Login';
 import Notification from './components/Notification';
 import Users from './components/Users';
+import Navbar from './components/Navbar';
 
 const App = () => {
   return (
     <div>
       <h2>blogs</h2>
       <Notification />
-      <Login />
+      <Navbar />
       <Routes>
         <Route path='/*' element={<Blogs />} />
         <Route path='/users/*' element={<Users />} />
