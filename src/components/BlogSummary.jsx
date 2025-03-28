@@ -1,18 +1,32 @@
-import { useState } from 'react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useEffect, useState } from 'react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { notify, useNotificationDispatch } from '../reducers/notificationReducer';
-import { remove, sendLike } from '../services/blogs';
+import { getAll, remove, sendLike } from '../services/blogs';
 import { useAuthValue } from '../reducers/authReducer';
+import { useParams } from 'react-router-dom';
 
 const BlogSummary = () => {
-  const [visible, setVisible] = useState(false);
+  const id = useParams().id;
 
-  const toggle = () => setVisible(!visible);
+  const [prevError, setPrevError] = useState(null);
 
   const { username, token } = useAuthValue();
 
   const queryClient = useQueryClient();
   const dispatch = useNotificationDispatch();
+
+  const { data: blog, error: blogError, isError: blogErrorStatus } = useQuery({
+    queryKey: ['blogList'],
+    queryFn: getAll,
+    select: (blogs) => {
+      const target = blogs.find((blog) => blog._id === id);
+      if (!target)
+        throw new Error('blog Not Found');
+      return target;
+    },
+    retry: false,
+    staleTime: 60 * 1000,
+  });
 
   const likeBlogMutation = useMutation({
     mutationFn: sendLike,
@@ -46,6 +60,24 @@ const BlogSummary = () => {
     retry: false,
   });
 
+  useEffect(() => {
+    if (blogErrorStatus && blogError?.message !== prevError) {
+      notify(dispatch, blogError.message || 'An Error Occured', false, 5);
+      setPrevError(blogError.message);
+    }
+  }, [dispatch, blogErrorStatus, blogError?.message, prevError]);
+
+  const handleLikeClick = () => {
+    likeBlogMutation.mutate({ token, blog });
+  };
+
+  const handleDeleteClick = () => {
+    const deleteConfirm = window.confirm(`Delete ${blog?.title} By ${blog?.author}?`);
+    if (!deleteConfirm) return;
+
+    deleteBlogMutation.mutate({ token, blog });
+  };
+
   const blogStyle = {
     width: '15%',
     display: 'flex',
@@ -61,37 +93,22 @@ const BlogSummary = () => {
     flexDirection: 'row',
     justifyContent: 'space-between'
   };
-  const blogBodyStyle = {
-    display: visible ? '' : 'none'
-  };
   const deleteButtonStyle = {
-    display: blog.user.username === username ? '' : 'none'
-  };
-
-  const handleLikeClick = () => {
-    likeBlogMutation.mutate({ token, blog });
-  };
-
-  const handleDeleteClick = () => {
-    const deleteConfirm = window.confirm(`Delete ${blog.title} By ${blog.author}?`);
-    if (!deleteConfirm) return;
-
-    deleteBlogMutation.mutate({ token, blog });
+    display: blog?.user.username === username ? '' : 'none'
   };
 
   return (
     <div style={blogStyle}>
       <div style={blogHeaderStyle}>
-        <h4>{blog.title}</h4>
-        <p>{`-${blog.author}`}</p>
-        <button onClick={toggle}>{visible ? 'hide' : 'show'}</button>
+        <h4>{blog?.title}</h4>
+        <p>{`-${blog?.author}`}</p>
       </div>
-      <div style={blogBodyStyle}>
-        <p data-testid="blogUrl">{blog.url}</p>
+      <div>
+        <p data-testid="blogUrl">{blog?.url}</p>
         <button data-testid="blogLike" onClick={handleLikeClick}>
-          {blog.likes}
+          {blog?.likes}
         </button>
-        <p data-testid="blogUser">{blog.user.username}</p>
+        <p data-testid="blogUser">{blog?.user.username}</p>
         <button data-testid="blogDelete" style={deleteButtonStyle} onClick={handleDeleteClick}>
           delete
         </button>
