@@ -10,7 +10,13 @@ const UserList = () => {
 
   const dispatch = useNotificationDispatch();
 
-  const usersQuery = useQuery({
+  const {
+    isLoading: usersLoadingStatus,
+    isSuccess: usersSuccessStatus,
+    data: users,
+    isError: usersErrorStatus,
+    error: usersError,
+  } = useQuery({
     queryKey: ['users'],
     queryFn: getAll,
     retry: false,
@@ -19,22 +25,22 @@ const UserList = () => {
   });
 
   useEffect(() => {
-    if (usersQuery.isError && usersQuery.error?.message !== prevError) {
-      notify(dispatch, usersQuery.error.message || 'An Error Occured', false, 5);
-      setPrevError(usersQuery.error.message);
+    if (usersErrorStatus && usersError?.message !== prevError) {
+      notify(dispatch, usersError.message || 'An Error Occured', false, 5);
+      setPrevError(usersError.message);
     }
-  }, [dispatch, usersQuery.isError, usersQuery.error?.message, prevError]);
+  }, [dispatch, usersErrorStatus, usersError?.message, prevError]);
 
-  if (usersQuery.isLoading) {
+  if (usersLoadingStatus) {
     userTable = <tr><td>Loading Users</td></tr>;
   }
-  if (usersQuery.isError) {
+  if (usersErrorStatus) {
     userTable = <tr><td>Error Getting Users</td></tr>;
   }
-  if (usersQuery.isSuccess) {
-    userTable = usersQuery.data === null
+  if (usersSuccessStatus) {
+    userTable = users === null
       ? (<tr></tr>)
-      : usersQuery.data?.map(user => (
+      : users?.map(user => (
         <tr key={user.id}>
           <td><Link to={`/users/${user.id}`}>{user.username}</Link></td>
           <td>{user.blogs.length}</td>

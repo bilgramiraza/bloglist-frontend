@@ -15,7 +15,12 @@ const BlogSummary = () => {
   const queryClient = useQueryClient();
   const dispatch = useNotificationDispatch();
 
-  const { data: blog, error: blogError, isError: blogErrorStatus } = useQuery({
+  const {
+    data: blog,
+    isLoading: blogLoadingStatus,
+    error: blogError,
+    isError: blogErrorStatus,
+  } = useQuery({
     queryKey: ['blogList'],
     queryFn: getAll,
     select: (blogs) => {
@@ -81,6 +86,21 @@ const BlogSummary = () => {
   const deleteButtonStyle = {
     display: blog?.user.username === username ? '' : 'none'
   };
+
+  if (blogLoadingStatus) {
+    return (
+      <div>
+        <p>Loading Blog</p>
+      </div>
+    );
+  }
+  if (blogErrorStatus) {
+    return (
+      <div>
+        <p>Error Getting Blog</p>
+      </div>
+    );
+  }
 
   return (
     <div>

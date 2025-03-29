@@ -10,7 +10,12 @@ const UserSummary = () => {
 
   const dispatch = useNotificationDispatch();
 
-  const userQuery = useQuery({
+  const {
+    isLoading: userLoadingStatus,
+    data: user,
+    isError: userErrorStatus,
+    error: userError,
+  } = useQuery({
     queryKey: ['users'],
     queryFn: getAll,
     select: (users) => {
@@ -24,20 +29,20 @@ const UserSummary = () => {
   });
 
   useEffect(() => {
-    if (userQuery.isError && userQuery.error?.message !== prevError) {
-      notify(dispatch, userQuery.error.message || 'An Error Occured', false, 5);
-      setPrevError(userQuery.error.message);
+    if (userErrorStatus && userError?.message !== prevError) {
+      notify(dispatch, userError.message || 'An Error Occured', false, 5);
+      setPrevError(userError.message);
     }
-  }, [dispatch, userQuery.isError, userQuery.error?.message, prevError]);
+  }, [dispatch, userErrorStatus, userError?.message, prevError]);
 
-  if (userQuery.isLoading) {
+  if (userLoadingStatus) {
     return (
       <div>
         <h4>Loading Blogs</h4>
       </div>
     );
   }
-  if (userQuery.isError) {
+  if (userErrorStatus) {
     return (
       <div>
         <h4>User Not Found</h4>
@@ -47,11 +52,11 @@ const UserSummary = () => {
 
   return (
     <div>
-      <h4>{userQuery.data?.name.toUpperCase()} Blogs</h4>
+      <h4>{user?.name?.toUpperCase()} Blogs</h4>
       <ul>
         {
-          userQuery.data?.blogs?.length
-            ? userQuery.data?.blogs?.map(blog => (
+          user?.blogs?.length
+            ? user?.blogs?.map(blog => (
               <li key={blog.id}>{blog.title}</li>
             ))
             : (

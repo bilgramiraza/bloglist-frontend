@@ -8,7 +8,12 @@ const BlogList = () => {
   const dispatch = useNotificationDispatch();
   const [prevError, setPrevError] = useState(null);
 
-  const blogsQuery = useQuery({
+  const {
+    data: blogs,
+    isLoading: blogsLoadingStatus,
+    error: blogsError,
+    isError: blogsErrorStatus,
+  } = useQuery({
     queryKey: ['blogList'],
     queryFn: getAll,
     retry: false,
@@ -18,23 +23,23 @@ const BlogList = () => {
   });
 
   useEffect(() => {
-    if (blogsQuery.isError && blogsQuery.error?.message !== prevError) {
-      notify(dispatch, blogsQuery.error.message || 'An Error Occured', false, 5);
-      setPrevError(blogsQuery.error.message);
+    if (blogsErrorStatus && blogsError?.message !== prevError) {
+      notify(dispatch, blogsError.message || 'An Error Occured', false, 5);
+      setPrevError(blogsError.message);
     }
-  }, [dispatch, blogsQuery.isError, blogsQuery.error?.message, prevError]);
+  }, [dispatch, blogsErrorStatus, blogsError?.message, prevError]);
 
-  if (blogsQuery.isLoading) {
+  if (blogsLoadingStatus) {
     return (
       <div data-testid="bloglist">
-        <p>Loading Blogs</p>;
+        <p>Loading Blogs</p>
       </div>
     );
   }
-  if (blogsQuery.isError) {
+  if (blogsErrorStatus) {
     return (
       <div data-testid="bloglist">
-        <p>Error Getting Blogs</p>;
+        <p>Error Getting Blogs</p>
       </div>
     );
   }
@@ -55,20 +60,18 @@ const BlogList = () => {
     justifyContent: 'space-between'
   };
 
-  if (blogsQuery.isSuccess) {
-    return (
-      <div data-testid="bloglist">
-        {blogsQuery.data.map((blog) => (
-          <div style={blogStyle} key={blog._id}>
-            <Link to={`/blogs/${blog._id}`} style={blogListStyle}>
-              <h4>{blog.title}</h4>
-              <p>{`-${blog.author}`}</p>
-            </Link>
-          </div>
-        ))}
-      </div>
-    );
-  }
+  return (
+    <div data-testid="bloglist">
+      {blogs.map((blog) => (
+        <div style={blogStyle} key={blog._id}>
+          <Link to={`/blogs/${blog._id}`} style={blogListStyle}>
+            <h4>{blog.title}</h4>
+            <p>{`-${blog.author}`}</p>
+          </Link>
+        </div>
+      ))}
+    </div>
+  );
 };
 
 export default BlogList;
