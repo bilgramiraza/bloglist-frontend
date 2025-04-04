@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { login } from '../src/services/auth';
+import { api } from '../src/services/api';
 
 const initialState = {
   name: null,
@@ -18,22 +18,15 @@ const authSlice = createSlice({
         token: `Bearer ${action.payload.token}`
       };
     },
-    clearUser() {
+    logout() {
       return initialState;
     }
+  },
+  extraReducers: (builder) => {
+    builder.addMatcher(api.endpoints.login.matchFulfilled, setUser);
   }
 });
 
-export const { setUser, clearUser } = authSlice.actions;
+export const { setUser, logout } = authSlice.actions;
 
 export default authSlice.reducer;
-
-export const loginUser = (username, password) => async (dispatch) => {
-  try {
-    const credentials = await login({ username, password });
-    dispatch(setUser(credentials));
-    return credentials;
-  } catch (err) {
-    throw new Error(err.message || 'Failed to Login User');
-  }
-};

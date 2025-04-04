@@ -1,14 +1,18 @@
-import axios from 'axios';
+import { api } from './api';
 
-const baseUrl = '/api/login';
+export const authApi = api.injectEndpoints({
+  endpoints: (build) => ({
+    login: build.mutation({
+      query: (credentials) => {
+        return {
+          url: '/login',
+          method: 'POST',
+          body: credentials
+        };
+      },
+      transformResponse: (res) => ({ name: res.name, username: res.username, token: res.token })
+    })
+  })
+});
 
-const login = async (credentials) => {
-  try {
-    const response = await axios.post(baseUrl, credentials);
-    return response.data;
-  } catch (err) {
-    throw new Error(err?.response?.data?.error || 'Network Issue');
-  }
-};
-
-export { login };
+export const { useLoginMutation } = authApi;
