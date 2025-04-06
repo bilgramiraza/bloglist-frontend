@@ -10,7 +10,8 @@ export const authApi = api.injectEndpoints({
           body: credentials
         };
       },
-      transformResponse: (res) => ({ name: res.name, username: res.username, token: res.token })
+      transformResponse: (res) => ({ name: res.name, username: res.username, token: res.token }),
+      transformErrorResponse: (res) => res?.data?.error || 'Network Issue'
     })
   })
 });

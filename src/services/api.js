@@ -4,13 +4,23 @@ const baseQuery = fetchBaseQuery({
   baseUrl: '/api',
   prepareHeaders: (headers, { getState }) => {
     const token = getState().auth.token;
-    if (token) headers.set('authentication', `Bearer ${token}`);
+    if (token) headers.set('authorization', `Bearer ${token}`);
 
     return headers;
   }
 });
 
-const baseQueryWithRetry = retry(baseQuery, { maxRetries: 6 });
+const baseQueryWithRetry = retry(
+  async (args, api, extraOptions) => {
+    const result = await baseQuery(args, api, extraOptions);
+
+    if ([401, 403, 404].includes(result.error?.status)) {
+      retry.fail(result.error);
+    }
+    return result;
+  },
+  { maxRetries: 3 }
+);
 
 export const api = createApi({
   baseQuery: baseQueryWithRetry,

@@ -12,7 +12,7 @@ const LoginForm = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const [login, { isLoading }] = useLoginMutation();
+  const [login, { isLoading, isError }] = useLoginMutation();
 
   const from = location?.state?.from?.pathname || '/';
 
@@ -22,15 +22,14 @@ const LoginForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const credentials = await login({ username, password });
-      window.localStorage.setItem('loggedInBlogUser', JSON.stringify(credentials.data));
-      dispatch(notify(`${credentials.data.name} Has Logged In`));
+      const credentials = await login({ username, password }).unwrap();
+      window.localStorage.setItem('loggedInBlogUser', JSON.stringify(credentials));
+      dispatch(notify(`${credentials.name} Has Logged In`));
       setUsername('');
       setPassword('');
       navigate(from, { replace: true });
-
     } catch (err) {
-      dispatch(notify(err.message || 'An Error Occured', false, 5));
+      dispatch(notify(err || 'An Error Occured', false, 5));
     }
   };
 
@@ -43,7 +42,7 @@ const LoginForm = () => {
     <div>
       <h2>Login to Application</h2>
       <form onSubmit={handleSubmit}>
-        <fieldset disabled={isLoading}>
+        <fieldset disabled={isLoading && !isError}>
           <label>
             Username:
             <input
