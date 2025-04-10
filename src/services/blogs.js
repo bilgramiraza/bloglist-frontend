@@ -1,15 +1,24 @@
 import axios from 'axios';
+import { api } from './api';
 
 const baseUrl = '/api/blogs';
 
-const getAll = async () => {
-  try {
-    const response = await axios.get(baseUrl);
-    return response.data;
-  } catch (err) {
-    throw new Error(err?.response?.data?.error || 'Network Issue');
-  }
-};
+export const blogsApi = api.injectEndpoints({
+  endpoints: (build) => ({
+    getAllBlogs: build.query({
+      query: () => ({ url: '/blogs' }),
+      providesTags: (results = []) => [
+        'Blogs',
+        ...results.map(({ _id }) => ({ type: 'Blogs', id: _id })),
+        { type: 'Blogs', id: 'LIST' }
+      ],
+      transformResponse: (res) => res?.sort((a, b) => b.likes - a.likes),
+      transformErrorResponse: (res) => res?.data?.error || 'Network Issue'
+    })
+  })
+});
+
+export const { useGetAllBlogsQuery } = blogsApi;
 
 const create = async (newBlog, token) => {
   try {
@@ -56,4 +65,4 @@ const remove = async (blogId, token) => {
   }
 };
 
-export { getAll, create, sendLike, remove };
+export { create, sendLike, remove };

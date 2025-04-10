@@ -1,5 +1,6 @@
-import { create, getAll, remove as removeBlog, sendLike } from '../src/services/blogs';
+import { create, remove as removeBlog, sendLike } from '../src/services/blogs';
 import { createSlice, createSelector } from '@reduxjs/toolkit';
+import { api } from '../src/services/api';
 
 const initialState = [];
 
@@ -20,6 +21,9 @@ const blogsSlice = createSlice({
     like(state, action) {
       return state.map((blog) => (blog._id === action.payload._id ? action.payload : blog));
     }
+  },
+  extraReducers: (builder) => {
+    builder.addMatcher(api.endpoints.getAllBlogs.matchFulfilled, setBlogs);
   }
 });
 
@@ -27,24 +31,10 @@ export const { setBlogs, add, remove, like } = blogsSlice.actions;
 
 export default blogsSlice.reducer;
 
-export const selectSortedBlogs = createSelector(
-  (state) => state.blogs,
-  (blogs) => [...blogs].sort((a, b) => b.likes - a.likes)
-);
-
 export const selectBlogById = createSelector(
   [(state) => state.blogs, (_state, targetBlogId) => targetBlogId],
   (blogs, targetBlogId) => blogs.find((blog) => blog._id === targetBlogId)
 );
-
-export const initializeBlogs = () => async (dispatch) => {
-  try {
-    const blogs = await getAll();
-    dispatch(setBlogs(blogs));
-  } catch (err) {
-    throw new Error(err.message || 'Failed to Get Blogs');
-  }
-};
 
 export const newBlog = (blog) => async (dispatch, getState) => {
   try {
