@@ -1,9 +1,27 @@
-import { useSelector } from 'react-redux';
-import { selectSortedBlogs } from '../../reducers/blogsReducer';
+import { useEffect, useState } from 'react';
+import { useGetAllBlogsQuery } from '../services/blogs';
 import { Link } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { notify } from '../../reducers/notificationReducer';
 
 const BlogList = () => {
-  const blogs = useSelector(selectSortedBlogs);
+  const [prevError, setPrevError] = useState(null);
+  const {
+    data: blogs,
+    error: blogsError,
+    isLoading: blogsLoadingStatus,
+    isError: blogsErrorStatus
+  } = useGetAllBlogsQuery();
+
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (blogsErrorStatus && blogsError?.message !== prevError) {
+      notify(dispatch, blogsError.message || 'An Error Occured', false, 3);
+      setPrevError(blogsError.message);
+    }
+  }, [dispatch, blogsErrorStatus, blogsError?.message, prevError]);
+
 
   const blogStyle = {
     width: '75%',
@@ -21,6 +39,22 @@ const BlogList = () => {
     borderWidth: 1,
     marginBottom: 2
   };
+
+  if (blogsLoadingStatus) {
+    return (
+      <div data-testid="bloglist" style={blogStyle}>
+        <p>Loading Blogs...</p>
+      </div>
+    );
+  }
+
+  if (blogsErrorStatus) {
+    return (
+      <div data-testid="bloglist" style={blogStyle}>
+        <p>Error Loading Blogs</p>
+      </div>
+    );
+  }
 
   if (!blogs || !blogs.length) {
     return (
