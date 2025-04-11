@@ -16,11 +16,11 @@ const BlogList = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (blogsErrorStatus && blogsError?.message !== prevError) {
-      notify(dispatch, blogsError.message || 'An Error Occured', false, 3);
-      setPrevError(blogsError.message);
+    if (blogsErrorStatus && blogsError !== prevError) {
+      dispatch(notify(blogsError || 'An Error Occured', false, 3));
+      setPrevError(blogsError);
     }
-  }, [dispatch, blogsErrorStatus, blogsError?.message, prevError]);
+  }, [dispatch, blogsErrorStatus, blogsError, prevError]);
 
 
   const blogStyle = {
