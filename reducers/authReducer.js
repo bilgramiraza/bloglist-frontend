@@ -7,23 +7,23 @@ const initialState = {
   token: null
 };
 
+const setUserReducer = (state, action) => {
+  state.name = action.payload.name;
+  state.username = action.payload.username;
+  state.token = `Bearer ${action.payload.token}`;
+};
+
 const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    setUser(_state, action) {
-      return {
-        name: action.payload.name,
-        username: action.payload.username,
-        token: `Bearer ${action.payload.token}`
-      };
-    },
+    setUser: setUserReducer,
     logout() {
       return initialState;
     }
   },
   extraReducers: (builder) => {
-    builder.addMatcher(api.endpoints.login.matchFulfilled, setUser);
+    builder.addMatcher(api.endpoints.login.matchFulfilled, setUserReducer);
   }
 });
 
