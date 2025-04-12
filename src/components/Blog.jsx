@@ -1,7 +1,8 @@
 import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { deleteBlog, likeBlog, selectBlogById } from '../../reducers/blogsReducer';
+import { deleteBlog, selectBlogById } from '../../reducers/blogsReducer';
 import { notify } from '../../reducers/notificationReducer';
+import { useLikeBlogMutation } from '../services/blogs';
 
 const Blog = () => {
   const id = useParams().id;
@@ -12,16 +13,24 @@ const Blog = () => {
 
   const dispatch = useDispatch();
 
+  const [
+    likeBlog,
+    {
+      isLoading: likeLoadingStatus,
+      isError: likeErrorStatus
+    }
+  ] = useLikeBlogMutation();
+
   const deleteButtonStyle = {
     display: blog.user.username === currentUser ? '' : 'none'
   };
 
   const handleLikeClick = async () => {
     try {
-      await dispatch(likeBlog(blog));
+      await likeBlog(blog).unwrap();
       dispatch(notify(`Blog(${blog.title}) Liked Successfully`));
     } catch (err) {
-      dispatch(notify(err.message || 'An Error Occured', false, 5));
+      dispatch(notify(err || 'An Error Occured', false, 5));
     }
   };
 
@@ -42,7 +51,7 @@ const Blog = () => {
       <p>{`-${blog.author}`}</p>
       <div>
         <p data-testid="blogUrl">{blog.url}</p>
-        <button data-testid="blogLike" onClick={handleLikeClick}>
+        <button data-testid="blogLike" onClick={handleLikeClick} disabled={likeLoadingStatus && !likeErrorStatus}>
           {blog.likes}
         </button>
         <p data-testid="blogUser">Submitted By {blog.user.username}</p>
