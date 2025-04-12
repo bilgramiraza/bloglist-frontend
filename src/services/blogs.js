@@ -14,7 +14,7 @@ export const blogsApi = api.injectEndpoints({
       ],
       transformResponse: (res) => res?.sort((a, b) => b.likes - a.likes),
       transformErrorResponse: (res) => res?.data?.error || 'Network Issue'
-    }),
+    }), //Optimize Adding New Blogs to single Call
     createNewBlog: build.mutation({
       query: (newBlog) => ({
         url: '/blogs',
@@ -23,29 +23,20 @@ export const blogsApi = api.injectEndpoints({
       }),
       invalidatesTags: [{ type: 'Blogs', id: 'LIST' }],
       transformErrorResponse: (res) => res?.data?.error || 'Network Issue'
+    }),
+    likeBlog: build.mutation({
+      query: (blog) => ({
+        url: `/blogs/${blog._id}/like`,
+        method: 'PUT',
+        body: { ...blog, likes: blog.likes + 1 }
+      }),
+      invalidatesTags: (likedBlog) => [{ type: 'Blogs', id: likedBlog?._id }],
+      transformErrorResponse: (res) => res?.data?.error || 'Network Issue'
     })
   })
 });
 
-export const { useGetAllBlogsQuery, useCreateNewBlogMutation } = blogsApi;
-
-const sendLike = async (blog, token) => {
-  try {
-    const config = {
-      headers: {
-        Authorization: token
-      }
-    };
-    const likedBlog = {
-      ...blog,
-      likes: blog.likes + 1
-    };
-    const response = await axios.put(`${baseUrl}/${blog._id}/like`, likedBlog, config);
-    return response.data;
-  } catch (err) {
-    throw new Error(err?.response?.data?.error || 'Network Issue');
-  }
-};
+export const { useGetAllBlogsQuery, useCreateNewBlogMutation, useLikeBlogMutation } = blogsApi;
 
 const remove = async (blogId, token) => {
   try {
@@ -60,4 +51,4 @@ const remove = async (blogId, token) => {
   }
 };
 
-export { sendLike, remove };
+export { remove };
