@@ -1,7 +1,4 @@
-import axios from 'axios';
 import { api } from './api';
-
-const baseUrl = '/api/blogs';
 
 export const blogsApi = api.injectEndpoints({
   endpoints: (build) => ({
@@ -32,23 +29,21 @@ export const blogsApi = api.injectEndpoints({
       }),
       invalidatesTags: (likedBlog) => [{ type: 'Blogs', id: likedBlog?._id }],
       transformErrorResponse: (res) => res?.data?.error || 'Network Issue'
+    }),
+    removeBlog: build.mutation({
+      query: (blogId) => ({
+        url: `/blogs/${blogId}`,
+        method: 'DELETE'
+      }),
+      invalidatesTags: [{ type: 'Blogs', id: 'LIST' }],
+      transformErrorResponse: (res) => res?.data?.error || 'Network Issue'
     })
   })
 });
 
-export const { useGetAllBlogsQuery, useCreateNewBlogMutation, useLikeBlogMutation } = blogsApi;
-
-const remove = async (blogId, token) => {
-  try {
-    const config = {
-      headers: {
-        Authorization: token
-      }
-    };
-    await axios.delete(`${baseUrl}/${blogId}`, config);
-  } catch (err) {
-    throw new Error(err?.response?.data?.error || 'Network Issue');
-  }
-};
-
-export { remove };
+export const {
+  useGetAllBlogsQuery,
+  useCreateNewBlogMutation,
+  useLikeBlogMutation,
+  useRemoveBlogMutation
+} = blogsApi;
