@@ -1,8 +1,8 @@
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { deleteBlog, selectBlogById } from '../../reducers/blogsReducer';
+import { selectBlogById } from '../../reducers/blogsReducer';
 import { notify } from '../../reducers/notificationReducer';
-import { useLikeBlogMutation } from '../services/blogs';
+import { useLikeBlogMutation, useRemoveBlogMutation } from '../services/blogs';
 
 const Blog = () => {
   const id = useParams().id;
@@ -12,6 +12,7 @@ const Blog = () => {
   const currentUser = useSelector(state => state.auth.username);
 
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const [
     likeBlog,
@@ -20,6 +21,14 @@ const Blog = () => {
       isError: likeErrorStatus
     }
   ] = useLikeBlogMutation();
+
+  const [
+    removeBlog,
+    {
+      isLoading: removeLoadingStatus,
+      isError: removeErrorStatus
+    }
+  ] = useRemoveBlogMutation();
 
   const deleteButtonStyle = {
     display: blog.user.username === currentUser ? '' : 'none'
@@ -38,10 +47,11 @@ const Blog = () => {
     const deleteConfirm = window.confirm(`Delete ${blog.title} By ${blog.author}?`);
     if (!deleteConfirm) return;
     try {
-      await dispatch(deleteBlog(blog._id));
+      await removeBlog(blog._id).unwrap();
       dispatch(notify(`Blog(${blog.title} By ${blog.author}) Deleted Successfully`));
+      navigate('/');
     } catch (err) {
-      dispatch(notify(err.message || 'An Error Occured', false, 5));
+      dispatch(notify(err || 'An Error Occured', false, 5));
     }
   };
 
@@ -55,7 +65,7 @@ const Blog = () => {
           {blog.likes}
         </button>
         <p data-testid="blogUser">Submitted By {blog.user.username}</p>
-        <button data-testid="blogDelete" style={deleteButtonStyle} onClick={handleDeleteClick}>
+        <button data-testid="blogDelete" style={deleteButtonStyle} onClick={handleDeleteClick} disabled={removeLoadingStatus && !removeErrorStatus}>
           delete
         </button>
       </div>
