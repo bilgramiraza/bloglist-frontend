@@ -14,25 +14,20 @@ export const blogsApi = api.injectEndpoints({
       ],
       transformResponse: (res) => res?.sort((a, b) => b.likes - a.likes),
       transformErrorResponse: (res) => res?.data?.error || 'Network Issue'
+    }),
+    createNewBlog: build.mutation({
+      query: (newBlog) => ({
+        url: '/blogs',
+        method: 'POST',
+        body: newBlog
+      }),
+      invalidatesTags: [{ type: 'Blogs', id: 'LIST' }],
+      transformErrorResponse: (res) => res?.data?.error || 'Network Issue'
     })
   })
 });
 
-export const { useGetAllBlogsQuery } = blogsApi;
-
-const create = async (newBlog, token) => {
-  try {
-    const config = {
-      headers: {
-        Authorization: token
-      }
-    };
-    const response = await axios.post(baseUrl, newBlog, config);
-    return response.data;
-  } catch (err) {
-    throw new Error(err?.response?.data?.error || 'Network Issue');
-  }
-};
+export const { useGetAllBlogsQuery, useCreateNewBlogMutation } = blogsApi;
 
 const sendLike = async (blog, token) => {
   try {
@@ -65,4 +60,4 @@ const remove = async (blogId, token) => {
   }
 };
 
-export { create, sendLike, remove };
+export { sendLike, remove };

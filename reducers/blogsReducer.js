@@ -1,19 +1,20 @@
-import { create, remove as removeBlog, sendLike } from '../src/services/blogs';
+import { remove as removeBlog, sendLike } from '../src/services/blogs';
 import { createSlice, createSelector } from '@reduxjs/toolkit';
 import { api } from '../src/services/api';
 
 const initialState = [];
 
+const setBlogsReducer = (_state, action) => action.payload;
+const addBlogsReducer = (state, action) => {
+  state.push(action.payload);
+};
+
 const blogsSlice = createSlice({
   name: 'blogs',
   initialState,
   reducers: {
-    setBlogs(_state, action) {
-      return action.payload;
-    },
-    add(state, action) {
-      state.push(action.payload);
-    },
+    setBlogs: setBlogsReducer,
+    add: addBlogsReducer,
     remove(state, action) {
       return state.filter((blogs) => blogs._id !== action.payload);
     },
@@ -23,7 +24,9 @@ const blogsSlice = createSlice({
     }
   },
   extraReducers: (builder) => {
-    builder.addMatcher(api.endpoints.getAllBlogs.matchFulfilled, setBlogs);
+    builder
+      .addMatcher(api.endpoints.getAllBlogs.matchFulfilled, setBlogsReducer)
+      .addMatcher(api.endpoints.createNewBlog.matchFulfilled, addBlogsReducer);
   }
 });
 
@@ -35,16 +38,6 @@ export const selectBlogById = createSelector(
   [(state) => state.blogs, (_state, targetBlogId) => targetBlogId],
   (blogs, targetBlogId) => blogs.find((blog) => blog._id === targetBlogId)
 );
-
-export const newBlog = (blog) => async (dispatch, getState) => {
-  try {
-    const token = getState().auth.token;
-    const newBlog = await create(blog, token);
-    dispatch(add(newBlog));
-  } catch (err) {
-    throw new Error(err.message || 'Failed to Create Blog');
-  }
-};
 
 export const deleteBlog = (blogId) => async (dispatch, getState) => {
   try {
