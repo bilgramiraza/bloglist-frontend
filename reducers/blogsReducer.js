@@ -1,4 +1,4 @@
-import { remove as removeBlog, sendLike } from '../src/services/blogs';
+import { remove as removeBlog } from '../src/services/blogs';
 import { createSlice, createSelector } from '@reduxjs/toolkit';
 import { api } from '../src/services/api';
 
@@ -8,6 +8,9 @@ const setBlogsReducer = (_state, action) => action.payload;
 const addBlogsReducer = (state, action) => {
   state.push(action.payload);
 };
+//Replaces the Liked Blog Object
+const likeBlogReducer = (state, action) =>
+  state.map((blog) => (blog._id === action.payload._id ? action.payload : blog));
 
 const blogsSlice = createSlice({
   name: 'blogs',
@@ -18,15 +21,13 @@ const blogsSlice = createSlice({
     remove(state, action) {
       return state.filter((blogs) => blogs._id !== action.payload);
     },
-    //Replaces the Liked Blog Object
-    like(state, action) {
-      return state.map((blog) => (blog._id === action.payload._id ? action.payload : blog));
-    }
+    like: likeBlogReducer
   },
   extraReducers: (builder) => {
     builder
       .addMatcher(api.endpoints.getAllBlogs.matchFulfilled, setBlogsReducer)
-      .addMatcher(api.endpoints.createNewBlog.matchFulfilled, addBlogsReducer);
+      .addMatcher(api.endpoints.createNewBlog.matchFulfilled, addBlogsReducer)
+      .addMatcher(api.endpoints.likeBlog.matchFulfilled, likeBlogReducer);
   }
 });
 
@@ -46,15 +47,5 @@ export const deleteBlog = (blogId) => async (dispatch, getState) => {
     dispatch(remove(blogId));
   } catch (err) {
     throw new Error(err.message || 'Failed to Delete Blog');
-  }
-};
-
-export const likeBlog = (blog) => async (dispatch, getState) => {
-  try {
-    const token = getState().auth.token;
-    const likedBlog = await sendLike(blog, token);
-    dispatch(like(likedBlog));
-  } catch (err) {
-    throw new Error(err.message || 'Failed to Like Blog');
   }
 };
