@@ -1,4 +1,4 @@
-import { createSlice, createSelector } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
 import { api } from '../src/services/api';
 
 const initialState = [];
@@ -26,8 +26,3 @@ const blogsSlice = createSlice({
 });
 
 export default blogsSlice.reducer;
-
-export const selectBlogById = createSelector(
-  [(state) => state.blogs, (_state, targetBlogId) => targetBlogId],
-  (blogs, targetBlogId) => blogs.find((blog) => blog._id === targetBlogId)
-);
