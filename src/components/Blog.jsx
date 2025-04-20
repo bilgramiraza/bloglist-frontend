@@ -1,18 +1,27 @@
+import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { selectBlogById } from '../../reducers/blogsReducer';
 import { notify } from '../../reducers/notificationReducer';
-import { useLikeBlogMutation, useRemoveBlogMutation } from '../services/blogs';
+import { useGetAllBlogsQuery, useLikeBlogMutation, useRemoveBlogMutation } from '../services/blogs';
 
 const Blog = () => {
   const id = useParams().id;
 
-  const blog = useSelector(state => selectBlogById(state, id));
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const [prevError, setPrevError] = useState(null);
 
   const currentUser = useSelector(state => state.auth.username);
 
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
+  const {
+    data: blogs,
+    error: blogsError,
+    isLoading: blogsLoadingStatus,
+    isError: blogsErrorStatus
+  } = useGetAllBlogsQuery();
+
+  const blog = blogs?.find(blog => blog._id === id);
 
   const [
     likeBlog,
@@ -30,8 +39,15 @@ const Blog = () => {
     }
   ] = useRemoveBlogMutation();
 
+  useEffect(() => {
+    if (blogsErrorStatus && blogsError !== prevError) {
+      dispatch(notify(blogsError || 'An Error Occured', false, 3));
+      setPrevError(blogsError);
+    }
+  }, [dispatch, blogsErrorStatus, blogsError, prevError]);
+
   const deleteButtonStyle = {
-    display: blog.user.username === currentUser ? '' : 'none'
+    display: blog?.user.username === currentUser ? '' : 'none'
   };
 
   const handleLikeClick = async () => {
@@ -54,6 +70,36 @@ const Blog = () => {
       dispatch(notify(err || 'An Error Occured', false, 5));
     }
   };
+
+  if (blogsLoadingStatus) {
+    return (
+      <div>
+        <h4>Loading Title</h4>
+        <p>Loading Author</p>
+        <div>
+          <p>Loading Url</p>
+          <button>
+            Loading
+          </button>
+          <p>Loading User</p>
+          <button>
+            Loading
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (blogsErrorStatus) {
+    return (
+      <div>
+        <h4>Error Loading Blog</h4>
+        <div>
+          <p>Error Loading Blog</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div>
