@@ -27,6 +27,19 @@ export const blogsApi = api.injectEndpoints({
         method: 'PUT',
         body: { ...blog, likes: blog.likes + 1 }
       }),
+      async onQueryStarted(likedBlog, { dispatch, queryFulfilled }) {
+        const patchResult = dispatch(
+          api.util.updateQueryData('getAllBlogs', undefined, (draft) => {
+            const targetBlog = draft.find((blog) => blog._id === likedBlog._id);
+            if (targetBlog) targetBlog.likes++;
+          })
+        );
+        try {
+          await queryFulfilled;
+        } catch {
+          patchResult.undo();
+        }
+      },
       invalidatesTags: (likedBlog) => [{ type: 'Blogs', id: likedBlog?._id }],
       transformErrorResponse: (res) => res?.data?.error || 'Network Issue'
     }),
