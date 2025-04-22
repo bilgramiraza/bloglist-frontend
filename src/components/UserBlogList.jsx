@@ -1,20 +1,59 @@
+import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 import { useParams } from "react-router-dom";
-import { useSelector } from "react-redux";
-import { selectBlogsByUserId } from "../../reducers/usersReducer";
+import { useGetAllUsersQuery } from "../services/users";
+import { notify } from "../../reducers/notificationReducer";
 
 function UserBlogList() {
   const id = useParams().id;
+  const [prevError, setPrevError] = useState(null);
 
-  const userBlogs = useSelector(state => selectBlogsByUserId(state, id));
+  const {
+    data: users,
+    error: usersError,
+    isLoading: usersLoadingStatus,
+    isError: usersErrorStatus
+  } = useGetAllUsersQuery();
 
-  if (!userBlogs)
-    return null;
+  const userBlogs = users?.find((user) => user.id === id);
 
-  const userBlogsList = userBlogs.blogs.map(blog =>
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (usersErrorStatus && usersError !== prevError) {
+      dispatch(notify(usersError || 'An Error Occured', false, 3));
+      setPrevError(usersError);
+    }
+  }, [dispatch, usersErrorStatus, usersError, prevError]);
+
+  if (!userBlogs && !(usersLoadingStatus || usersErrorStatus))
+    return (
+      <div>
+        <p>User Not Found</p>
+      </div>
+    );
+
+  const userBlogsList = userBlogs?.blogs.map(blog =>
     <li key={blog.id}>
       {blog.title}
     </li>
   );
+
+  if (usersLoadingStatus) {
+    return (
+      <div>
+        <p>Loading User Details...</p>
+      </div>
+    );
+  }
+
+  if (usersErrorStatus) {
+    return (
+      <div>
+        <p>Error Loading User Details</p>
+      </div>
+    );
+  }
 
   return (
     <div>
