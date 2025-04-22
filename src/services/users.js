@@ -1,14 +1,17 @@
-import axios from 'axios';
+import { api } from './api';
 
-const baseUrl = '/api/users';
+export const blogsApi = api.injectEndpoints({
+  endpoints: (build) => ({
+    getAllUsers: build.query({
+      query: () => ({ url: '/users' }),
+      providesTags: (results = []) => [
+        'Users',
+        ...results.map(({ _id }) => ({ type: 'Users', id: _id })),
+        { type: 'Users', id: 'LIST' }
+      ],
+      transformErrorResponse: (res) => res?.data?.error || 'Network Issue'
+    })
+  })
+});
 
-const getAll = async () => {
-  try {
-    const response = await axios.get(baseUrl);
-    return response.data;
-  } catch (err) {
-    throw new Error(err?.response?.data?.error || 'Network Issue');
-  }
-};
-
-export { getAll };
+export const { useGetAllUsersQuery } = blogsApi;
