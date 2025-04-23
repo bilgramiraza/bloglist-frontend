@@ -58,7 +58,17 @@ export const blogsApi = api.injectEndpoints({
         url: `/blogs/${blogId}`,
         method: 'DELETE'
       }),
-      invalidatesTags: [{ type: 'Blogs', id: 'LIST' }],
+      async onQueryStarted(blogId, { dispatch, queryFulfilled }) {
+        try {
+          await queryFulfilled;
+          dispatch(
+            api.util.updateQueryData('getAllBlogs', undefined, (draft) => {
+              const idx = draft.findIndex((blog) => blog._id === blogId);
+              if (idx !== -1) draft.splice(idx, 1);
+            })
+          );
+        } catch {}
+      },
       transformErrorResponse: (res) => res?.data?.error || 'Network Issue'
     })
   })
