@@ -11,14 +11,24 @@ export const blogsApi = api.injectEndpoints({
       ],
       transformResponse: (res) => res?.sort((a, b) => b.likes - a.likes),
       transformErrorResponse: (res) => res?.data?.error || 'Network Issue'
-    }), //Optimize Adding New Blogs to single Call
+    }),
     createNewBlog: build.mutation({
       query: (newBlog) => ({
         url: '/blogs',
         method: 'POST',
         body: newBlog
       }),
-      invalidatesTags: [{ type: 'Blogs', id: 'LIST' }],
+      async onQueryStarted(_arg, { dispatch, queryFulfilled }) {
+        try {
+          const { data: createdBlog } = await queryFulfilled;
+          dispatch(
+            api.util.updateQueryData('getAllBlogs', undefined, (draft) => {
+              draft.push(createdBlog);
+              draft.sort((a, b) => b.likes - a.likes);
+            })
+          );
+        } catch {}
+      },
       transformErrorResponse: (res) => res?.data?.error || 'Network Issue'
     }),
     likeBlog: build.mutation({
