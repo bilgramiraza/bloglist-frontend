@@ -50,7 +50,6 @@ export const blogsApi = api.injectEndpoints({
           patchResult.undo();
         }
       },
-      invalidatesTags: (likedBlog) => [{ type: 'Blogs', id: likedBlog?._id }],
       transformErrorResponse: (res) => res?.data?.error || 'Network Issue'
     }),
     removeBlog: build.mutation({
