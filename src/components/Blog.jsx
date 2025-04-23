@@ -103,14 +103,14 @@ const Blog = () => {
 
   return (
     <div>
-      <h4>{blog.title}</h4>
-      <p>{`-${blog.author}`}</p>
+      <h4>{blog?.title}</h4>
+      <p>{`-${blog?.author}`}</p>
       <div>
-        <p data-testid="blogUrl">{blog.url}</p>
+        <p data-testid="blogUrl">{blog?.url}</p>
         <button data-testid="blogLike" onClick={handleLikeClick} disabled={likeLoadingStatus && !likeErrorStatus}>
-          {blog.likes}
+          {blog?.likes}
         </button>
-        <p data-testid="blogUser">Submitted By {blog.user.username}</p>
+        <p data-testid="blogUser">Submitted By {blog?.user.username}</p>
         <button data-testid="blogDelete" style={deleteButtonStyle} onClick={handleDeleteClick} disabled={removeLoadingStatus && !removeErrorStatus}>
           delete
         </button>
