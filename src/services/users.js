@@ -1,6 +1,6 @@
 import { api } from './api';
 
-export const blogsApi = api.injectEndpoints({
+export const usersApi = api.injectEndpoints({
   endpoints: (build) => ({
     getAllUsers: build.query({
       query: () => ({ url: '/users' }),
@@ -14,4 +14,4 @@ export const blogsApi = api.injectEndpoints({
   })
 });
 
-export const { useGetAllUsersQuery } = blogsApi;
+export const { useGetAllUsersQuery } = usersApi;
