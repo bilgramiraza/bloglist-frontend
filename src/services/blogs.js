@@ -69,6 +69,24 @@ export const blogsApi = api.injectEndpoints({
         } catch {}
       },
       transformErrorResponse: (res) => res?.data?.error || 'Network Issue'
+    }),
+    createNewComment: build.mutation({
+      query: ({ blogId, comment }) => ({
+        url: `/blogs/${blogId}/comments`,
+        method: 'POST',
+        body: { comment }
+      }),
+      async onQueryStarted(_arg, { dispatch, queryFulfilled }) {
+        try {
+          const { data: commentedBlog } = await queryFulfilled;
+          dispatch(
+            api.util.updateQueryData('getAllBlogs', undefined, (draft) => {
+              return draft.map((blog) => (blog._id === commentedBlog._id ? commentedBlog : blog));
+            })
+          );
+        } catch {}
+      },
+      transformErrorResponse: (res) => res?.data?.error || 'Network Issue'
     })
   })
 });
@@ -77,5 +95,6 @@ export const {
   useGetAllBlogsQuery,
   useCreateNewBlogMutation,
   useLikeBlogMutation,
-  useRemoveBlogMutation
+  useRemoveBlogMutation,
+  useCreateNewCommentMutation
 } = blogsApi;
