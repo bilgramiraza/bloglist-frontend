@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { notify } from '../../reducers/notificationReducer';
-import { useGetAllBlogsQuery, useLikeBlogMutation, useRemoveBlogMutation } from '../services/blogs';
+import { useCreateNewCommentMutation, useGetAllBlogsQuery, useLikeBlogMutation, useRemoveBlogMutation } from '../services/blogs';
 
 const Blog = () => {
   const id = useParams().id;
@@ -13,6 +13,31 @@ const Blog = () => {
   const [prevError, setPrevError] = useState(null);
 
   const currentUser = useSelector(state => state.auth.username);
+
+  const [comment, setComment] = useState('');
+
+  const handleCommentChange = (e) => setComment(e.target.value);
+
+  const [
+    createNewComment,
+    {
+      isLoading: commentLoadingStatus,
+      isError: commentErrorStatus
+    }
+  ] = useCreateNewCommentMutation();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    /* c8 ignore next */ //Protection vs Weirdos
+    if (!comment) return;
+    try {
+      await createNewComment({ blogId: id, comment }).unwrap();
+      setComment('');
+      dispatch(notify(`Successfully Commented Under Blog(${blog.title})`));
+    } catch (err) {
+      dispatch(notify(err || 'An Error Occured', false, 5));
+    }
+  };
 
   const {
     data: blogs,
@@ -117,10 +142,25 @@ const Blog = () => {
       </div>
       <div>
         <h5>Comments</h5>
+        <div>
+          <form onSubmit={handleSubmit}>
+            <fieldset disabled={commentLoadingStatus && !commentErrorStatus}>
+              <input
+                type="text"
+                name="comment"
+                value={comment}
+                onChange={handleCommentChange}
+              />
+              <button type="submit" disabled={false}>
+                Post Comment
+              </button>
+            </fieldset>
+          </form>
+        </div>
         <ul>
           {!blog?.comments.length
             ? <p>No Comments to Display</p>
-            : blog?.comments.map(comment => <li>{comment}</li>)
+            : blog?.comments.map(comment => <li key={comment}>{comment}</li>)
           }
         </ul>
       </div>
