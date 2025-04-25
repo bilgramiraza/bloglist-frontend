@@ -13,7 +13,7 @@ const Blog = () => {
   const dispatch = useDispatch();
 
   const deleteButtonStyle = {
-    display: blog.user.username === currentUser ? '' : 'none'
+    display: blog?.user.username === currentUser ? '' : 'none'
   };
 
   const handleLikeClick = async () => {
@@ -38,14 +38,14 @@ const Blog = () => {
 
   return (
     <div>
-      <h4>{blog.title}</h4>
-      <p>{`-${blog.author}`}</p>
+      <h4>{blog?.title}</h4>
+      <p>{`-${blog?.author}`}</p>
       <div>
-        <p data-testid="blogUrl">{blog.url}</p>
+        <p data-testid="blogUrl">{blog?.url}</p>
         <button data-testid="blogLike" onClick={handleLikeClick}>
-          {blog.likes}
+          {blog?.likes}
         </button>
-        <p data-testid="blogUser">Submitted By {blog.user.username}</p>
+        <p data-testid="blogUser">Submitted By {blog?.user.username}</p>
         <button data-testid="blogDelete" style={deleteButtonStyle} onClick={handleDeleteClick}>
           delete
         </button>
