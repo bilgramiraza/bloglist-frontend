@@ -50,6 +50,16 @@ const Blog = () => {
           delete
         </button>
       </div>
+      <div>
+        <h5>Comments</h5>
+        <ul>
+          {
+            !blog?.comments.length
+              ? <p> No Comments to Display</p>
+              : blog?.comments.map(comment => <li key={comment}>{comment}</li>)
+          }
+        </ul>
+      </div>
     </div>
   );
 };
