@@ -1,7 +1,8 @@
 import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { deleteBlog, likeBlog, selectBlogById } from '../../reducers/blogsReducer';
+import { commentOnBlog, deleteBlog, likeBlog, selectBlogById } from '../../reducers/blogsReducer';
 import { notify } from '../../reducers/notificationReducer';
+import { useState } from 'react';
 
 const Blog = () => {
   const id = useParams().id;
@@ -12,8 +13,26 @@ const Blog = () => {
 
   const dispatch = useDispatch();
 
+  const [comment, setComment] = useState('');
+
+  const handleComment = (e) => setComment(e.target.value);
+
   const deleteButtonStyle = {
     display: blog?.user.username === currentUser ? '' : 'none'
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    /* c8 ignore next */ //Protection vs Weirdos
+    if (!comment) return;
+
+    try {
+      await dispatch(commentOnBlog(blog._id, comment));
+      dispatch(notify(`Successfully Commented on Blog(${blog.title})`));
+      setComment('');
+    } catch (err) {
+      dispatch(notify(err.message || 'An Error Occured', false, 5));
+    }
   };
 
   const handleLikeClick = async () => {
@@ -52,6 +71,17 @@ const Blog = () => {
       </div>
       <div>
         <h5>Comments</h5>
+        <form onSubmit={handleSubmit}>
+          <input
+            type='text'
+            name='comment'
+            value={comment}
+            onChange={handleComment}
+          />
+          <button type='submit'>
+            Post Comment
+          </button>
+        </form>
         <ul>
           {
             !blog?.comments.length
