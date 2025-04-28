@@ -22,18 +22,14 @@ const blogsSlice = createSlice({
     remove(state, action) {
       return state.filter((blogs) => blogs._id !== action.payload);
     },
-    //Replaces the Liked Blog Object
-    like(state, action) {
-      return state.map((blog) => (blog._id === action.payload._id ? action.payload : blog));
-    },
-    //Replaces the commented Blog Object
-    comment(state, action) {
+    //Replaces the Blog Object
+    update(state, action) {
       return state.map((blog) => (blog._id === action.payload._id ? action.payload : blog));
     }
   }
 });
 
-export const { setBlogs, add, remove, like, comment } = blogsSlice.actions;
+export const { setBlogs, add, remove, update } = blogsSlice.actions;
 
 export default blogsSlice.reducer;
 
@@ -80,7 +76,7 @@ export const likeBlog = (blog) => async (dispatch, getState) => {
   try {
     const token = getState().auth.token;
     const likedBlog = await sendLike(blog, token);
-    dispatch(like(likedBlog));
+    dispatch(update(likedBlog));
   } catch (err) {
     throw new Error(err.message || 'Failed to Like Blog');
   }
@@ -89,7 +85,7 @@ export const likeBlog = (blog) => async (dispatch, getState) => {
 export const commentOnBlog = (blogId, comment) => async (dispatch) => {
   try {
     const commentedBlog = await createComment(blogId, comment);
-    dispatch(comment(commentedBlog));
+    dispatch(update(commentedBlog));
   } catch (err) {
     throw new Error(err.message || 'Failed to comment on Blog');
   }
