@@ -1,4 +1,10 @@
-import { create, getAll, remove as removeBlog, sendLike } from '../src/services/blogs';
+import {
+  create,
+  createComment,
+  getAll,
+  remove as removeBlog,
+  sendLike
+} from '../src/services/blogs';
 import { createSlice, createSelector } from '@reduxjs/toolkit';
 
 const initialState = [];
@@ -19,11 +25,15 @@ const blogsSlice = createSlice({
     //Replaces the Liked Blog Object
     like(state, action) {
       return state.map((blog) => (blog._id === action.payload._id ? action.payload : blog));
+    },
+    //Replaces the commented Blog Object
+    comment(state, action) {
+      return state.map((blog) => (blog._id === action.payload._id ? action.payload : blog));
     }
   }
 });
 
-export const { setBlogs, add, remove, like } = blogsSlice.actions;
+export const { setBlogs, add, remove, like, comment } = blogsSlice.actions;
 
 export default blogsSlice.reducer;
 
@@ -73,5 +83,14 @@ export const likeBlog = (blog) => async (dispatch, getState) => {
     dispatch(like(likedBlog));
   } catch (err) {
     throw new Error(err.message || 'Failed to Like Blog');
+  }
+};
+
+export const commentOnBlog = (blogId, comment) => async (dispatch) => {
+  try {
+    const commentedBlog = await createComment(blogId, comment);
+    dispatch(comment(commentedBlog));
+  } catch (err) {
+    throw new Error(err.message || 'Failed to comment on Blog');
   }
 };

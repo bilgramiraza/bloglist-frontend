@@ -56,4 +56,13 @@ const remove = async (blogId, token) => {
   }
 };
 
-export { getAll, create, sendLike, remove };
+const createComment = async (blogId, comment) => {
+  try {
+    const response = await axios.post(`${baseUrl}/${blogId}/comments`, { comment });
+    return response.data;
+  } catch (err) {
+    throw new Error(err?.response?.data?.error || 'Network Issue');
+  }
+};
+
+export { getAll, create, sendLike, remove, createComment };
