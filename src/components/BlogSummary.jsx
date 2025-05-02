@@ -116,6 +116,15 @@ const BlogSummary = () => {
           delete
         </button>
       </div>
+      <div>
+        <h4>Comments</h4>
+        <ul>
+          {
+            !blog?.comments.length
+              ? <p> No Comments to Display</p>
+              : blog?.comments.map(comment => <li key={comment}>{comment}</li>)}
+        </ul>
+      </div>
     </div>
   );
 };
