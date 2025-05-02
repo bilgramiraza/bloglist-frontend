@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { notify, useNotificationDispatch } from '../reducers/notificationReducer';
-import { getAll, remove, sendLike } from '../services/blogs';
+import { createComment, getAll, remove, sendLike } from '../services/blogs';
 import { useAuthValue } from '../reducers/authReducer';
 import { useParams } from 'react-router-dom';
 
@@ -9,6 +9,7 @@ const BlogSummary = () => {
   const id = useParams().id;
 
   const [prevError, setPrevError] = useState(null);
+  const [comment, setComment] = useState('');
 
   const { username, token } = useAuthValue();
 
@@ -65,12 +66,38 @@ const BlogSummary = () => {
     retry: false,
   });
 
+  const newCommentMutation = useMutation({
+    mutationFn: createComment,
+    onSuccess: updatedBlog => {
+      const blogs = queryClient.getQueryData(['blogList']);
+      queryClient.setQueryData(
+        ['blogList'],
+        blogs.map(blog => blog._id === updatedBlog._id ? updatedBlog : blog)
+      );
+      notify(dispatch, `Successfully Commented on Blog(${updatedBlog.title})`);
+    },
+    onError: err => {
+      notify(dispatch, err.message || 'An Error Occured', false, 5);
+    },
+    retry: false,
+  });
+
+
   useEffect(() => {
     if (blogErrorStatus && blogError?.message !== prevError) {
       notify(dispatch, blogError.message || 'An Error Occured', false, 5);
       setPrevError(blogError.message);
     }
   }, [dispatch, blogErrorStatus, blogError?.message, prevError]);
+
+  const handleComment = (e) => setComment(e.target.value);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!comment) return;
+
+    newCommentMutation.mutate({ blogId: blog._id, comment });
+  };
 
   const handleLikeClick = () => {
     likeBlogMutation.mutate({ token, blog });
@@ -118,6 +145,15 @@ const BlogSummary = () => {
       </div>
       <div>
         <h4>Comments</h4>
+        <form onSubmit={handleSubmit}>
+          <input
+            type='text'
+            name='comment'
+            value={comment}
+            onChange={handleComment}
+          />
+          <button type='submit'>Post Comment</button>
+        </form>
         <ul>
           {
             !blog?.comments.length
