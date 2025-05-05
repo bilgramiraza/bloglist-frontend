@@ -1,4 +1,4 @@
-import { getAll } from '../src/services/users';
+import { getAll } from '../services/users';
 import { createSelector, createSlice } from '@reduxjs/toolkit';
 
 const initialState = [];

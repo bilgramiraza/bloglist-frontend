@@ -1,7 +1,7 @@
 import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { commentOnBlog, deleteBlog, likeBlog, selectBlogById } from '../../reducers/blogsReducer';
-import { notify } from '../../reducers/notificationReducer';
+import { commentOnBlog, deleteBlog, likeBlog, selectBlogById } from '../reducers/blogsReducer';
+import { notify } from '../reducers/notificationReducer';
 import { useState } from 'react';
 
 const Blog = () => {

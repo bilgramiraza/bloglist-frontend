@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { notify } from "../../reducers/notificationReducer";
-import { initializeUsers } from "../../reducers/usersReducer";
+import { notify } from "../reducers/notificationReducer";
+import { initializeUsers } from "../reducers/usersReducer";
 import { Routes, Route } from 'react-router-dom';
 import UsersSummary from "./UsersSummary";
 import UserBlogList from "./UserBlogList";

@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from "react-redux";
-import { notify } from "../../reducers/notificationReducer";
-import { setUser, clearUser } from "../../reducers/authReducer";
+import { notify } from "../reducers/notificationReducer";
+import { setUser, clearUser } from "../reducers/authReducer";
 import { useLocation, useNavigate } from 'react-router-dom';
 
 function Login() {

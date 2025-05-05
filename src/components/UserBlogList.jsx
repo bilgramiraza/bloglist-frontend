@@ -1,6 +1,6 @@
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { selectBlogsByUserId } from "../../reducers/usersReducer";
+import { selectBlogsByUserId } from "../reducers/usersReducer";
 
 function UserBlogList() {
   const id = useParams().id;

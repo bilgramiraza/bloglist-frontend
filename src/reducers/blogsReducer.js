@@ -1,10 +1,4 @@
-import {
-  create,
-  createComment,
-  getAll,
-  remove as removeBlog,
-  sendLike
-} from '../src/services/blogs';
+import { create, createComment, getAll, remove as removeBlog, sendLike } from '../services/blogs';
 import { createSlice, createSelector } from '@reduxjs/toolkit';
 
 const initialState = [];

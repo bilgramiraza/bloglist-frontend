@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { notify } from '../../reducers/notificationReducer';
-import { loginUser } from '../../reducers/authReducer';
+import { notify } from '../reducers/notificationReducer';
+import { loginUser } from '../reducers/authReducer';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 const LoginForm = () => {

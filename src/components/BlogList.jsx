@@ -1,5 +1,5 @@
 import { useSelector } from 'react-redux';
-import { selectSortedBlogs } from '../../reducers/blogsReducer';
+import { selectSortedBlogs } from '../reducers/blogsReducer';
 import { Link } from 'react-router-dom';
 
 const BlogList = () => {
