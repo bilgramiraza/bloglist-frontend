@@ -1,15 +1,14 @@
 import { create, createComment, getAll, remove as removeBlog, sendLike } from '../services/blogs';
-import { createSlice, createSelector } from '@reduxjs/toolkit';
-
-const initialState = [];
+import { createSlice, createSelector, createAsyncThunk } from '@reduxjs/toolkit';
 
 const blogsSlice = createSlice({
   name: 'blogs',
-  initialState,
+  initialState: {
+    items: [],
+    status: 'idle', //'idle' | 'loading' | 'succeeded' | 'failed'
+    error: null
+  },
   reducers: {
-    setBlogs(_state, action) {
-      return action.payload;
-    },
     add(state, action) {
       state.push(action.payload);
     },
@@ -20,31 +19,50 @@ const blogsSlice = createSlice({
     update(state, action) {
       return state.map((blog) => (blog._id === action.payload._id ? action.payload : blog));
     }
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchBlogs.pending, (state) => {
+        state.status = 'loading';
+        state.error = null;
+      })
+      .addCase(fetchBlogs.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        state.items = action.payload;
+      })
+      .addCase(fetchBlogs.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload || action.error.message;
+      });
   }
 });
 
-export const { setBlogs, add, remove, update } = blogsSlice.actions;
+export const { add, remove, update } = blogsSlice.actions;
 
 export default blogsSlice.reducer;
 
 export const selectSortedBlogs = createSelector(
   (state) => state.blogs,
-  (blogs) => [...blogs].sort((a, b) => b.likes - a.likes)
+  ({ status, error, items }) => ({
+    status,
+    error,
+    blogs: [...items].sort((a, b) => b.likes - a.likes)
+  })
 );
 
 export const selectBlogById = createSelector(
-  [(state) => state.blogs, (_state, targetBlogId) => targetBlogId],
+  [(state) => state.blogs.items, (_state, targetBlogId) => targetBlogId],
   (blogs, targetBlogId) => blogs.find((blog) => blog._id === targetBlogId)
 );
 
-export const initializeBlogs = () => async (dispatch) => {
+export const fetchBlogs = createAsyncThunk('blogs/fetchAll', async (_, { rejectWithValue }) => {
   try {
     const blogs = await getAll();
-    dispatch(setBlogs(blogs));
+    return blogs;
   } catch (err) {
-    throw new Error(err.message || 'Failed to Get Blogs');
+    return rejectWithValue(err.message || 'Failed to Get Blogs');
   }
-};
+});
 
 export const newBlog = (blog) => async (dispatch, getState) => {
   try {

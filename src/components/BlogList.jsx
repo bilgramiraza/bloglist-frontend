@@ -1,9 +1,17 @@
-import { useSelector } from 'react-redux';
-import { selectSortedBlogs } from '../reducers/blogsReducer';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchBlogs, selectSortedBlogs } from '../reducers/blogsReducer';
 import { Link } from 'react-router-dom';
+import { useEffect } from 'react';
+import { notify } from '../reducers/notificationReducer';
 
 const BlogList = () => {
-  const blogs = useSelector(selectSortedBlogs);
+  const {
+    status,
+    blogs,
+    error
+  } = useSelector(selectSortedBlogs);
+
+  const dispatch = useDispatch();
 
   const blogStyle = {
     width: '75%',
@@ -21,6 +29,27 @@ const BlogList = () => {
     borderWidth: 1,
     marginBottom: 2
   };
+
+  useEffect(() => {
+    if (status === 'idle') dispatch(fetchBlogs());
+    if (status === 'failed') dispatch(notify(error || 'An Error Occured', false, 3));
+  }, [status, dispatch]);
+
+  if (status === 'loading') {
+    return (
+      <div data-testid="bloglist" style={blogStyle}>
+        <p>Loading Blogs...</p>
+      </div>
+    );
+  }
+
+  if (status === 'failed') {
+    return (
+      <div data-testid="bloglist" style={blogStyle}>
+        <p>Failed to Load Blogs</p>
+      </div>
+    );
+  }
 
   if (!blogs || !blogs.length) {
     return (
