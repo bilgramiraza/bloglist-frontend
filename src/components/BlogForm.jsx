@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { newBlog } from '../reducers/blogsReducer';
+import { useDispatch, useSelector } from 'react-redux';
+import { createNewBlog } from '../reducers/blogsReducer';
 import { notify } from '../reducers/notificationReducer';
 import PropTypes from 'prop-types';
 
@@ -9,6 +9,10 @@ const BlogForm = ({ onClose }) => {
   const [title, setTitle] = useState('');
   const [author, setAuthor] = useState('');
 
+  const {
+    status: { create: status },
+    error
+  } = useSelector(state => state.blogs);
   const dispatch = useDispatch();
 
   const handleAuthorChange = (e) => setAuthor(e.target.value);
@@ -20,14 +24,14 @@ const BlogForm = ({ onClose }) => {
     /* c8 ignore next */ //Protection vs Weirdos
     if (!title || !author || !url) return;
     try {
-      await dispatch(newBlog({ title, author, url }));
+      await dispatch(createNewBlog({ title, author, url })).unwrap();
+      dispatch(notify(`Blog(${title}) Created Successfully`));
       setTitle('');
       setAuthor('');
       setUrl('');
-      dispatch(notify(`Blog(${title}) Created Successfully`));
       onClose();
     } catch (err) {
-      dispatch(notify(err.message || 'An Error Occured', false, 5));
+      dispatch(notify(error || err || 'An Error Occured', false, 5));
     }
   };
 
@@ -35,33 +39,35 @@ const BlogForm = ({ onClose }) => {
     <div>
       <h2>New Blog</h2>
       <form onSubmit={handleSubmit}>
-        <label>
-          Title:
-          <input
-            data-testid="title"
-            type="text"
-            name="title"
-            value={title}
-            onChange={handleTitleChange}
-          />
-        </label>
-        <label>
-          Author:
-          <input
-            data-testid="author"
-            type="text"
-            name="author"
-            value={author}
-            onChange={handleAuthorChange}
-          />
-        </label>
-        <label>
-          Url:
-          <input data-testid="url" type="text" name="url" value={url} onChange={handleUrlChange} />
-        </label>
-        <button data-testid="create" type="submit" disabled={!title || !author || !url}>
-          Create
-        </button>
+        <fieldset disabled={status === 'loading'}>
+          <label>
+            Title:
+            <input
+              data-testid="title"
+              type="text"
+              name="title"
+              value={title}
+              onChange={handleTitleChange}
+            />
+          </label>
+          <label>
+            Author:
+            <input
+              data-testid="author"
+              type="text"
+              name="author"
+              value={author}
+              onChange={handleAuthorChange}
+            />
+          </label>
+          <label>
+            Url:
+            <input data-testid="url" type="text" name="url" value={url} onChange={handleUrlChange} />
+          </label>
+          <button data-testid="create" type="submit" disabled={!title || !author || !url}>
+            Create
+          </button>
+        </fieldset>
       </form>
     </div>
   );

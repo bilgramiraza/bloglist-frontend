@@ -6,7 +6,7 @@ import { notify } from '../reducers/notificationReducer';
 
 const BlogList = () => {
   const {
-    status,
+    status: { fetch: status },
     blogs,
     error
   } = useSelector(selectSortedBlogs);
@@ -31,7 +31,7 @@ const BlogList = () => {
   };
 
   useEffect(() => {
-    if (status === 'idle') dispatch(fetchBlogs());
+    if (status === 'initial') dispatch(fetchBlogs());
     if (status === 'failed') dispatch(notify(error || 'An Error Occured', false, 3));
   }, [status, dispatch]);
 
