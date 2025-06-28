@@ -5,13 +5,14 @@ const blogsSlice = createSlice({
   name: 'blogs',
   initialState: {
     items: [],
-    status: 'idle', //'idle' | 'loading' | 'succeeded' | 'failed'
+    status: {
+      //'initial' | 'idle' | 'loading' | 'succeeded' | 'failed'
+      fetch: 'initial',
+      create: 'initial'
+    },
     error: null
   },
   reducers: {
-    add(state, action) {
-      state.push(action.payload);
-    },
     remove(state, action) {
       return state.filter((blogs) => blogs._id !== action.payload);
     },
@@ -23,21 +24,37 @@ const blogsSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(fetchBlogs.pending, (state) => {
-        state.status = 'loading';
+        state.status.fetch = 'loading';
         state.error = null;
       })
       .addCase(fetchBlogs.fulfilled, (state, action) => {
-        state.status = 'succeeded';
+        state.status.fetch = 'succeeded';
         state.items = action.payload;
+        state.status.fetch = 'idle';
       })
       .addCase(fetchBlogs.rejected, (state, action) => {
-        state.status = 'failed';
+        state.status.fetch = 'failed';
         state.error = action.payload || action.error.message;
+        state.status.fetch = 'idle';
+      })
+      .addCase(createNewBlog.pending, (state) => {
+        state.status.create = 'loading';
+        state.error = null;
+      })
+      .addCase(createNewBlog.fulfilled, (state, action) => {
+        state.status.create = 'succeeded';
+        state.items.push(action.payload);
+        state.status.create = 'idle';
+      })
+      .addCase(createNewBlog.rejected, (state, action) => {
+        state.status.create = 'failed';
+        state.error = action.payload || action.error.message;
+        state.status.create = 'idle';
       });
   }
 });
 
-export const { add, remove, update } = blogsSlice.actions;
+export const { remove, update } = blogsSlice.actions;
 
 export default blogsSlice.reducer;
 
@@ -64,15 +81,18 @@ export const fetchBlogs = createAsyncThunk('blogs/fetchAll', async (_, { rejectW
   }
 });
 
-export const newBlog = (blog) => async (dispatch, getState) => {
-  try {
-    const token = getState().auth.token;
-    const newBlog = await create(blog, token);
-    dispatch(add(newBlog));
-  } catch (err) {
-    throw new Error(err.message || 'Failed to Create Blog');
+export const createNewBlog = createAsyncThunk(
+  'blogs/createNewBlog',
+  async (blog, { getState, rejectWithValue }) => {
+    try {
+      const token = getState().auth.token;
+      const newBlog = await create(blog, token);
+      return newBlog;
+    } catch (err) {
+      return rejectWithValue(err.message || 'Failed to Create Blog');
+    }
   }
-};
+);
 
 export const deleteBlog = (blogId) => async (dispatch, getState) => {
   try {
