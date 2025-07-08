@@ -10,16 +10,12 @@ const blogsSlice = createSlice({
       fetch: 'initial',
       create: 'initial',
       delete: 'initial',
-      like: 'initial'
+      like: 'initial',
+      comment: 'initial'
     },
     error: null
   },
-  reducers: {
-    //Replaces the Blog Object
-    update(state, action) {
-      return state.map((blog) => (blog._id === action.payload._id ? action.payload : blog));
-    }
-  },
+  reducers: {},
   extraReducers: (builder) => {
     builder
       .addCase(fetchBlogs.pending, (state) => {
@@ -79,11 +75,25 @@ const blogsSlice = createSlice({
         state.status.like = 'failed';
         state.error = action.payload || action.error.message;
         state.status.like = 'idle';
+      })
+      .addCase(commentOnBlog.pending, (state) => {
+        state.status.comment = 'loading';
+        state.error = null;
+      })
+      .addCase(commentOnBlog.fulfilled, (state, action) => {
+        state.status.comment = 'succeeded';
+        state.items = state.items.map((blog) =>
+          blog._id === action.payload._id ? action.payload : blog
+        );
+        state.status.comment = 'idle';
+      })
+      .addCase(commentOnBlog.rejected, (state, action) => {
+        state.status.comment = 'failed';
+        state.error = action.payload || action.error.message;
+        state.status.comment = 'idle';
       });
   }
 });
-
-export const { update } = blogsSlice.actions;
 
 export default blogsSlice.reducer;
 
@@ -153,11 +163,14 @@ export const likeBlog = createAsyncThunk(
   }
 );
 
-export const commentOnBlog = (blogId, comment) => async (dispatch) => {
-  try {
-    const commentedBlog = await createComment(blogId, comment);
-    dispatch(update(commentedBlog));
-  } catch (err) {
-    throw new Error(err.message || 'Failed to comment on Blog');
+export const commentOnBlog = createAsyncThunk(
+  'blogs/commentOnBlog',
+  async ({ blogId, comment }, { rejectWithValue }) => {
+    try {
+      const commentedBlog = await createComment(blogId, comment);
+      return commentedBlog;
+    } catch (err) {
+      return rejectWithValue(err.message || 'Failed to Like Blog');
+    }
   }
-};
+);

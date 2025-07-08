@@ -10,7 +10,8 @@ const Blog = () => {
   const {
     status: {
       delete: deleteStatus,
-      like: likeStatus
+      like: likeStatus,
+      comment: commentStatus
     },
     error,
     blog
@@ -35,11 +36,11 @@ const Blog = () => {
     if (!comment) return;
 
     try {
-      await dispatch(commentOnBlog(blog._id, comment));
+      await dispatch(commentOnBlog({ blogId: blog._id, comment })).unwrap();
       dispatch(notify(`Successfully Commented on Blog(${blog.title})`));
       setComment('');
     } catch (err) {
-      dispatch(notify(err.message || 'An Error Occured', false, 5));
+      dispatch(notify(err.message || err || 'An Error Occured', false, 5));
     }
   };
 
@@ -90,15 +91,17 @@ const Blog = () => {
       <div>
         <h5>Comments</h5>
         <form onSubmit={handleSubmit}>
-          <input
-            type='text'
-            name='comment'
-            value={comment}
-            onChange={handleComment}
-          />
-          <button type='submit'>
-            Post Comment
-          </button>
+          <fieldset disabled={commentStatus === 'loading'}>
+            <input
+              type='text'
+              name='comment'
+              value={comment}
+              onChange={handleComment}
+            />
+            <button type='submit'>
+              Post Comment
+            </button>
+          </fieldset>
         </form>
         <ul>
           {
