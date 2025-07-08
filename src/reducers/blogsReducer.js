@@ -8,14 +8,12 @@ const blogsSlice = createSlice({
     status: {
       //'initial' | 'idle' | 'loading' | 'succeeded' | 'failed'
       fetch: 'initial',
-      create: 'initial'
+      create: 'initial',
+      delete: 'initial'
     },
     error: null
   },
   reducers: {
-    remove(state, action) {
-      return state.filter((blogs) => blogs._id !== action.payload);
-    },
     //Replaces the Blog Object
     update(state, action) {
       return state.map((blog) => (blog._id === action.payload._id ? action.payload : blog));
@@ -50,11 +48,25 @@ const blogsSlice = createSlice({
         state.status.create = 'failed';
         state.error = action.payload || action.error.message;
         state.status.create = 'idle';
+      })
+      .addCase(deleteBlog.pending, (state) => {
+        state.status.delete = 'loading';
+        state.error = null;
+      })
+      .addCase(deleteBlog.fulfilled, (state, action) => {
+        state.status.delete = 'succeeded';
+        state.items = state.items.filter((blogs) => blogs._id !== action.payload);
+        state.status.delete = 'idle';
+      })
+      .addCase(deleteBlog.rejected, (state, action) => {
+        state.status.delete = 'failed';
+        state.error = action.payload || action.error.message;
+        state.status.delete = 'idle';
       });
   }
 });
 
-export const { remove, update } = blogsSlice.actions;
+export const { update } = blogsSlice.actions;
 
 export default blogsSlice.reducer;
 
@@ -68,8 +80,12 @@ export const selectSortedBlogs = createSelector(
 );
 
 export const selectBlogById = createSelector(
-  [(state) => state.blogs.items, (_state, targetBlogId) => targetBlogId],
-  (blogs, targetBlogId) => blogs.find((blog) => blog._id === targetBlogId)
+  [(state) => state.blogs, (_state, targetBlogId) => targetBlogId],
+  ({ status, error, items }, targetBlogId) => ({
+    status,
+    error,
+    blog: [...items].find((blog) => blog._id === targetBlogId)
+  })
 );
 
 export const fetchBlogs = createAsyncThunk('blogs/fetchAll', async (_, { rejectWithValue }) => {
@@ -94,15 +110,18 @@ export const createNewBlog = createAsyncThunk(
   }
 );
 
-export const deleteBlog = (blogId) => async (dispatch, getState) => {
-  try {
-    const token = getState().auth.token;
-    await removeBlog(blogId, token);
-    dispatch(remove(blogId));
-  } catch (err) {
-    throw new Error(err.message || 'Failed to Delete Blog');
+export const deleteBlog = createAsyncThunk(
+  'blogs/deleteBlog',
+  async (blogId, { getState, rejectWithValue }) => {
+    try {
+      const token = getState().auth.token;
+      await removeBlog(blogId, token);
+      return blogId;
+    } catch (err) {
+      return rejectWithValue(err.message || 'Failed to Delete Blog');
+    }
   }
-};
+);
 
 export const likeBlog = (blog) => async (dispatch, getState) => {
   try {

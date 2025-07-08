@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { commentOnBlog, deleteBlog, likeBlog, selectBlogById } from '../reducers/blogsReducer';
 import { notify } from '../reducers/notificationReducer';
@@ -7,11 +7,16 @@ import { useState } from 'react';
 const Blog = () => {
   const id = useParams().id;
 
-  const blog = useSelector(state => selectBlogById(state, id));
+  const {
+    status: { delete: deleteStatus },
+    error,
+    blog
+  } = useSelector(state => selectBlogById(state, id));
 
   const currentUser = useSelector(state => state.auth.username);
 
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const [comment, setComment] = useState('');
 
@@ -48,10 +53,11 @@ const Blog = () => {
     const deleteConfirm = window.confirm(`Delete ${blog.title} By ${blog.author}?`);
     if (!deleteConfirm) return;
     try {
-      await dispatch(deleteBlog(blog._id));
+      await dispatch(deleteBlog(blog._id)).unwrap();
       dispatch(notify(`Blog(${blog.title} By ${blog.author}) Deleted Successfully`));
+      setTimeout(() => navigate('/'), 500);
     } catch (err) {
-      dispatch(notify(err.message || 'An Error Occured', false, 5));
+      dispatch(notify(error || err || 'An Error Occured', false, 5));
     }
   };
 
@@ -65,8 +71,13 @@ const Blog = () => {
           {blog?.likes}
         </button>
         <p data-testid="blogUser">Submitted By {blog?.user.username}</p>
-        <button data-testid="blogDelete" style={deleteButtonStyle} onClick={handleDeleteClick}>
-          delete
+        <button
+          data-testid="blogDelete"
+          style={deleteButtonStyle}
+          onClick={handleDeleteClick}
+          disabled={deleteStatus === 'loading'}
+        >
+          {deleteStatus === 'loading' ? 'deleting' : 'delete'}
         </button>
       </div>
       <div>
