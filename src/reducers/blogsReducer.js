@@ -9,7 +9,8 @@ const blogsSlice = createSlice({
       //'initial' | 'idle' | 'loading' | 'succeeded' | 'failed'
       fetch: 'initial',
       create: 'initial',
-      delete: 'initial'
+      delete: 'initial',
+      like: 'initial'
     },
     error: null
   },
@@ -62,6 +63,22 @@ const blogsSlice = createSlice({
         state.status.delete = 'failed';
         state.error = action.payload || action.error.message;
         state.status.delete = 'idle';
+      })
+      .addCase(likeBlog.pending, (state) => {
+        state.status.like = 'loading';
+        state.error = null;
+      })
+      .addCase(likeBlog.fulfilled, (state, action) => {
+        state.status.like = 'succeeded';
+        state.items = state.items.map((blog) =>
+          blog._id === action.payload._id ? action.payload : blog
+        );
+        state.status.like = 'idle';
+      })
+      .addCase(likeBlog.rejected, (state, action) => {
+        state.status.like = 'failed';
+        state.error = action.payload || action.error.message;
+        state.status.like = 'idle';
       });
   }
 });
@@ -123,15 +140,18 @@ export const deleteBlog = createAsyncThunk(
   }
 );
 
-export const likeBlog = (blog) => async (dispatch, getState) => {
-  try {
-    const token = getState().auth.token;
-    const likedBlog = await sendLike(blog, token);
-    dispatch(update(likedBlog));
-  } catch (err) {
-    throw new Error(err.message || 'Failed to Like Blog');
+export const likeBlog = createAsyncThunk(
+  'blogs/likeBlog',
+  async (blog, { getState, rejectWithValue }) => {
+    try {
+      const token = getState().auth.token;
+      const likedBlog = await sendLike(blog, token);
+      return likedBlog;
+    } catch (err) {
+      return rejectWithValue(err.message || 'Failed to Like Blog');
+    }
   }
-};
+);
 
 export const commentOnBlog = (blogId, comment) => async (dispatch) => {
   try {

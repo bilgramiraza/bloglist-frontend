@@ -8,7 +8,10 @@ const Blog = () => {
   const id = useParams().id;
 
   const {
-    status: { delete: deleteStatus },
+    status: {
+      delete: deleteStatus,
+      like: likeStatus
+    },
     error,
     blog
   } = useSelector(state => selectBlogById(state, id));
@@ -42,10 +45,10 @@ const Blog = () => {
 
   const handleLikeClick = async () => {
     try {
-      await dispatch(likeBlog(blog));
+      await dispatch(likeBlog(blog)).unwrap();
       dispatch(notify(`Blog(${blog.title}) Liked Successfully`));
     } catch (err) {
-      dispatch(notify(err.message || 'An Error Occured', false, 5));
+      dispatch(notify(error || err || 'An Error Occured', false, 5));
     }
   };
 
@@ -67,7 +70,11 @@ const Blog = () => {
       <p>{`-${blog?.author}`}</p>
       <div>
         <p data-testid="blogUrl">{blog?.url}</p>
-        <button data-testid="blogLike" onClick={handleLikeClick}>
+        <button
+          data-testid="blogLike"
+          onClick={handleLikeClick}
+          disabled={likeStatus === 'loading'}
+        >
           {blog?.likes}
         </button>
         <p data-testid="blogUser">Submitted By {blog?.user.username}</p>
