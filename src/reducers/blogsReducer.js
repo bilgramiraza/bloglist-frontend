@@ -1,17 +1,17 @@
 import { create, createComment, getAll, remove as removeBlog, sendLike } from '../services/blogs';
 import { createSlice, createSelector, createAsyncThunk } from '@reduxjs/toolkit';
+import { STATUS } from '../utils/constants';
 
 const blogsSlice = createSlice({
   name: 'blogs',
   initialState: {
     items: [],
     status: {
-      //'initial' | 'idle' | 'loading' | 'succeeded' | 'failed'
-      fetch: 'initial',
-      create: 'initial',
-      delete: 'initial',
-      like: 'initial',
-      comment: 'initial'
+      fetch: STATUS.INITIAL,
+      create: STATUS.INITIAL,
+      delete: STATUS.INITIAL,
+      like: STATUS.INITIAL,
+      comment: STATUS.INITIAL
     },
     error: null
   },
@@ -19,78 +19,78 @@ const blogsSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(fetchBlogs.pending, (state) => {
-        state.status.fetch = 'loading';
+        state.status.fetch = STATUS.LOADING;
         state.error = null;
       })
       .addCase(fetchBlogs.fulfilled, (state, action) => {
-        state.status.fetch = 'succeeded';
+        state.status.fetch = STATUS.SUCCEEDED;
         state.items = action.payload;
-        state.status.fetch = 'idle';
+        state.status.fetch = STATUS.IDLE;
       })
       .addCase(fetchBlogs.rejected, (state, action) => {
-        state.status.fetch = 'failed';
+        state.status.fetch = STATUS.FAILED;
         state.error = action.payload || action.error.message;
-        state.status.fetch = 'idle';
+        state.status.fetch = STATUS.IDLE;
       })
       .addCase(createNewBlog.pending, (state) => {
-        state.status.create = 'loading';
+        state.status.create = STATUS.LOADING;
         state.error = null;
       })
       .addCase(createNewBlog.fulfilled, (state, action) => {
-        state.status.create = 'succeeded';
+        state.status.create = STATUS.SUCCEEDED;
         state.items.push(action.payload);
-        state.status.create = 'idle';
+        state.status.create = STATUS.IDLE;
       })
       .addCase(createNewBlog.rejected, (state, action) => {
-        state.status.create = 'failed';
+        state.status.create = STATUS.FAILED;
         state.error = action.payload || action.error.message;
-        state.status.create = 'idle';
+        state.status.create = STATUS.IDLE;
       })
       .addCase(deleteBlog.pending, (state) => {
-        state.status.delete = 'loading';
+        state.status.delete = STATUS.LOADING;
         state.error = null;
       })
       .addCase(deleteBlog.fulfilled, (state, action) => {
-        state.status.delete = 'succeeded';
+        state.status.delete = STATUS.SUCCEEDED;
         state.items = state.items.filter((blogs) => blogs._id !== action.payload);
-        state.status.delete = 'idle';
+        state.status.delete = STATUS.IDLE;
       })
       .addCase(deleteBlog.rejected, (state, action) => {
-        state.status.delete = 'failed';
+        state.status.delete = STATUS.FAILED;
         state.error = action.payload || action.error.message;
-        state.status.delete = 'idle';
+        state.status.delete = STATUS.IDLE;
       })
       .addCase(likeBlog.pending, (state) => {
-        state.status.like = 'loading';
+        state.status.like = STATUS.LOADING;
         state.error = null;
       })
       .addCase(likeBlog.fulfilled, (state, action) => {
-        state.status.like = 'succeeded';
+        state.status.like = STATUS.SUCCEEDED;
         state.items = state.items.map((blog) =>
           blog._id === action.payload._id ? action.payload : blog
         );
-        state.status.like = 'idle';
+        state.status.like = STATUS.IDLE;
       })
       .addCase(likeBlog.rejected, (state, action) => {
-        state.status.like = 'failed';
+        state.status.like = STATUS.FAILED;
         state.error = action.payload || action.error.message;
-        state.status.like = 'idle';
+        state.status.like = STATUS.IDLE;
       })
       .addCase(commentOnBlog.pending, (state) => {
-        state.status.comment = 'loading';
+        state.status.comment = STATUS.LOADING;
         state.error = null;
       })
       .addCase(commentOnBlog.fulfilled, (state, action) => {
-        state.status.comment = 'succeeded';
+        state.status.comment = STATUS.SUCCEEDED;
         state.items = state.items.map((blog) =>
           blog._id === action.payload._id ? action.payload : blog
         );
-        state.status.comment = 'idle';
+        state.status.comment = STATUS.IDLE;
       })
       .addCase(commentOnBlog.rejected, (state, action) => {
-        state.status.comment = 'failed';
+        state.status.comment = STATUS.FAILED;
         state.error = action.payload || action.error.message;
-        state.status.comment = 'idle';
+        state.status.comment = STATUS.IDLE;
       });
   }
 });

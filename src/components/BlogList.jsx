@@ -3,6 +3,7 @@ import { fetchBlogs, selectSortedBlogs } from '../reducers/blogsReducer';
 import { Link } from 'react-router-dom';
 import { useEffect } from 'react';
 import { notify } from '../reducers/notificationReducer';
+import { STATUS } from '../utils/constants';
 
 const BlogList = () => {
   const {
@@ -31,11 +32,11 @@ const BlogList = () => {
   };
 
   useEffect(() => {
-    if (status === 'initial') dispatch(fetchBlogs());
-    if (status === 'failed') dispatch(notify(error || 'An Error Occured', false, 3));
+    if (status === STATUS.INITIAL) dispatch(fetchBlogs());
+    if (status === STATUS.FAILED) dispatch(notify(error || 'An Error Occured', false, 3));
   }, [status, dispatch]);
 
-  if (status === 'loading') {
+  if (status === STATUS.LOADING) {
     return (
       <div data-testid="bloglist" style={blogStyle}>
         <p>Loading Blogs...</p>
@@ -43,7 +44,7 @@ const BlogList = () => {
     );
   }
 
-  if (status === 'failed') {
+  if (status === STATUS.FAILED) {
     return (
       <div data-testid="bloglist" style={blogStyle}>
         <p>Failed to Load Blogs</p>

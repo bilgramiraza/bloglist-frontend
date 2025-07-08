@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { createNewBlog } from '../reducers/blogsReducer';
 import { notify } from '../reducers/notificationReducer';
 import PropTypes from 'prop-types';
+import { STATUS } from '../utils/constants';
 
 const BlogForm = ({ onClose }) => {
   const [url, setUrl] = useState('');
@@ -39,7 +40,7 @@ const BlogForm = ({ onClose }) => {
     <div>
       <h2>New Blog</h2>
       <form onSubmit={handleSubmit}>
-        <fieldset disabled={status === 'loading'}>
+        <fieldset disabled={status === STATUS.LOADING}>
           <label>
             Title:
             <input

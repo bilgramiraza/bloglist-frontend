@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { commentOnBlog, deleteBlog, likeBlog, selectBlogById } from '../reducers/blogsReducer';
 import { notify } from '../reducers/notificationReducer';
 import { useState } from 'react';
+import { STATUS } from '../utils/constants';
 
 const Blog = () => {
   const id = useParams().id;
@@ -74,7 +75,7 @@ const Blog = () => {
         <button
           data-testid="blogLike"
           onClick={handleLikeClick}
-          disabled={likeStatus === 'loading'}
+          disabled={likeStatus === STATUS.LOADING}
         >
           {blog?.likes}
         </button>
@@ -83,15 +84,15 @@ const Blog = () => {
           data-testid="blogDelete"
           style={deleteButtonStyle}
           onClick={handleDeleteClick}
-          disabled={deleteStatus === 'loading'}
+          disabled={deleteStatus === STATUS.LOADING}
         >
-          {deleteStatus === 'loading' ? 'deleting' : 'delete'}
+          {deleteStatus === STATUS.LOADING ? 'deleting' : 'delete'}
         </button>
       </div>
       <div>
         <h5>Comments</h5>
         <form onSubmit={handleSubmit}>
-          <fieldset disabled={commentStatus === 'loading'}>
+          <fieldset disabled={commentStatus === STATUS.LOADING}>
             <input
               type='text'
               name='comment'
