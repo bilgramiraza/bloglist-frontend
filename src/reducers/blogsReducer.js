@@ -111,7 +111,7 @@ export const selectBlogById = createSelector(
   ({ status, error, items }, targetBlogId) => ({
     status,
     error,
-    blog: [...items].find((blog) => blog._id === targetBlogId)
+    blog: items.find((blog) => blog._id === targetBlogId)
   })
 );
 
