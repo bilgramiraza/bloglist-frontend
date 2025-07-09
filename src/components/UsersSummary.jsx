@@ -1,11 +1,51 @@
-import { useSelector } from "react-redux";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import { STATUS } from "../utils/constants";
+import { notify } from "../reducers/notificationReducer";
 
 function UsersSummary() {
-  const users = useSelector(state => state.users);
+  const dispatch = useDispatch();
+
+  const {
+    status: { fetch: fetchStatus },
+    error,
+    items: users
+  } = useSelector(state => state.users);
+
+  useEffect(() => {
+    if (fetchStatus === STATUS.FAILED) dispatch(notify(error || 'An Error Occured', false, 3));
+  }, [fetchStatus, dispatch]);
+
+  if (fetchStatus === STATUS.LOADING) {
+    return (
+      <div>
+        <h4></h4>
+        <p>Loading Users...</p>
+      </div>
+    );
+  }
+
+  if (fetchStatus === STATUS.FAILED) {
+    return (
+      <div>
+        <h4></h4>
+        <p>Failed to Load Users due to error:{error}</p>
+      </div>
+    );
+  }
+
+  if (!users) {
+    return (
+      <div>
+        <h4></h4>
+        <p>Unable to Fetch Users</p>
+      </div>
+    );
+  }
 
   const userTable = users === null
-    ? (<tr></tr>)
+    ? (<tr><td>No Users Found</td></tr>)
     : users.map(user => {
       return (
         <tr key={user.id}>

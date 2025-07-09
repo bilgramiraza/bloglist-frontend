@@ -1,16 +1,62 @@
 import { useParams } from "react-router-dom";
-import { useSelector } from "react-redux";
-import { selectBlogsByUserId } from "../reducers/usersReducer";
+import { useDispatch, useSelector } from "react-redux";
+import { selectUserById } from "../reducers/usersReducer";
+import { useEffect } from "react";
+import { notify } from "../reducers/notificationReducer";
+import { STATUS } from "../utils/constants";
 
 function UserBlogList() {
   const id = useParams().id;
+  const dispatch = useDispatch();
 
-  const userBlogs = useSelector(state => selectBlogsByUserId(state, id));
+  const {
+    status: { fetch: fetchStatus },
+    error,
+    user
+  } = useSelector(state => selectUserById(state, id));
 
-  if (!userBlogs)
-    return null;
+  useEffect(() => {
+    if (fetchStatus === STATUS.FAILED) dispatch(notify(error || 'An Error Occured', false, 3));
+  }, [fetchStatus, dispatch]);
 
-  const userBlogsList = userBlogs.blogs.map(blog =>
+
+  if (fetchStatus === STATUS.LOADING) {
+    return (
+      <div>
+        <h4></h4>
+        <p>Loading User Details...</p>
+      </div>
+    );
+  }
+
+  if (fetchStatus === STATUS.FAILED) {
+    return (
+      <div>
+        <h4></h4>
+        <p>Failed to Load User Details due to error:{error}</p>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div>
+        <h4></h4>
+        <p>Unable to Fetch User</p>
+      </div>
+    );
+  }
+
+  if (!user.blogs.length) {
+    return (
+      <div>
+        <h4>{user.name}</h4>
+        <p>No Blogs to Display</p>
+      </div>
+    );
+  }
+
+  const userBlogsList = user.blogs.map(blog =>
     <li key={blog.id}>
       {blog.title}
     </li>
@@ -18,7 +64,7 @@ function UserBlogList() {
 
   return (
     <div>
-      <h4>{userBlogs.name}</h4>
+      <h4>{user.name}</h4>
       <ul>
         {userBlogsList}
       </ul>

@@ -1,21 +1,21 @@
-import { useEffect } from "react";
-import { useDispatch } from "react-redux";
-import { notify } from "../reducers/notificationReducer";
-import { initializeUsers } from "../reducers/usersReducer";
 import { Routes, Route } from 'react-router-dom';
 import UsersSummary from "./UsersSummary";
 import UserBlogList from "./UserBlogList";
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchUsers } from '../reducers/usersReducer';
+import { STATUS } from '../utils/constants';
 
 function Users() {
   const dispatch = useDispatch();
+  const {
+    status: { fetch: fetchStatus },
+  } = useSelector(state => state.users);
 
   useEffect(() => {
-    try {
-      dispatch(initializeUsers());
-    } catch (err) {
-      dispatch(notify(err.message || 'An Error Occured', false, 3));
-    }
-  }, []);
+    if (fetchStatus === STATUS.INITIAL) dispatch(fetchUsers());
+  }, [fetchStatus, dispatch]);
+
 
   return (
     <div>
