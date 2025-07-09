@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchBlogs, selectSortedBlogs } from '../reducers/blogsReducer';
+import { selectSortedBlogs } from '../reducers/blogsReducer';
 import { Link } from 'react-router-dom';
 import { useEffect } from 'react';
 import { notify } from '../reducers/notificationReducer';
@@ -32,7 +32,6 @@ const BlogList = () => {
   };
 
   useEffect(() => {
-    if (status === STATUS.INITIAL) dispatch(fetchBlogs());
     if (status === STATUS.FAILED) dispatch(notify(error || 'An Error Occured', false, 3));
   }, [status, dispatch]);
 
