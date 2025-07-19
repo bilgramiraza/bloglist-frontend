@@ -5,7 +5,7 @@ import { setUser, clearUser } from "../reducers/authReducer";
 import { useLocation, useNavigate } from 'react-router-dom';
 
 function Login() {
-  const user = useSelector(state => state.auth);
+  const { name } = useSelector(state => state?.auth?.credentials || {});
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -37,11 +37,11 @@ function Login() {
 
   return (
     <div>
-      {user.name === null ? (
+      {name === null ? (
         <button onClick={handleLogin}>Login</button>
       ) : (
         <p>
-          {user.name} Logged In <button onClick={handleLogout}>Logout</button>
+          {name} Logged In <button onClick={handleLogout}>Logout</button>
         </p>
       )}
     </div>

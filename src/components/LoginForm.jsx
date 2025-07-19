@@ -1,12 +1,34 @@
-import { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { notify } from '../reducers/notificationReducer';
-import { loginUser } from '../reducers/authReducer';
+import { loginUser, resetStatus } from '../reducers/authReducer';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { STATUS } from '../utils/constants';
 
 const LoginForm = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+
+  const {
+    status: loginStatus,
+    error,
+    credentials
+  } = useSelector(state => state.auth);
+
+  useEffect(() => {
+    if (loginStatus === STATUS.SUCCEEDED) {
+      dispatch(notify(`${credentials.name} Has Logged In`));
+      window.localStorage.setItem('loggedInBlogUser', JSON.stringify(credentials));
+      dispatch(resetStatus());
+      setUsername('');
+      setPassword('');
+      navigate(from, { replace: true });
+    }
+    if (loginStatus === STATUS.FAILED) {
+      dispatch(notify(error || 'An Error Occured', false, 5));
+      dispatch(resetStatus());
+    }
+  }, [loginStatus]);
 
   const dispatch = useDispatch();
   const location = useLocation();
@@ -17,19 +39,9 @@ const LoginForm = () => {
   const handleUsernameChange = (e) => setUsername(e.target.value);
   const handlePasswordChange = (e) => setPassword(e.target.value);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    try {
-      const credentials = await dispatch(loginUser(username, password));
-      window.localStorage.setItem('loggedInBlogUser', JSON.stringify(credentials));
-      dispatch(notify(`${credentials.name} Has Logged In`));
-      setUsername('');
-      setPassword('');
-      navigate(from, { replace: true });
-
-    } catch (err) {
-      dispatch(notify(err.message || 'An Error Occured', false, 5));
-    }
+    dispatch(loginUser({ username, password }));
   };
 
   const handleCancel = (e) => {
