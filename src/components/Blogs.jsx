@@ -6,19 +6,29 @@ import BlogForm from "./BlogForm";
 import BlogList from "./BlogList";
 import Blog from "./Blog";
 import { STATUS } from "../utils/constants";
-import { fetchBlogs } from "../reducers/blogsReducer";
+import { fetchBlogs, resetFetchStatus } from "../reducers/blogsReducer";
+import { notify } from "../reducers/notificationReducer";
 
 function Blogs() {
   const user = useSelector(state => state.auth);
   const {
     status: { fetch: status },
+    error,
   } = useSelector(state => state.blogs);
 
   const blogFormRef = useRef();
   const dispatch = useDispatch();
   useEffect(() => {
     if (status === STATUS.INITIAL) dispatch(fetchBlogs());
-  }, [status, dispatch]);
+    if (status === STATUS.SUCCEEDED) {
+      dispatch(notify('Successfully Fetched Blogs'));
+      dispatch(resetFetchStatus());
+    }
+    if (status === STATUS.FAILED) {
+      dispatch(notify(error || 'An Error Occured', false, 5));
+      dispatch(resetFetchStatus());
+    }
+  }, [status]);
 
   return (
     <div>
