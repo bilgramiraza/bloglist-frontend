@@ -15,22 +15,24 @@ const blogsSlice = createSlice({
     },
     error: null
   },
-  reducers: {},
+  reducers: {
+    resetStatus(state, action) {
+      state.status[action.payload] = STATUS.IDLE;
+      state.error = null;
+    }
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchBlogs.pending, (state) => {
         state.status.fetch = STATUS.LOADING;
-        state.error = null;
       })
       .addCase(fetchBlogs.fulfilled, (state, action) => {
         state.status.fetch = STATUS.SUCCEEDED;
         state.items = action.payload;
-        state.status.fetch = STATUS.IDLE;
       })
       .addCase(fetchBlogs.rejected, (state, action) => {
         state.status.fetch = STATUS.FAILED;
         state.error = action.payload || action.error.message;
-        state.status.fetch = STATUS.IDLE;
       })
       .addCase(createNewBlog.pending, (state) => {
         state.status.create = STATUS.LOADING;
@@ -95,6 +97,8 @@ const blogsSlice = createSlice({
   }
 });
 
+export const { resetStatus } = blogsSlice.actions;
+
 export default blogsSlice.reducer;
 
 export const selectSortedBlogs = createSelector(
@@ -114,6 +118,26 @@ export const selectBlogById = createSelector(
     blog: items.find((blog) => blog._id === targetBlogId)
   })
 );
+
+export const resetFetchStatus = () => async (dispatch) => {
+  dispatch(resetStatus('fetch'));
+};
+
+export const resetCreateStatus = () => async (dispatch) => {
+  dispatch(resetStatus('create'));
+};
+
+export const resetDeleteStatus = () => async (dispatch) => {
+  dispatch(resetStatus('delete'));
+};
+
+export const resetLikeStatus = () => async (dispatch) => {
+  dispatch(resetStatus('like'));
+};
+
+export const resetCommentStatus = () => async (dispatch) => {
+  dispatch(resetStatus('comment'));
+};
 
 export const fetchBlogs = createAsyncThunk('blogs/fetchAll', async (_, { rejectWithValue }) => {
   try {
