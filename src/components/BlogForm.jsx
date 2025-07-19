@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { createNewBlog } from '../reducers/blogsReducer';
+import { createNewBlog, resetCreateStatus } from '../reducers/blogsReducer';
 import { notify } from '../reducers/notificationReducer';
 import PropTypes from 'prop-types';
 import { STATUS } from '../utils/constants';
@@ -31,8 +31,10 @@ const BlogForm = ({ onClose }) => {
       setAuthor('');
       setUrl('');
       onClose();
+      dispatch(resetCreateStatus());
     } catch (err) {
       dispatch(notify(error || err || 'An Error Occured', false, 5));
+      dispatch(resetCreateStatus());
     }
   };
 

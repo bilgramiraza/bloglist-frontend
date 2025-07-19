@@ -1,6 +1,6 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { commentOnBlog, deleteBlog, likeBlog, selectBlogById } from '../reducers/blogsReducer';
+import { commentOnBlog, deleteBlog, likeBlog, resetCommentStatus, resetDeleteStatus, resetLikeStatus, selectBlogById } from '../reducers/blogsReducer';
 import { notify } from '../reducers/notificationReducer';
 import { useState } from 'react';
 import { STATUS } from '../utils/constants';
@@ -40,8 +40,10 @@ const Blog = () => {
       await dispatch(commentOnBlog({ blogId: blog._id, comment })).unwrap();
       dispatch(notify(`Successfully Commented on Blog(${blog.title})`));
       setComment('');
+      dispatch(resetCommentStatus());
     } catch (err) {
       dispatch(notify(err.message || err || 'An Error Occured', false, 5));
+      dispatch(resetCommentStatus());
     }
   };
 
@@ -49,8 +51,10 @@ const Blog = () => {
     try {
       await dispatch(likeBlog(blog)).unwrap();
       dispatch(notify(`Blog(${blog.title}) Liked Successfully`));
+      dispatch(resetLikeStatus());
     } catch (err) {
       dispatch(notify(error || err || 'An Error Occured', false, 5));
+      dispatch(resetLikeStatus());
     }
   };
 
@@ -60,9 +64,11 @@ const Blog = () => {
     try {
       await dispatch(deleteBlog(blog._id)).unwrap();
       dispatch(notify(`Blog(${blog.title} By ${blog.author}) Deleted Successfully`));
+      dispatch(resetDeleteStatus());
       setTimeout(() => navigate('/'), 500);
     } catch (err) {
       dispatch(notify(error || err || 'An Error Occured', false, 5));
+      dispatch(resetDeleteStatus());
     }
   };
 
