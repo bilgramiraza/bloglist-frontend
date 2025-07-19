@@ -41,12 +41,10 @@ const blogsSlice = createSlice({
       .addCase(createNewBlog.fulfilled, (state, action) => {
         state.status.create = STATUS.SUCCEEDED;
         state.items.push(action.payload);
-        state.status.create = STATUS.IDLE;
       })
       .addCase(createNewBlog.rejected, (state, action) => {
         state.status.create = STATUS.FAILED;
         state.error = action.payload || action.error.message;
-        state.status.create = STATUS.IDLE;
       })
       .addCase(deleteBlog.pending, (state) => {
         state.status.delete = STATUS.LOADING;
@@ -55,12 +53,10 @@ const blogsSlice = createSlice({
       .addCase(deleteBlog.fulfilled, (state, action) => {
         state.status.delete = STATUS.SUCCEEDED;
         state.items = state.items.filter((blogs) => blogs._id !== action.payload);
-        state.status.delete = STATUS.IDLE;
       })
       .addCase(deleteBlog.rejected, (state, action) => {
         state.status.delete = STATUS.FAILED;
         state.error = action.payload || action.error.message;
-        state.status.delete = STATUS.IDLE;
       })
       .addCase(likeBlog.pending, (state) => {
         state.status.like = STATUS.LOADING;
@@ -71,12 +67,10 @@ const blogsSlice = createSlice({
         state.items = state.items.map((blog) =>
           blog._id === action.payload._id ? action.payload : blog
         );
-        state.status.like = STATUS.IDLE;
       })
       .addCase(likeBlog.rejected, (state, action) => {
         state.status.like = STATUS.FAILED;
         state.error = action.payload || action.error.message;
-        state.status.like = STATUS.IDLE;
       })
       .addCase(commentOnBlog.pending, (state) => {
         state.status.comment = STATUS.LOADING;
@@ -87,12 +81,10 @@ const blogsSlice = createSlice({
         state.items = state.items.map((blog) =>
           blog._id === action.payload._id ? action.payload : blog
         );
-        state.status.comment = STATUS.IDLE;
       })
       .addCase(commentOnBlog.rejected, (state, action) => {
         state.status.comment = STATUS.FAILED;
         state.error = action.payload || action.error.message;
-        state.status.comment = STATUS.IDLE;
       });
   }
 });
