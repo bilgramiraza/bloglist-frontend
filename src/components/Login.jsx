@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from "react-redux";
 import { notify } from "../reducers/notificationReducer";
-import { setUser, clearUser } from "../reducers/authReducer";
+import { setUser, logoutUser } from "../reducers/authReducer";
 import { useLocation, useNavigate } from 'react-router-dom';
 
 function Login() {
@@ -27,8 +27,7 @@ function Login() {
 
   const handleLogout = async (e) => {
     e.preventDefault();
-    dispatch(clearUser());
-    window.localStorage.removeItem('loggedInBlogUser');
+    dispatch(logoutUser());
     dispatch(notify('Log out Successful'));
   };
 
