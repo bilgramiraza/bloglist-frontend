@@ -68,3 +68,8 @@ export const loginUser = createAsyncThunk(
     }
   }
 );
+
+export const logoutUser = () => async (dispatch) => {
+  dispatch(clearUser());
+  window.localStorage.removeItem('loggedInBlogUser');
+};
