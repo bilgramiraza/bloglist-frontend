@@ -2,19 +2,21 @@ import { create, createComment, getAll, remove as removeBlog, sendLike } from '.
 import { createSlice, createSelector, createAsyncThunk } from '@reduxjs/toolkit';
 import { STATUS } from '../utils/constants';
 
+const initialState = {
+  items: [],
+  status: {
+    fetch: STATUS.INITIAL,
+    create: STATUS.INITIAL,
+    delete: STATUS.INITIAL,
+    like: STATUS.INITIAL,
+    comment: STATUS.INITIAL
+  },
+  error: null
+};
+
 const blogsSlice = createSlice({
   name: 'blogs',
-  initialState: {
-    items: [],
-    status: {
-      fetch: STATUS.INITIAL,
-      create: STATUS.INITIAL,
-      delete: STATUS.INITIAL,
-      like: STATUS.INITIAL,
-      comment: STATUS.INITIAL
-    },
-    error: null
-  },
+  initialState,
   reducers: {
     resetStatus(state, action) {
       state.status[action.payload] = STATUS.IDLE;
