@@ -14,11 +14,15 @@ const LoginForm = () => {
     error,
     credentials
   } = useSelector(state => state.auth);
+  const dispatch = useDispatch();
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const from = location?.state?.from?.pathname || '/';
 
   useEffect(() => {
-    if (loginStatus === STATUS.SUCCEEDED) {
+    if (loginStatus === STATUS.SUCCEEDED && credentials?.name) {
       dispatch(notify(`${credentials.name} Has Logged In`));
-      window.localStorage.setItem('loggedInBlogUser', JSON.stringify(credentials));
       dispatch(resetStatus());
       setUsername('');
       setPassword('');
@@ -29,12 +33,6 @@ const LoginForm = () => {
       dispatch(resetStatus());
     }
   }, [loginStatus]);
-
-  const dispatch = useDispatch();
-  const location = useLocation();
-  const navigate = useNavigate();
-
-  const from = location?.state?.from?.pathname || '/';
 
   const handleUsernameChange = (e) => setUsername(e.target.value);
   const handlePasswordChange = (e) => setPassword(e.target.value);
