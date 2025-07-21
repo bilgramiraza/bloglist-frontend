@@ -1,24 +1,16 @@
 import { useParams } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { selectUserById } from "../reducers/usersReducer";
-import { useEffect } from "react";
-import { notify } from "../reducers/notificationReducer";
 import { STATUS } from "../utils/constants";
 
 function UserBlogList() {
   const id = useParams().id;
-  const dispatch = useDispatch();
 
   const {
     status: { fetch: fetchStatus },
     error,
     user
   } = useSelector(state => selectUserById(state, id));
-
-  useEffect(() => {
-    if (fetchStatus === STATUS.FAILED) dispatch(notify(error || 'An Error Occured', false, 3));
-  }, [fetchStatus, dispatch]);
-
 
   if (fetchStatus === STATUS.LOADING) {
     return (

@@ -1,21 +1,13 @@
-import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { STATUS } from "../utils/constants";
-import { notify } from "../reducers/notificationReducer";
 
 function UsersSummary() {
-  const dispatch = useDispatch();
-
   const {
     status: { fetch: fetchStatus },
     error,
     items: users
   } = useSelector(state => state.users);
-
-  useEffect(() => {
-    if (fetchStatus === STATUS.FAILED) dispatch(notify(error || 'An Error Occured', false, 3));
-  }, [fetchStatus, dispatch]);
 
   if (fetchStatus === STATUS.LOADING) {
     return (

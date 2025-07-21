@@ -3,19 +3,28 @@ import UsersSummary from "./UsersSummary";
 import UserBlogList from "./UserBlogList";
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchUsers } from '../reducers/usersReducer';
+import { fetchUsers, resetFetchStatus } from '../reducers/usersReducer';
 import { STATUS } from '../utils/constants';
+import { notify } from '../reducers/notificationReducer';
 
 function Users() {
-  const dispatch = useDispatch();
   const {
     status: { fetch: fetchStatus },
+    error
   } = useSelector(state => state.users);
 
+  const dispatch = useDispatch();
   useEffect(() => {
     if (fetchStatus === STATUS.INITIAL) dispatch(fetchUsers());
-  }, [fetchStatus, dispatch]);
-
+    if (fetchStatus === STATUS.SUCCEEDED) {
+      dispatch(notify('Successfully Fetched Users'));
+      dispatch(resetFetchStatus());
+    }
+    if (fetchStatus === STATUS.FAILED) {
+      dispatch(notify(error || 'An Error Occured', false, 3));
+      dispatch(resetFetchStatus());
+    }
+  }, [fetchStatus]);
 
   return (
     <div>
