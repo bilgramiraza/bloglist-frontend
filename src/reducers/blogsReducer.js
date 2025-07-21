@@ -111,23 +111,23 @@ export const selectBlogById = createSelector(
   })
 );
 
-export const resetFetchStatus = () => async (dispatch) => {
+export const resetFetchStatus = () => (dispatch) => {
   dispatch(resetStatus('fetch'));
 };
 
-export const resetCreateStatus = () => async (dispatch) => {
+export const resetCreateStatus = () => (dispatch) => {
   dispatch(resetStatus('create'));
 };
 
-export const resetDeleteStatus = () => async (dispatch) => {
+export const resetDeleteStatus = () => (dispatch) => {
   dispatch(resetStatus('delete'));
 };
 
-export const resetLikeStatus = () => async (dispatch) => {
+export const resetLikeStatus = () => (dispatch) => {
   dispatch(resetStatus('like'));
 };
 
-export const resetCommentStatus = () => async (dispatch) => {
+export const resetCommentStatus = () => (dispatch) => {
   dispatch(resetStatus('comment'));
 };
 
