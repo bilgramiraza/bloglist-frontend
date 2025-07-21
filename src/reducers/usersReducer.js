@@ -2,16 +2,23 @@ import { getAll } from '../services/users';
 import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
 import { STATUS } from '../utils/constants';
 
+const initialState = {
+  items: [],
+  status: {
+    fetch: STATUS.INITIAL
+  },
+  error: null
+};
+
 const usersSlice = createSlice({
   name: 'users',
-  initialState: {
-    items: [],
-    status: {
-      fetch: STATUS.INITIAL
-    },
-    error: null
+  initialState,
+  reducers: {
+    resetStatus(state, action) {
+      state.status[action.payload] = STATUS.IDLE;
+      state.error = null;
+    }
   },
-  reducers: {},
   extraReducers: (builder) => {
     builder
       .addCase(fetchUsers.pending, (state) => {
@@ -21,15 +28,15 @@ const usersSlice = createSlice({
       .addCase(fetchUsers.fulfilled, (state, action) => {
         state.status.fetch = STATUS.SUCCEEDED;
         state.items = action.payload;
-        state.status.fetch = STATUS.IDLE;
       })
       .addCase(fetchUsers.rejected, (state, action) => {
         state.status.fetch = STATUS.FAILED;
         state.error = action.payload || action.error.message;
-        state.status.fetch = STATUS.IDLE;
       });
   }
 });
+
+export const { resetStatus } = usersSlice.actions;
 
 export default usersSlice.reducer;
 
@@ -41,6 +48,10 @@ export const selectUserById = createSelector(
     user: items.find((user) => user.id === userId)
   })
 );
+
+export const resetFetchStatus = () => (dispatch) => {
+  dispatch(resetStatus('fetch'));
+};
 
 export const fetchUsers = createAsyncThunk('users/fetchAll', async (_, { rejectWithValue }) => {
   try {
