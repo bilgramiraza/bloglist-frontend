@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { createNewBlog, resetCreateStatus } from '../reducers/blogsReducer';
 import { notify } from '../reducers/notificationReducer';
@@ -20,22 +20,26 @@ const BlogForm = ({ onClose }) => {
   const handleTitleChange = (e) => setTitle(e.target.value);
   const handleUrlChange = (e) => setUrl(e.target.value);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    /* c8 ignore next */ //Protection vs Weirdos
-    if (!title || !author || !url) return;
-    try {
-      await dispatch(createNewBlog({ title, author, url })).unwrap();
+  useEffect(() => {
+    if (status === STATUS.SUCCEEDED && title) {
       dispatch(notify(`Blog(${title}) Created Successfully`));
       setTitle('');
       setAuthor('');
       setUrl('');
-      onClose();
       dispatch(resetCreateStatus());
-    } catch (err) {
-      dispatch(notify(error || err || 'An Error Occured', false, 5));
+      onClose();
+    }
+    if (status === STATUS.FAILED) {
+      dispatch(notify(error || 'An Error Occured', false, 5));
       dispatch(resetCreateStatus());
     }
+  }, [status]);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    /* c8 ignore next */ //Protection vs Weirdos
+    if (!title || !author || !url) return;
+    dispatch(createNewBlog({ title, author, url }));
   };
 
   return (
