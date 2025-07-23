@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import { useGetAllUsersQuery } from "../services/users";
-import { notify } from "../../reducers/notificationReducer";
+import { notify } from "../reducers/notificationReducer";
 
 function UsersSummary() {
   const [prevError, setPrevError] = useState(null);

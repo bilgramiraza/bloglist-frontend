@@ -3,7 +3,7 @@ import notificationReducer from './notificationReducer';
 import blogsReducer from './blogsReducer';
 import authReducer from './authReducer';
 import usersReducer from './usersReducer';
-import { api } from '../src/services/api';
+import { api } from '../services/api';
 
 export const store = configureStore({
   reducer: {

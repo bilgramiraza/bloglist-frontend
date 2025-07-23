@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useCreateNewBlogMutation } from '../services/blogs';
-import { notify } from '../../reducers/notificationReducer';
+import { notify } from '../reducers/notificationReducer';
 import PropTypes from 'prop-types';
 
 const BlogForm = ({ onClose }) => {

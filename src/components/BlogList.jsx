@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useGetAllBlogsQuery } from '../services/blogs';
 import { Link } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { notify } from '../../reducers/notificationReducer';
+import { notify } from '../reducers/notificationReducer';
 
 const BlogList = () => {
   const [prevError, setPrevError] = useState(null);

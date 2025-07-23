@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { notify } from '../../reducers/notificationReducer';
+import { notify } from '../reducers/notificationReducer';
 import { useCreateNewCommentMutation, useGetAllBlogsQuery, useLikeBlogMutation, useRemoveBlogMutation } from '../services/blogs';
 
 const Blog = () => {

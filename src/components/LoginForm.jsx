@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { notify } from '../../reducers/notificationReducer';
+import { notify } from '../reducers/notificationReducer';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useLoginMutation } from '../services/auth';
 
