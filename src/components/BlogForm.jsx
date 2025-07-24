@@ -1,15 +1,12 @@
 import { useState } from 'react';
-import { useDispatch } from 'react-redux';
 import { useCreateNewBlogMutation } from '../services/blogs';
-import { notify } from '../reducers/notificationReducer';
 import PropTypes from 'prop-types';
+import { notifyError, notifySuccess } from './Notification';
 
 const BlogForm = ({ onClose }) => {
   const [url, setUrl] = useState('');
   const [title, setTitle] = useState('');
   const [author, setAuthor] = useState('');
-
-  const dispatch = useDispatch();
 
   const handleAuthorChange = (e) => setAuthor(e.target.value);
   const handleTitleChange = (e) => setTitle(e.target.value);
@@ -26,10 +23,10 @@ const BlogForm = ({ onClose }) => {
       setTitle('');
       setAuthor('');
       setUrl('');
-      dispatch(notify(`Blog(${title}) Created Successfully`));
+      notifySuccess(`Blog(${title}) Created Successfully`);
       onClose();
     } catch (err) {
-      dispatch(notify(err || 'An Error Occured', false, 5));
+      notifyError(err || 'An Error Occured');
     }
   };
 

@@ -1,13 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import { notify } from '../reducers/notificationReducer';
+import { useSelector } from 'react-redux';
 import { useCreateNewCommentMutation, useGetAllBlogsQuery, useLikeBlogMutation, useRemoveBlogMutation } from '../services/blogs';
+import { notifyError, notifySuccess } from './Notification';
 
 const Blog = () => {
   const id = useParams().id;
 
-  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const [prevError, setPrevError] = useState(null);
@@ -33,9 +32,9 @@ const Blog = () => {
     try {
       await createNewComment({ blogId: id, comment }).unwrap();
       setComment('');
-      dispatch(notify(`Successfully Commented Under Blog(${blog.title})`));
+      notifySuccess(`Successfully Commented Under Blog(${blog.title})`);
     } catch (err) {
-      dispatch(notify(err || 'An Error Occured', false, 5));
+      notifyError(err || 'An Error Occured');
     }
   };
 
@@ -66,10 +65,10 @@ const Blog = () => {
 
   useEffect(() => {
     if (blogsErrorStatus && blogsError !== prevError) {
-      dispatch(notify(blogsError || 'An Error Occured', false, 3));
+      notifyError(err || 'An Error Occured');
       setPrevError(blogsError);
     }
-  }, [dispatch, blogsErrorStatus, blogsError, prevError]);
+  }, [blogsErrorStatus, blogsError, prevError]);
 
   const deleteButtonStyle = {
     display: blog?.user.username === currentUser ? '' : 'none'
@@ -78,9 +77,9 @@ const Blog = () => {
   const handleLikeClick = async () => {
     try {
       await likeBlog(blog).unwrap();
-      dispatch(notify(`Blog(${blog.title}) Liked Successfully`));
+      notifySuccess(`Blog(${blog.title}) Liked Successfully`);
     } catch (err) {
-      dispatch(notify(err || 'An Error Occured', false, 5));
+      notifyError(err || 'An Error Occured');
     }
   };
 
@@ -89,10 +88,10 @@ const Blog = () => {
     if (!deleteConfirm) return;
     try {
       await removeBlog(blog._id).unwrap();
-      dispatch(notify(`Blog(${blog.title} By ${blog.author}) Deleted Successfully`));
+      notifySuccess(`Blog(${blog.title} By ${blog.author}) Deleted Successfully`);
       navigate('/');
     } catch (err) {
-      dispatch(notify(err || 'An Error Occured', false, 5));
+      notifyError(err || 'An Error Occured');
     }
   };
 

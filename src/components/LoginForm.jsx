@@ -1,14 +1,12 @@
 import { useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { notify } from '../reducers/notificationReducer';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useLoginMutation } from '../services/auth';
+import { notifyError, notifySuccess } from './Notification';
 
 const LoginForm = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
-  const dispatch = useDispatch();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -24,12 +22,12 @@ const LoginForm = () => {
     try {
       const credentials = await login({ username, password }).unwrap();
       window.localStorage.setItem('loggedInBlogUser', JSON.stringify(credentials));
-      dispatch(notify(`${credentials.name} Has Logged In`));
+      notifySuccess(`${credentials.name} Has Logged In`);
       setUsername('');
       setPassword('');
       navigate(from, { replace: true });
     } catch (err) {
-      dispatch(notify(err || 'An Error Occured', false, 5));
+      notifyError(err || 'An Error Occured');
     }
   };
 

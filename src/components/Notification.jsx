@@ -1,25 +1,17 @@
-import { useSelector } from 'react-redux';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function Notification() {
-  const { message, status } = useSelector(state => state.notification);
-
-  if (!message) return null;
-
   return (
-    <div data-testid="notification">
-      <span
-        style={{
-          padding: '2px',
-          borderStyle: 'solid',
-          borderWidth: '2px',
-          borderColor: status ? 'green' : 'red',
-          borderRadius: '5px'
-        }}
-      >
-        {message}
-      </span>
-    </div>
-  );
+    <ToastContainer
+      autoClose={3000}
+      closeButton={false}
+      closeOnClick={true}
+      newestOnTop={true}
+    />);
 }
-
 export default Notification;
+
+export const notifySuccess = msg => toast.success(msg, { autoClose: 3000 });
+
+export const notifyError = msg => toast.error(msg, { autoClose: 5000 });

@@ -1,5 +1,4 @@
 import { configureStore } from '@reduxjs/toolkit';
-import notificationReducer from './notificationReducer';
 import blogsReducer from './blogsReducer';
 import authReducer from './authReducer';
 import usersReducer from './usersReducer';
@@ -7,7 +6,6 @@ import { api } from '../services/api';
 
 export const store = configureStore({
   reducer: {
-    notification: notificationReducer,
     blogs: blogsReducer,
     users: usersReducer,
     auth: authReducer,

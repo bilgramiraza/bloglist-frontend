@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import { useGetAllUsersQuery } from "../services/users";
-import { notify } from "../reducers/notificationReducer";
+import { notifyError } from "./Notification";
 
 function UsersSummary() {
   const [prevError, setPrevError] = useState(null);
@@ -14,14 +13,12 @@ function UsersSummary() {
     isError: usersErrorStatus
   } = useGetAllUsersQuery();
 
-  const dispatch = useDispatch();
-
   useEffect(() => {
     if (usersErrorStatus && usersError !== prevError) {
-      dispatch(notify(usersError || 'An Error Occured', false, 3));
+      notifyError(usersError || 'An Error Occured');
       setPrevError(usersError);
     }
-  }, [dispatch, usersErrorStatus, usersError, prevError]);
+  }, [usersErrorStatus, usersError, prevError]);
 
   if (usersLoadingStatus) {
     return (

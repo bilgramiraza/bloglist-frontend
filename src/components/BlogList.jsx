@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useGetAllBlogsQuery } from '../services/blogs';
 import { Link } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
-import { notify } from '../reducers/notificationReducer';
+import { notifyError } from './Notification';
 
 const BlogList = () => {
   const [prevError, setPrevError] = useState(null);
@@ -13,14 +12,12 @@ const BlogList = () => {
     isError: blogsErrorStatus
   } = useGetAllBlogsQuery();
 
-  const dispatch = useDispatch();
-
   useEffect(() => {
     if (blogsErrorStatus && blogsError !== prevError) {
-      dispatch(notify(blogsError || 'An Error Occured', false, 3));
+      notifyError(blogsError || 'An Error Occured');
       setPrevError(blogsError);
     }
-  }, [dispatch, blogsErrorStatus, blogsError, prevError]);
+  }, [blogsErrorStatus, blogsError, prevError]);
 
 
   const blogStyle = {

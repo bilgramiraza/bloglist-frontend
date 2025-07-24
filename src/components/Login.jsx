@@ -1,8 +1,8 @@
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from "react-redux";
-import { notify } from "../reducers/notificationReducer";
 import { setUser, logout } from "../reducers/authReducer";
 import { useLocation, useNavigate } from 'react-router-dom';
+import { notifySuccess } from './Notification';
 
 function Login() {
   const user = useSelector(state => state.auth);
@@ -16,7 +16,7 @@ function Login() {
     if (loggedUserJSON) {
       const credentials = JSON.parse(loggedUserJSON);
       dispatch(setUser(credentials));
-      dispatch(notify(`${credentials.name} Has Logged In`));
+      notifySuccess(`${credentials.name} Has Logged In`);
     }
   }, []);
 
@@ -29,7 +29,7 @@ function Login() {
     e.preventDefault();
     dispatch(logout());
     window.localStorage.removeItem('loggedInBlogUser');
-    dispatch(notify('Log out Successful'));
+    notifySuccess('Log out Successful');
   };
 
   if (location?.pathname === '/login')
