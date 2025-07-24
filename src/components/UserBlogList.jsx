@@ -1,27 +1,16 @@
-import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useGetAllUsersQuery } from "../services/users";
-import { notifyError } from "./Notification";
 
 function UserBlogList() {
   const id = useParams().id;
-  const [prevError, setPrevError] = useState(null);
 
   const {
     data: users,
-    error: usersError,
     isLoading: usersLoadingStatus,
     isError: usersErrorStatus
   } = useGetAllUsersQuery();
 
   const userBlogs = users?.find((user) => user.id === id);
-
-  useEffect(() => {
-    if (usersErrorStatus && usersError !== prevError) {
-      notifyError(usersError || 'An Error Occured');
-      setPrevError(usersError);
-    }
-  }, [usersErrorStatus, usersError, prevError]);
 
   if (!userBlogs && !(usersLoadingStatus || usersErrorStatus))
     return (

@@ -1,24 +1,12 @@
-import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useGetAllUsersQuery } from "../services/users";
-import { notifyError } from "./Notification";
 
 function UsersSummary() {
-  const [prevError, setPrevError] = useState(null);
-
   const {
     data: users,
-    error: usersError,
     isLoading: usersLoadingStatus,
     isError: usersErrorStatus
   } = useGetAllUsersQuery();
-
-  useEffect(() => {
-    if (usersErrorStatus && usersError !== prevError) {
-      notifyError(usersError || 'An Error Occured');
-      setPrevError(usersError);
-    }
-  }, [usersErrorStatus, usersError, prevError]);
 
   if (usersLoadingStatus) {
     return (
