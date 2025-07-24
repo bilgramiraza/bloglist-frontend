@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { useCreateNewCommentMutation, useGetAllBlogsQuery, useLikeBlogMutation, useRemoveBlogMutation } from '../services/blogs';
@@ -7,15 +7,18 @@ import { notifyError, notifySuccess } from './Notification';
 const Blog = () => {
   const id = useParams().id;
 
-  const navigate = useNavigate();
-
-  const [prevError, setPrevError] = useState(null);
-
-  const currentUser = useSelector(state => state.auth.username);
-
   const [comment, setComment] = useState('');
 
-  const handleCommentChange = (e) => setComment(e.target.value);
+  const currentUser = useSelector(state => state.auth.username);
+  const navigate = useNavigate();
+
+  const {
+    data: blogs,
+    isLoading: blogsLoadingStatus,
+    isError: blogsErrorStatus
+  } = useGetAllBlogsQuery();
+
+  const blog = blogs?.find(blog => blog._id === id);
 
   const [
     createNewComment,
@@ -24,28 +27,6 @@ const Blog = () => {
       isError: commentErrorStatus
     }
   ] = useCreateNewCommentMutation();
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    /* c8 ignore next */ //Protection vs Weirdos
-    if (!comment) return;
-    try {
-      await createNewComment({ blogId: id, comment }).unwrap();
-      setComment('');
-      notifySuccess(`Successfully Commented Under Blog(${blog.title})`);
-    } catch (err) {
-      notifyError(err || 'An Error Occured');
-    }
-  };
-
-  const {
-    data: blogs,
-    error: blogsError,
-    isLoading: blogsLoadingStatus,
-    isError: blogsErrorStatus
-  } = useGetAllBlogsQuery();
-
-  const blog = blogs?.find(blog => blog._id === id);
 
   const [
     likeBlog,
@@ -63,15 +44,19 @@ const Blog = () => {
     }
   ] = useRemoveBlogMutation();
 
-  useEffect(() => {
-    if (blogsErrorStatus && blogsError !== prevError) {
-      notifyError(err || 'An Error Occured');
-      setPrevError(blogsError);
-    }
-  }, [blogsErrorStatus, blogsError, prevError]);
+  const handleCommentChange = (e) => setComment(e.target.value);
 
-  const deleteButtonStyle = {
-    display: blog?.user.username === currentUser ? '' : 'none'
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    /* c8 ignore next */ //Protection vs Weirdos
+    if (!comment) return;
+    try {
+      await createNewComment({ blogId: id, comment }).unwrap();
+      setComment('');
+      notifySuccess(`Successfully Commented Under Blog(${blog.title})`);
+    } catch (err) {
+      notifyError(err || 'An Error Occured');
+    }
   };
 
   const handleLikeClick = async () => {
@@ -93,6 +78,10 @@ const Blog = () => {
     } catch (err) {
       notifyError(err || 'An Error Occured');
     }
+  };
+
+  const deleteButtonStyle = {
+    display: blog?.user.username === currentUser ? '' : 'none'
   };
 
   if (blogsLoadingStatus) {

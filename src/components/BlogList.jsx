@@ -1,24 +1,12 @@
-import { useEffect, useState } from 'react';
 import { useGetAllBlogsQuery } from '../services/blogs';
 import { Link } from 'react-router-dom';
-import { notifyError } from './Notification';
 
 const BlogList = () => {
-  const [prevError, setPrevError] = useState(null);
   const {
     data: blogs,
-    error: blogsError,
     isLoading: blogsLoadingStatus,
     isError: blogsErrorStatus
   } = useGetAllBlogsQuery();
-
-  useEffect(() => {
-    if (blogsErrorStatus && blogsError !== prevError) {
-      notifyError(blogsError || 'An Error Occured');
-      setPrevError(blogsError);
-    }
-  }, [blogsErrorStatus, blogsError, prevError]);
-
 
   const blogStyle = {
     width: '75%',
