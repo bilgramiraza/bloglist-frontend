@@ -1,24 +1,17 @@
-import { useNotificationValue } from '../reducers/notificationReducer';
+import { toast, Toaster } from "sonner";
 
 function Notification() {
-  const { message, status } = useNotificationValue();
-  if (!message) return null;
-
   return (
-    <div data-testid="notification">
-      <span
-        style={{
-          padding: '2px',
-          borderStyle: 'solid',
-          borderWidth: '2px',
-          borderColor: status ? 'green' : 'red',
-          borderRadius: '5px'
-        }}
-      >
-        {message}
-      </span>
-    </div>
+    <Toaster
+      richColors={true}
+      visibleToasts={9}
+      position="top-right"
+    />
   );
 }
+
+export const notifySuccess = msg => toast.success(msg, { duration: 3000 });
+
+export const notifyError = msg => toast.error(msg, { duration: 5000 });
 
 export default Notification;

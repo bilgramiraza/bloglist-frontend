@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { loginUser, useAuthDispatch } from '../reducers/authReducer';
-import { notify, useNotificationDispatch } from '../reducers/notificationReducer';
+import { notifyError, notifySuccess } from './Notification';
 
 const LoginForm = () => {
   const [username, setUsername] = useState('');
@@ -9,7 +9,6 @@ const LoginForm = () => {
   const handleUsernameChange = (e) => setUsername(e.target.value);
   const handlePasswordChange = (e) => setPassword(e.target.value);
 
-  const notifyDispatch = useNotificationDispatch();
   const authDispatch = useAuthDispatch();
 
   const handleSubmit = async (e) => {
@@ -17,11 +16,11 @@ const LoginForm = () => {
     try {
       const credentials = await loginUser(authDispatch, username, password);
       window.localStorage.setItem('loggedInBlogUser', JSON.stringify(credentials));
-      notify(notifyDispatch, `${credentials.name} Has Logged In`);
+      notifySuccess(`${credentials.name} Has Logged In`);
       setUsername('');
       setPassword('');
     } catch (err) {
-      notify(notifyDispatch, err.message || 'An Error Occured', false, 5);
+      notifyError(err.message || 'An Error Occured');
     }
   };
 

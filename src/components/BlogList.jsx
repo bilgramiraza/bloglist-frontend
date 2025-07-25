@@ -1,11 +1,10 @@
 import { getAll } from '../services/blogs';
 import { useQuery } from '@tanstack/react-query';
-import { notify, useNotificationDispatch } from '../reducers/notificationReducer';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { notifyError } from './Notification';
 
 const BlogList = () => {
-  const dispatch = useNotificationDispatch();
   const [prevError, setPrevError] = useState(null);
 
   const {
@@ -24,10 +23,10 @@ const BlogList = () => {
 
   useEffect(() => {
     if (blogsErrorStatus && blogsError?.message !== prevError) {
-      notify(dispatch, blogsError.message || 'An Error Occured', false, 5);
+      notifyError(blogsError.message || 'An Error Occured');
       setPrevError(blogsError.message);
     }
-  }, [dispatch, blogsErrorStatus, blogsError?.message, prevError]);
+  }, [blogsErrorStatus, blogsError?.message, prevError]);
 
   if (blogsLoadingStatus) {
     return (

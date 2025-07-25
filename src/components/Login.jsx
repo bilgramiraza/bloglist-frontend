@@ -1,11 +1,10 @@
 import { useEffect } from 'react';
-import { notify, useNotificationDispatch } from '../reducers/notificationReducer';
 import { clearAuth, setAuth, useAuthDispatch, useAuthValue } from '../reducers/authReducer';
 import LoginForm from './LoginForm';
 import Toggleable from './Toggleable';
+import { notifySuccess } from './Notification';
 
 const Login = () => {
-  const notifyDispatch = useNotificationDispatch();
   const authDispatch = useAuthDispatch();
 
   const { name, username } = useAuthValue();
@@ -15,7 +14,7 @@ const Login = () => {
     if (loggedUserJSON) {
       const credentials = JSON.parse(loggedUserJSON);
       setAuth(authDispatch, credentials);
-      notify(notifyDispatch, `${credentials.name} Has Logged In`);
+      notifySuccess(`${credentials.name} Has Logged In`);
     }
   }, []);
 
@@ -23,7 +22,7 @@ const Login = () => {
     e.preventDefault();
     window.localStorage.removeItem('loggedInBlogUser');
     clearAuth(authDispatch);
-    notify(notifyDispatch, 'Log out Successful');
+    notifySuccess('Log out Successful');
   };
 
 

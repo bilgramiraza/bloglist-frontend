@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { create } from '../services/blogs';
-import { notify, useNotificationDispatch } from '../reducers/notificationReducer';
 import PropTypes from 'prop-types';
 import { useAuthValue } from '../reducers/authReducer';
+import { notifyError, notifySuccess } from './Notification';
 
 const BlogForm = ({ onClose }) => {
   const [url, setUrl] = useState('');
@@ -13,18 +13,17 @@ const BlogForm = ({ onClose }) => {
   const { token } = useAuthValue();
 
   const queryClient = useQueryClient();
-  const dispatch = useNotificationDispatch();
 
   const newBlogMutation = useMutation({
     mutationFn: create,
     onSuccess: newBlog => {
       const blogs = queryClient.getQueryData(['blogList']);
       queryClient.setQueryData(['blogList'], blogs.concat(newBlog));
-      notify(dispatch, `Blog(${newBlog.title}) Created Successfully`);
+      notifySuccess(`Blog(${newBlog.title}) Created Successfully`);
       onClose();
     },
     onError: err => {
-      notify(dispatch, err.message || 'An Error Occured', false, 5);
+      notifyError(err.message || 'An Error Occured');
     },
     retry: false,
   });

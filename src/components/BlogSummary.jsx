@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { notify, useNotificationDispatch } from '../reducers/notificationReducer';
 import { createComment, getAll, remove, sendLike } from '../services/blogs';
 import { useAuthValue } from '../reducers/authReducer';
 import { useParams } from 'react-router-dom';
+import { notifyError, notifySuccess } from './Notification';
 
 const BlogSummary = () => {
   const id = useParams().id;
@@ -14,7 +14,6 @@ const BlogSummary = () => {
   const { username, token } = useAuthValue();
 
   const queryClient = useQueryClient();
-  const dispatch = useNotificationDispatch();
 
   const {
     data: blog,
@@ -42,10 +41,10 @@ const BlogSummary = () => {
         ['blogList'],
         blogs.map(blog => blog._id === likedBlog._id ? likedBlog : blog)
       );
-      notify(dispatch, `Blog(${likedBlog.title}) Liked Successfully`);
+      notifySuccess(`Blog(${likedBlog.title}) Liked Successfully`);
     },
     onError: err => {
-      notify(dispatch, err.message || 'An Error Occured', false, 5);
+      notifyError(err.message || 'An Error Occured')
     },
     retry: false,
   });
@@ -58,10 +57,10 @@ const BlogSummary = () => {
         ['blogList'],
         blogs.filter((blog) => blog._id !== deletedBlog._id)
       );
-      notify(dispatch, `Blog(${deletedBlog.title} By ${deletedBlog.author}) Deleted Successfully`);
+      notifySuccess(`Blog(${deletedBlog.title} By ${deletedBlog.author}) Deleted Successfully`);
     },
     onError: err => {
-      notify(dispatch, err.message || 'An Error Occured', false, 5);
+      notifyError(err.message || 'An Error Occured');
     },
     retry: false,
   });
@@ -74,10 +73,10 @@ const BlogSummary = () => {
         ['blogList'],
         blogs.map(blog => blog._id === updatedBlog._id ? updatedBlog : blog)
       );
-      notify(dispatch, `Successfully Commented on Blog(${updatedBlog.title})`);
+      notifySuccess(`Successfully Commented on Blog(${updatedBlog.title})`);
     },
     onError: err => {
-      notify(dispatch, err.message || 'An Error Occured', false, 5);
+      notifyError(err.message || 'An Error Occured');
     },
     retry: false,
   });
@@ -85,10 +84,10 @@ const BlogSummary = () => {
 
   useEffect(() => {
     if (blogErrorStatus && blogError?.message !== prevError) {
-      notify(dispatch, blogError.message || 'An Error Occured', false, 5);
+      notifyError(blogError.message || 'An Error Occured');
       setPrevError(blogError.message);
     }
-  }, [dispatch, blogErrorStatus, blogError?.message, prevError]);
+  }, [blogErrorStatus, blogError?.message, prevError]);
 
   const handleComment = (e) => setComment(e.target.value);
 

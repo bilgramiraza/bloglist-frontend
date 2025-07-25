@@ -1,14 +1,12 @@
 import { useParams } from "react-router-dom";
-import { notify, useNotificationDispatch } from "../reducers/notificationReducer";
 import { useQuery } from "@tanstack/react-query";
 import { getAll } from "../services/users";
 import { useEffect, useState } from "react";
+import { notifyError } from "./Notification";
 
 const UserSummary = () => {
   const id = useParams().id;
   const [prevError, setPrevError] = useState(null);
-
-  const dispatch = useNotificationDispatch();
 
   const {
     isLoading: userLoadingStatus,
@@ -30,10 +28,10 @@ const UserSummary = () => {
 
   useEffect(() => {
     if (userErrorStatus && userError?.message !== prevError) {
-      notify(dispatch, userError.message || 'An Error Occured', false, 5);
+      notifyError(userError.message || 'An Error Occured');
       setPrevError(userError.message);
     }
-  }, [dispatch, userErrorStatus, userError?.message, prevError]);
+  }, [userErrorStatus, userError?.message, prevError]);
 
   if (userLoadingStatus) {
     return (
