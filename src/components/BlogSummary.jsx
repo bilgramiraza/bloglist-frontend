@@ -1,14 +1,13 @@
-import { useEffect, useState } from 'react';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { createComment, getAll, remove, sendLike } from '../services/blogs';
 import { useAuthValue } from '../reducers/authReducer';
 import { useParams } from 'react-router-dom';
-import { notifyError, notifySuccess } from './Notification';
+import { useMutationWithToast, useQueryWithToast } from './Notification';
 
 const BlogSummary = () => {
   const id = useParams().id;
 
-  const [prevError, setPrevError] = useState(null);
   const [comment, setComment] = useState('');
 
   const { username, token } = useAuthValue();
@@ -18,76 +17,78 @@ const BlogSummary = () => {
   const {
     data: blog,
     isLoading: blogLoadingStatus,
-    error: blogError,
     isError: blogErrorStatus,
-  } = useQuery({
+  } = useQueryWithToast({
     queryKey: ['blogList'],
     queryFn: getAll,
-    select: (blogs) => {
-      const target = blogs.find((blog) => blog._id === id);
-      if (!target)
-        throw new Error('blog Not Found');
-      return target;
+    queryOptions: {
+      select: (blogs) => {
+        const target = blogs.find((blog) => blog._id === id);
+        if (!target)
+          throw new Error('blog Not Found');
+        return target;
+      },
     },
-    retry: false,
-    staleTime: 60 * 1000,
+    toastMsg: {
+      loading: 'Fetching Blog...',
+      success: (data) => `Successfully Fetched Blog(${data?.title})`,
+      error: (err) => err.message || 'Error Fetching Blog'
+    },
   });
 
-  const likeBlogMutation = useMutation({
+  const likeBlogMutation = useMutationWithToast({
     mutationFn: sendLike,
-    onSuccess: likedBlog => {
-      const blogs = queryClient.getQueryData(['blogList']);
-      queryClient.setQueryData(
-        ['blogList'],
-        blogs.map(blog => blog._id === likedBlog._id ? likedBlog : blog)
-      );
-      notifySuccess(`Blog(${likedBlog.title}) Liked Successfully`);
+    mutationOptions: {
+      onSuccess: likedBlog => {
+        const blogs = queryClient.getQueryData(['blogList']);
+        queryClient.setQueryData(
+          ['blogList'],
+          blogs.map(blog => blog._id === likedBlog._id ? likedBlog : blog)
+        );
+      },
     },
-    onError: err => {
-      notifyError(err.message || 'An Error Occured')
+    toastMsg: {
+      loading: 'Liking Blog...',
+      success: (data) => `Blog(${data.title}) Liked Successfully`,
+      error: (err) => err.message || 'Failed to like the Blog'
     },
-    retry: false,
   });
 
-  const deleteBlogMutation = useMutation({
+  const deleteBlogMutation = useMutationWithToast({
     mutationFn: remove,
-    onSuccess: deletedBlog => {
-      const blogs = queryClient.getQueryData(['blogList']);
-      queryClient.setQueryData(
-        ['blogList'],
-        blogs.filter((blog) => blog._id !== deletedBlog._id)
-      );
-      notifySuccess(`Blog(${deletedBlog.title} By ${deletedBlog.author}) Deleted Successfully`);
+    mutationOptions: {
+      onSuccess: deletedBlog => {
+        const blogs = queryClient.getQueryData(['blogList']);
+        queryClient.setQueryData(
+          ['blogList'],
+          blogs.filter((blog) => blog._id !== deletedBlog._id)
+        );
+      },
     },
-    onError: err => {
-      notifyError(err.message || 'An Error Occured');
+    toastMsg: {
+      loading: 'Deleting Blog...',
+      success: (data) => `Blog(${data.title} By ${data.author}) Deleted Successfully`,
+      error: (err) => err.message || 'Failed to delete the Blog'
     },
-    retry: false,
   });
 
-  const newCommentMutation = useMutation({
+  const newCommentMutation = useMutationWithToast({
     mutationFn: createComment,
-    onSuccess: updatedBlog => {
-      const blogs = queryClient.getQueryData(['blogList']);
-      queryClient.setQueryData(
-        ['blogList'],
-        blogs.map(blog => blog._id === updatedBlog._id ? updatedBlog : blog)
-      );
-      notifySuccess(`Successfully Commented on Blog(${updatedBlog.title})`);
+    mutationOptions: {
+      onSuccess: updatedBlog => {
+        const blogs = queryClient.getQueryData(['blogList']);
+        queryClient.setQueryData(
+          ['blogList'],
+          blogs.map(blog => blog._id === updatedBlog._id ? updatedBlog : blog)
+        );
+      },
     },
-    onError: err => {
-      notifyError(err.message || 'An Error Occured');
+    toastMsg: {
+      loading: 'Submitting Comment...',
+      success: (data) => `Successfully Commented on Blog(${data.title})`,
+      error: (err) => err.message || 'Failed to Comment'
     },
-    retry: false,
   });
-
-
-  useEffect(() => {
-    if (blogErrorStatus && blogError?.message !== prevError) {
-      notifyError(blogError.message || 'An Error Occured');
-      setPrevError(blogError.message);
-    }
-  }, [blogErrorStatus, blogError?.message, prevError]);
 
   const handleComment = (e) => setComment(e.target.value);
 

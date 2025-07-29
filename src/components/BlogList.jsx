@@ -1,32 +1,24 @@
 import { getAll } from '../services/blogs';
-import { useQuery } from '@tanstack/react-query';
-import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { notifyError } from './Notification';
+import { useQueryWithToast } from './Notification';
 
 const BlogList = () => {
-  const [prevError, setPrevError] = useState(null);
-
   const {
     data: blogs,
     isLoading: blogsLoadingStatus,
-    error: blogsError,
     isError: blogsErrorStatus,
-  } = useQuery({
+  } = useQueryWithToast({
     queryKey: ['blogList'],
     queryFn: getAll,
-    retry: false,
-    select: blogs => blogs.toSorted((blogA, blogB) => blogB.likes - blogA.likes),
-    throwOnError: false,
-    staleTime: 60 * 1000,
+    queryOptions: {
+      select: blogs => blogs.toSorted((blogA, blogB) => blogB.likes - blogA.likes),
+    },
+    toastMsg: {
+      loading: 'Fetching Blogs...',
+      success: (data) => `Successfully Fetched Blogs(${data.length})`,
+      error: (err) => err.message || 'Error Fetching Blogs'
+    },
   });
-
-  useEffect(() => {
-    if (blogsErrorStatus && blogsError?.message !== prevError) {
-      notifyError(blogsError.message || 'An Error Occured');
-      setPrevError(blogsError.message);
-    }
-  }, [blogsErrorStatus, blogsError?.message, prevError]);
 
   if (blogsLoadingStatus) {
     return (

@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQueryClient } from '@tanstack/react-query';
 import { create } from '../services/blogs';
 import PropTypes from 'prop-types';
 import { useAuthValue } from '../reducers/authReducer';
-import { notifyError, notifySuccess } from './Notification';
+import { useMutationWithToast } from './Notification';
 
 const BlogForm = ({ onClose }) => {
   const [url, setUrl] = useState('');
@@ -14,18 +14,20 @@ const BlogForm = ({ onClose }) => {
 
   const queryClient = useQueryClient();
 
-  const newBlogMutation = useMutation({
+  const newBlogMutation = useMutationWithToast({
     mutationFn: create,
-    onSuccess: newBlog => {
-      const blogs = queryClient.getQueryData(['blogList']);
-      queryClient.setQueryData(['blogList'], blogs.concat(newBlog));
-      notifySuccess(`Blog(${newBlog.title}) Created Successfully`);
-      onClose();
+    mutationOptions: {
+      onSuccess: newBlog => {
+        const blogs = queryClient.getQueryData(['blogList']);
+        queryClient.setQueryData(['blogList'], blogs.concat(newBlog));
+        onClose();
+      }
     },
-    onError: err => {
-      notifyError(err.message || 'An Error Occured');
+    toastMsg: {
+      loading: 'Processing Blog...',
+      success: (data) => `Blog(${data.title}) Created Successfully`,
+      error: (err) => err.message || 'Failed to Create Blog'
     },
-    retry: false,
   });
 
   const handleAuthorChange = (e) => setAuthor(e.target.value);

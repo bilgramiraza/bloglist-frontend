@@ -1,37 +1,31 @@
 import { useParams } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
 import { getAll } from "../services/users";
-import { useEffect, useState } from "react";
-import { notifyError } from "./Notification";
+import { useQueryWithToast } from "./Notification";
 
 const UserSummary = () => {
   const id = useParams().id;
-  const [prevError, setPrevError] = useState(null);
 
   const {
     isLoading: userLoadingStatus,
     data: user,
     isError: userErrorStatus,
-    error: userError,
-  } = useQuery({
+  } = useQueryWithToast({
     queryKey: ['users'],
     queryFn: getAll,
-    select: (users) => {
-      const target = users.find((user) => user.id === id);
-      if (!target)
-        throw new Error('User Not Found');
-      return target;
+    queryOptions: {
+      select: (users) => {
+        const target = users.find((user) => user.id === id);
+        if (!target)
+          throw new Error('User Not Found');
+        return target;
+      },
     },
-    retry: false,
-    staleTime: 60 * 1000,
+    toastMsg: {
+      loading: 'Fetching User...',
+      success: 'Successfully Fetched User',
+      error: (err) => err.message || 'Error Fetching User'
+    },
   });
-
-  useEffect(() => {
-    if (userErrorStatus && userError?.message !== prevError) {
-      notifyError(userError.message || 'An Error Occured');
-      setPrevError(userError.message);
-    }
-  }, [userErrorStatus, userError?.message, prevError]);
 
   if (userLoadingStatus) {
     return (
