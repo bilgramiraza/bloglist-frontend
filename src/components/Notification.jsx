@@ -1,6 +1,7 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useEffect, useRef } from "react";
 import { toast, Toaster } from "sonner";
+import { STATUS } from "../utils/constants";
 
 function Notification() {
   return (
@@ -108,5 +109,53 @@ export const useMutationWithToast = ({
     ...mutationOptions,
   });
 }
+
+export const useToast = ({
+  status,
+  toastMsg = {
+    loading: 'Loading...',
+    success: 'Success!',
+    error: 'Error',
+  },
+  toastOptions = {
+    id: 'auth',
+  },
+}) => {
+  const prevError = useRef(false);
+  const didToast = useRef(false);
+
+  useEffect(() => {
+    if (status === STATUS.LOADING) {
+      toast.loading(toastMsg.loading, {
+        id: toastOptions.id,
+        duration: Infinity,
+      });
+      didToast.current = false;
+    }
+    if (status === STATUS.FAILED && toastMsg.error !== prevError.current) {
+      toast.error(
+        toastMsg.error,
+        {
+          id: toastOptions.id,
+          duration: 5000,
+        });
+      prevError.current = toastMsg.error;
+      didToast.current = true;
+    }
+    if (status === STATUS.SUCCEEDED && !didToast.current) {
+      toast.success(
+        toastMsg.success,
+        {
+          id: toastOptions.id,
+          duration: 3000,
+        });
+      didToast.current = true;
+    }
+  }, [status]);
+
+  useEffect(() => {
+    return () => toast.dismiss(toastOptions.id);
+  }, []);
+};
 
 export default Notification;
