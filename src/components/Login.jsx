@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { clearAuth, resetStatus, setAuth, useAuthDispatch, useAuthValue } from '../reducers/authReducer';
+import { clearAuth, resetStatus, restoreUser, useAuthDispatch, useAuthValue } from '../reducers/authReducer';
 import LoginForm from './LoginForm';
 import Toggleable from './Toggleable';
 import { notifySuccess, useToast } from './Notification';
@@ -30,14 +30,9 @@ const Login = () => {
   });
 
   useEffect(() => {
-    const loggedUserJSON = window.localStorage.getItem('loggedInBlogUser');
-    if (loggedUserJSON) {
-      const credentials = JSON.parse(loggedUserJSON);
-      setAuth(authDispatch, credentials);
+    if (status === STATUS.INITIAL) {
+      restoreUser(authDispatch);
     }
-  }, []);
-
-  useEffect(() => {
     if (status === STATUS.SUCCEEDED || status === STATUS.FAILED) {
       const timeout = setTimeout(() => resetStatus(authDispatch), 50);
       return () => clearTimeout(timeout);
