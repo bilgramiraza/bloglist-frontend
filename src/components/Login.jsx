@@ -1,22 +1,48 @@
 import { useEffect } from 'react';
-import { clearAuth, setAuth, useAuthDispatch, useAuthValue } from '../reducers/authReducer';
+import { clearAuth, resetStatus, setAuth, useAuthDispatch, useAuthValue } from '../reducers/authReducer';
 import LoginForm from './LoginForm';
 import Toggleable from './Toggleable';
-import { notifySuccess } from './Notification';
+import { notifySuccess, useToast } from './Notification';
+import { STATUS } from '../utils/constants';
 
 const Login = () => {
   const authDispatch = useAuthDispatch();
 
-  const { name, username } = useAuthValue();
+  const {
+    status,
+    error,
+    credentials: {
+      name,
+      username
+    }
+  } = useAuthValue();
+
+  useToast({
+    status,
+    toastMsg: {
+      loading: 'Loading...',
+      success: `${name} Has Logged In`,
+      error: error || 'An Error Occured',
+    },
+    toastOptions: {
+      id: 'auth'
+    },
+  });
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedInBlogUser');
     if (loggedUserJSON) {
       const credentials = JSON.parse(loggedUserJSON);
       setAuth(authDispatch, credentials);
-      notifySuccess(`${credentials.name} Has Logged In`);
     }
   }, []);
+
+  useEffect(() => {
+    if (status === STATUS.SUCCEEDED || status === STATUS.FAILED) {
+      const timeout = setTimeout(() => resetStatus(authDispatch), 50);
+      return () => clearTimeout(timeout);
+    }
+  }, [status]);
 
   const handleLogout = async (e) => {
     e.preventDefault();
@@ -28,15 +54,13 @@ const Login = () => {
 
   return (
     <div>
-      {username === null ? (
-        <Toggleable buttonLabel="Login">
+      {!username
+        ? <Toggleable buttonLabel="Login">
           <LoginForm />
         </Toggleable>
-      ) : (
-        <p>
+        : <p>
           {name} Logged In <button onClick={handleLogout}>Logout</button>
-        </p>
-      )}
+        </p>}
     </div>
   );
 };

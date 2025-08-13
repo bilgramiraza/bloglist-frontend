@@ -1,6 +1,6 @@
-import { useState } from 'react';
-import { loginUser, useAuthDispatch } from '../reducers/authReducer';
-import { notifyError, notifySuccess } from './Notification';
+import { useEffect, useState } from 'react';
+import { loginUser, useAuthDispatch, useAuthValue } from '../reducers/authReducer';
+import { STATUS } from '../utils/constants';
 
 const LoginForm = () => {
   const [username, setUsername] = useState('');
@@ -10,18 +10,20 @@ const LoginForm = () => {
   const handlePasswordChange = (e) => setPassword(e.target.value);
 
   const authDispatch = useAuthDispatch();
+  const {
+    status,
+  } = useAuthValue();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const credentials = await loginUser(authDispatch, username, password);
-      window.localStorage.setItem('loggedInBlogUser', JSON.stringify(credentials));
-      notifySuccess(`${credentials.name} Has Logged In`);
+  useEffect(() => {
+    if (status === STATUS.SUCCEEDED) {
       setUsername('');
       setPassword('');
-    } catch (err) {
-      notifyError(err.message || 'An Error Occured');
     }
+  }, [status]);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    loginUser(authDispatch, username, password);
   };
 
   return (
