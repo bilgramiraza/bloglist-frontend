@@ -74,8 +74,20 @@ export const loginUser = async (dispatch, username, password) => {
   loginStart(dispatch);
   try {
     const credentials = await login({ username, password });
-    setAuth(dispatch, credentials);
+    loginSuccess(dispatch, credentials);
     window.localStorage.setItem('loggedInBlogUser', JSON.stringify(credentials));
+  } catch (err) {
+    loginFailed(dispatch, err.message || 'Failed to Login User');
+  }
+};
+
+export const restoreUser = async (dispatch) => {
+  loginStart(dispatch);
+  try {
+    const loggedUserJSON = window.localStorage.getItem('loggedInBlogUser');
+    if (!loggedUserJSON) throw new Error('Unable to Restore User');
+    const credentials = JSON.parse(loggedUserJSON);
+    loginSuccess(dispatch, credentials);
   } catch (err) {
     loginFailed(dispatch, err.message || 'Failed to Login User');
   }
@@ -87,7 +99,7 @@ export const loginStart = (dispatch) => {
   });
 };
 
-export const setAuth = (dispatch, credentials) => {
+export const loginSuccess = (dispatch, credentials) => {
   dispatch({
     type: 'login_success',
     payload: credentials,
