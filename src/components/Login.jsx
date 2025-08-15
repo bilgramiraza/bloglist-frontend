@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { logoutUser, resetLoginStatus, resetLogoutStatus, resetRestoreStatus, restoreUser, useAuthDispatch, useAuthValue } from '../reducers/authReducer';
+import { asyncReset, logoutUser, restoreUser, useAuthDispatch, useAuthValue } from '../reducers/authReducer';
 import LoginForm from './LoginForm';
 import Toggleable from './Toggleable';
 import { useToast } from './Notification';
@@ -14,7 +14,11 @@ const Login = () => {
       restore: restoreStatus,
       logout: logoutStatus,
     },
-    error,
+    error: {
+      login: loginError,
+      restore: restoreError,
+      logout: logoutError,
+    },
     credentials: {
       name,
       username
@@ -25,26 +29,26 @@ const Login = () => {
     status: loginStatus,
     toastMsg: {
       loading: 'Logging In...',
-      success: `${name} Logged in Successfully`,
-      error: error || 'An Error Occured',
+      success: `${name || 'User'} Logged in Successfully`,
+      error: loginError || 'An Error Occured',
     },
     toastOptions: {
       id: 'login'
     },
-    resetFn: () => resetLoginStatus(authDispatch),
+    resetFn: () => asyncReset(authDispatch, 'login'),
   });
 
   useToast({
     status: restoreStatus,
     toastMsg: {
       loading: 'Logging In...',
-      success: `${name} Has Logged In`,
-      error: error || 'An Error Occured',
+      success: `${name || 'User'} Has Logged In`,
+      error: restoreError || 'An Error Occured',
     },
     toastOptions: {
       id: 'restore'
     },
-    resetFn: () => resetRestoreStatus(authDispatch),
+    resetFn: () => asyncReset(authDispatch, 'restore'),
   });
 
   useToast({
@@ -52,12 +56,12 @@ const Login = () => {
     toastMsg: {
       loading: 'Logging out...',
       success: 'Log out Successful',
-      error: error || 'An Error Occured',
+      error: logoutError || 'An Error Occured',
     },
     toastOptions: {
       id: 'logout'
     },
-    resetFn: () => resetLogoutStatus(authDispatch),
+    resetFn: () => asyncReset(authDispatch, 'logout'),
   });
 
   useEffect(() => {
