@@ -120,11 +120,18 @@ export const useToast = ({
   toastOptions = {
     id: 'auth',
   },
+  resetFn = null,
 }) => {
   const prevError = useRef(false);
   const didToast = useRef(false);
 
+  const resetFnTimeoutRef = useRef(null);
+
   useEffect(() => {
+    if (resetFnTimeoutRef.current) {
+      clearTimeout(resetFnTimeoutRef.current);
+    }
+
     if (status === STATUS.LOADING) {
       toast.loading(toastMsg.loading, {
         id: toastOptions.id,
@@ -141,6 +148,10 @@ export const useToast = ({
         });
       prevError.current = toastMsg.error;
       didToast.current = true;
+
+      if (resetFn) {
+        resetFnTimeoutRef.current = setTimeout(() => resetFn(), 5000 + 100);
+      }
     }
     if (status === STATUS.SUCCEEDED && !didToast.current) {
       toast.success(
@@ -150,6 +161,15 @@ export const useToast = ({
           duration: 3000,
         });
       didToast.current = true;
+
+      if (resetFn) {
+        resetFnTimeoutRef.current = setTimeout(() => resetFn(), 3000 + 100);
+      }
+    }
+    return () => {
+      if (resetFnTimeoutRef.current) {
+        clearTimeout(resetFnTimeoutRef.current);
+      }
     }
   }, [status]);
 
