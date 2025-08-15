@@ -14,10 +14,6 @@ function Notification() {
   );
 }
 
-export const notifySuccess = msg => toast.success(msg, { duration: 3000 });
-
-export const notifyError = msg => toast.error(msg, { duration: 5000 });
-
 const serializeQueryKey = (key) => typeof key === 'string' ? key : JSON.stringify(key);
 
 export const useQueryWithToast = ({
@@ -126,7 +122,6 @@ export const useToast = ({
   const didToast = useRef(false);
 
   const resetFnTimeoutRef = useRef(null);
-
   useEffect(() => {
     if (resetFnTimeoutRef.current) {
       clearTimeout(resetFnTimeoutRef.current);
@@ -162,6 +157,10 @@ export const useToast = ({
         });
       didToast.current = true;
 
+      if (status === STATUS.IDLE || status === STATUS.INITIAL) {
+        didToast.current = false;
+      }
+
       if (resetFn) {
         resetFnTimeoutRef.current = setTimeout(() => resetFn(), 3000 + 100);
       }
@@ -173,9 +172,9 @@ export const useToast = ({
     }
   }, [status]);
 
-  useEffect(() => {
-    return () => toast.dismiss(toastOptions.id);
-  }, []);
+  // useEffect(() => {
+  //   return () => toast.dismiss(toastOptions.id);
+  // }, []);
 };
 
 export default Notification;
