@@ -10,16 +10,19 @@ const LoginForm = () => {
   const handlePasswordChange = (e) => setPassword(e.target.value);
 
   const authDispatch = useAuthDispatch();
+
   const {
-    status,
+    status: {
+      login: loginStatus,
+    },
   } = useAuthValue();
 
   useEffect(() => {
-    if (status === STATUS.SUCCEEDED) {
+    if (loginStatus === STATUS.SUCCEEDED) {
       setUsername('');
       setPassword('');
     }
-  }, [status]);
+  }, [loginStatus]);
 
   const handleSubmit = (e) => {
     e.preventDefault();

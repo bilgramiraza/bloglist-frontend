@@ -1,15 +1,19 @@
 import { useEffect } from 'react';
-import { clearAuth, resetStatus, restoreUser, useAuthDispatch, useAuthValue } from '../reducers/authReducer';
+import { logoutUser, resetLoginStatus, resetLogoutStatus, resetRestoreStatus, restoreUser, useAuthDispatch, useAuthValue } from '../reducers/authReducer';
 import LoginForm from './LoginForm';
 import Toggleable from './Toggleable';
-import { notifySuccess, useToast } from './Notification';
+import { useToast } from './Notification';
 import { STATUS } from '../utils/constants';
 
 const Login = () => {
   const authDispatch = useAuthDispatch();
 
   const {
-    status,
+    status: {
+      login: loginStatus,
+      restore: restoreStatus,
+      logout: logoutStatus,
+    },
     error,
     credentials: {
       name,
@@ -18,34 +22,54 @@ const Login = () => {
   } = useAuthValue();
 
   useToast({
-    status,
+    status: loginStatus,
     toastMsg: {
-      loading: 'Loading...',
+      loading: 'Logging In...',
+      success: `${name} Logged in Successfully`,
+      error: error || 'An Error Occured',
+    },
+    toastOptions: {
+      id: 'login'
+    },
+    resetFn: () => resetLoginStatus(authDispatch),
+  });
+
+  useToast({
+    status: restoreStatus,
+    toastMsg: {
+      loading: 'Logging In...',
       success: `${name} Has Logged In`,
       error: error || 'An Error Occured',
     },
     toastOptions: {
-      id: 'auth'
+      id: 'restore'
     },
+    resetFn: () => resetRestoreStatus(authDispatch),
+  });
+
+  useToast({
+    status: logoutStatus,
+    toastMsg: {
+      loading: 'Logging out...',
+      success: 'Log out Successful',
+      error: error || 'An Error Occured',
+    },
+    toastOptions: {
+      id: 'logout'
+    },
+    resetFn: () => resetLogoutStatus(authDispatch),
   });
 
   useEffect(() => {
-    if (status === STATUS.INITIAL) {
+    if (restoreStatus === STATUS.INITIAL) {
       restoreUser(authDispatch);
     }
-    if (status === STATUS.SUCCEEDED || status === STATUS.FAILED) {
-      const timeout = setTimeout(() => resetStatus(authDispatch), 50);
-      return () => clearTimeout(timeout);
-    }
-  }, [status]);
+  }, [restoreStatus]);
 
-  const handleLogout = async (e) => {
+  const handleLogout = (e) => {
     e.preventDefault();
-    window.localStorage.removeItem('loggedInBlogUser');
-    clearAuth(authDispatch);
-    notifySuccess('Log out Successful');
+    logoutUser(authDispatch);
   };
-
 
   return (
     <div>
