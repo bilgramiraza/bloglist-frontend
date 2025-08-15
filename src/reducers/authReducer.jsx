@@ -8,7 +8,11 @@ const initialState = {
     restore: STATUS.INITIAL,
     logout: STATUS.INITIAL,
   },
-  error: null,
+  error: {
+    login: null,
+    restore: null,
+    logout: null,
+  },
   credentials: {
     name: null,
     username: null,
@@ -16,118 +20,47 @@ const initialState = {
   },
 };
 
+const setCredentials = (_, payload) => ({
+  credentials: {
+    name: payload.name,
+    username: payload.username,
+    token: `Bearer ${payload.token}`,
+  },
+});
+
+const credentialsUpdater = {
+  login: setCredentials,
+  restore: setCredentials,
+  logout: () => ({ credentials: initialState.credentials }),
+};
+
 const authReducer = (state, action) => {
   switch (action.type) {
-    case 'login_start':
+    case 'async_start':
       return {
         ...state,
-        status: {
-          ...state.status,
-          login: STATUS.LOADING,
-        },
+        status: { ...state.status, [action.key]: STATUS.LOADING, },
+        error: { ...state.error, [action.key]: null, },
       };
-    case 'login_success':
+    case 'async_success':
+      const updater = credentialsUpdater[action.key];
       return {
         ...state,
-        status: {
-          ...state.status,
-          login: STATUS.SUCCEEDED,
-        },
-        credentials: {
-          name: action.payload.name,
-          username: action.payload.username,
-          token: `Bearer ${action.payload.token}`,
-        }
+        status: { ...state.status, [action.key]: STATUS.SUCCEEDED, },
+        error: { ...state.error, [action.key]: null, },
+        ...(updater ? updater(state, action.payload) : {})
       };
-    case 'login_failed':
+    case 'async_failed':
       return {
         ...state,
-        status: {
-          ...state.status,
-          login: STATUS.FAILED,
-        },
-        error: action.payload || action.error.message,
+        status: { ...state.status, [action.key]: STATUS.FAILED, },
+        error: { ...state.error, [action.key]: action.payload || action.error?.message, },
       };
-    case 'restore_start':
+    case 'async_reset':
       return {
         ...state,
-        status: {
-          ...state.status,
-          restore: STATUS.LOADING,
-        },
-      };
-    case 'restore_success':
-      return {
-        ...state,
-        status: {
-          ...state.status,
-          restore: STATUS.SUCCEEDED,
-        },
-        credentials: {
-          name: action.payload.name,
-          username: action.payload.username,
-          token: `Bearer ${action.payload.token}`,
-        }
-      };
-    case 'restore_failed':
-      return {
-        ...state,
-        status: {
-          ...state.status,
-          restore: STATUS.FAILED,
-        },
-        error: action.payload || action.error.message,
-      };
-    case 'logout_start':
-      return {
-        ...state,
-        status: {
-          ...state.status,
-          logout: STATUS.LOADING,
-        },
-      };
-    case 'logout_success':
-      return {
-        ...initialState,
-        status: {
-          ...state.status,
-          logout: STATUS.SUCCEEDED,
-        },
-      };
-    case 'logout_failed':
-      return {
-        ...state,
-        status: {
-          ...state.status,
-          logout: STATUS.FAILED,
-        },
-      };
-    case 'resetLoginStatus':
-      return {
-        ...state,
-        status: {
-          ...state.status,
-          login: STATUS.IDLE,
-        },
-        error: null,
-      };
-    case 'resetLogoutStatus':
-      return {
-        ...state,
-        status: {
-          ...state.status,
-          logout: STATUS.IDLE,
-        },
-        error: null,
-      };
-    case 'resetRestoreStatus':
-      return {
-        ...state,
-        status: {
-          ...state.status,
-          restore: STATUS.IDLE,
-        },
-        error: null,
+        status: { ...state.status, [action.key]: STATUS.IDLE, },
+        error: { ...state.error, [action.key]: null, },
       };
     default:
       return state;
@@ -157,112 +90,65 @@ export const useAuthDispatch = () => {
 };
 
 export const loginUser = async (dispatch, username, password) => {
-  loginStart(dispatch);
+  asyncStart(dispatch, 'login');
   try {
     const credentials = await login({ username, password });
-    loginSuccess(dispatch, credentials);
+    asyncSuccess(dispatch, 'login', credentials);
     window.localStorage.setItem('loggedInBlogUser', JSON.stringify(credentials));
   } catch (err) {
-    loginFailed(dispatch, err.message || 'Failed to Login User');
+    asyncFailed(dispatch, 'login', err.message || 'Failed to Login User');
   }
 };
 
 export const restoreUser = async (dispatch) => {
-  restoreStart(dispatch);
+  asyncStart(dispatch, 'restore');
   try {
     const loggedUserJSON = window.localStorage.getItem('loggedInBlogUser');
     if (!loggedUserJSON) throw new Error('Unable to Restore User');
     const credentials = JSON.parse(loggedUserJSON);
-    restoreSuccess(dispatch, credentials);
+    asyncSuccess(dispatch, 'restore', credentials);
   } catch (err) {
-    restoreFailed(dispatch, err.message || 'Failed to Login User');
+    asyncFailed(dispatch, 'restore', err.message || 'Failed to Login User');
   }
 };
 
 export const logoutUser = async (dispatch) => {
-  logoutStart(dispatch);
+  asyncStart(dispatch, 'logout');
   try {
     window.localStorage.removeItem('loggedInBlogUser');
-    logoutSuccess(dispatch);
+    asyncSuccess(dispatch, 'logout');
   } catch (err) {
-    logoutFailed(dispatch, err.message || 'Failed to Login User');
+    asyncFailed(dispatch, 'logout', err.message || 'Failed to Login User');
   }
 };
 
-export const loginStart = (dispatch) => {
+export const asyncStart = (dispatch, key) => {
   dispatch({
-    type: 'login_start',
+    type: 'async_start',
+    key
   });
 };
 
-export const loginSuccess = (dispatch, credentials) => {
+export const asyncSuccess = (dispatch, key, credentials = {}) => {
   dispatch({
-    type: 'login_success',
-    payload: credentials,
+    type: 'async_success',
+    key,
+    payload: credentials
   });
 };
 
-export const loginFailed = (dispatch, msg) => {
+export const asyncFailed = (dispatch, key, msg) => {
   dispatch({
-    type: 'login_failed',
+    type: 'async_failed',
+    key,
     payload: msg,
   });
 };
 
-export const restoreStart = (dispatch) => {
+export const asyncReset = (dispatch, key) => {
   dispatch({
-    type: 'restore_start',
-  });
-};
-
-export const restoreSuccess = (dispatch, credentials) => {
-  dispatch({
-    type: 'restore_success',
-    payload: credentials,
-  });
-};
-
-export const restoreFailed = (dispatch, msg) => {
-  dispatch({
-    type: 'restore_failed',
-    payload: msg,
-  });
-};
-
-export const logoutStart = (dispatch) => {
-  dispatch({
-    type: 'logout_start',
-  });
-};
-
-export const logoutSuccess = (dispatch) => {
-  dispatch({
-    type: 'logout_success',
-  });
-};
-
-export const logoutFailed = (dispatch, msg) => {
-  dispatch({
-    type: 'logout_failed',
-    payload: msg,
-  });
-};
-
-export const resetLoginStatus = dispatch => {
-  dispatch({
-    type: 'resetLoginStatus',
-  });
-};
-
-export const resetRestoreStatus = dispatch => {
-  dispatch({
-    type: 'resetRestoreStatus',
-  });
-};
-
-export const resetLogoutStatus = dispatch => {
-  dispatch({
-    type: 'resetLogoutStatus',
+    type: 'async_reset',
+    key
   });
 };
 
