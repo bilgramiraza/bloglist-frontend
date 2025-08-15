@@ -3,7 +3,11 @@ import { login } from '../services/login';
 import { STATUS } from '../utils/constants';
 
 const initialState = {
-  status: STATUS.INITIAL,
+  status: {
+    login: STATUS.INITIAL,
+    restore: STATUS.INITIAL,
+    logout: STATUS.INITIAL,
+  },
   error: null,
   credentials: {
     name: null,
@@ -17,12 +21,18 @@ const authReducer = (state, action) => {
     case 'login_start':
       return {
         ...state,
-        status: STATUS.LOADING,
+        status: {
+          ...state.status,
+          login: STATUS.LOADING,
+        },
       };
     case 'login_success':
       return {
         ...state,
-        status: STATUS.SUCCEEDED,
+        status: {
+          ...state.status,
+          login: STATUS.SUCCEEDED,
+        },
         credentials: {
           name: action.payload.name,
           username: action.payload.username,
@@ -32,15 +42,91 @@ const authReducer = (state, action) => {
     case 'login_failed':
       return {
         ...state,
-        status: STATUS.FAILED,
+        status: {
+          ...state.status,
+          login: STATUS.FAILED,
+        },
         error: action.payload || action.error.message,
       };
-    case 'logout':
-      return initialState;
-    case 'resetStatus':
+    case 'restore_start':
       return {
         ...state,
-        status: STATUS.IDLE,
+        status: {
+          ...state.status,
+          restore: STATUS.LOADING,
+        },
+      };
+    case 'restore_success':
+      return {
+        ...state,
+        status: {
+          ...state.status,
+          restore: STATUS.SUCCEEDED,
+        },
+        credentials: {
+          name: action.payload.name,
+          username: action.payload.username,
+          token: `Bearer ${action.payload.token}`,
+        }
+      };
+    case 'restore_failed':
+      return {
+        ...state,
+        status: {
+          ...state.status,
+          restore: STATUS.FAILED,
+        },
+        error: action.payload || action.error.message,
+      };
+    case 'logout_start':
+      return {
+        ...state,
+        status: {
+          ...state.status,
+          logout: STATUS.LOADING,
+        },
+      };
+    case 'logout_success':
+      return {
+        ...initialState,
+        status: {
+          ...state.status,
+          logout: STATUS.SUCCEEDED,
+        },
+      };
+    case 'logout_failed':
+      return {
+        ...state,
+        status: {
+          ...state.status,
+          logout: STATUS.FAILED,
+        },
+      };
+    case 'resetLoginStatus':
+      return {
+        ...state,
+        status: {
+          ...state.status,
+          login: STATUS.IDLE,
+        },
+        error: null,
+      };
+    case 'resetLogoutStatus':
+      return {
+        ...state,
+        status: {
+          ...state.status,
+          logout: STATUS.IDLE,
+        },
+        error: null,
+      };
+    case 'resetRestoreStatus':
+      return {
+        ...state,
+        status: {
+          ...state.status,
+          restore: STATUS.IDLE,
+        },
         error: null,
       };
     default:
@@ -82,14 +168,24 @@ export const loginUser = async (dispatch, username, password) => {
 };
 
 export const restoreUser = async (dispatch) => {
-  loginStart(dispatch);
+  restoreStart(dispatch);
   try {
     const loggedUserJSON = window.localStorage.getItem('loggedInBlogUser');
     if (!loggedUserJSON) throw new Error('Unable to Restore User');
     const credentials = JSON.parse(loggedUserJSON);
-    loginSuccess(dispatch, credentials);
+    restoreSuccess(dispatch, credentials);
   } catch (err) {
-    loginFailed(dispatch, err.message || 'Failed to Login User');
+    restoreFailed(dispatch, err.message || 'Failed to Login User');
+  }
+};
+
+export const logoutUser = async (dispatch) => {
+  logoutStart(dispatch);
+  try {
+    window.localStorage.removeItem('loggedInBlogUser');
+    logoutSuccess(dispatch);
+  } catch (err) {
+    logoutFailed(dispatch, err.message || 'Failed to Login User');
   }
 };
 
@@ -113,15 +209,60 @@ export const loginFailed = (dispatch, msg) => {
   });
 };
 
-export const clearAuth = dispatch => {
+export const restoreStart = (dispatch) => {
   dispatch({
-    type: 'logout',
+    type: 'restore_start',
   });
 };
 
-export const resetStatus = dispatch => {
+export const restoreSuccess = (dispatch, credentials) => {
   dispatch({
-    type: 'resetStatus',
+    type: 'restore_success',
+    payload: credentials,
+  });
+};
+
+export const restoreFailed = (dispatch, msg) => {
+  dispatch({
+    type: 'restore_failed',
+    payload: msg,
+  });
+};
+
+export const logoutStart = (dispatch) => {
+  dispatch({
+    type: 'logout_start',
+  });
+};
+
+export const logoutSuccess = (dispatch) => {
+  dispatch({
+    type: 'logout_success',
+  });
+};
+
+export const logoutFailed = (dispatch, msg) => {
+  dispatch({
+    type: 'logout_failed',
+    payload: msg,
+  });
+};
+
+export const resetLoginStatus = dispatch => {
+  dispatch({
+    type: 'resetLoginStatus',
+  });
+};
+
+export const resetRestoreStatus = dispatch => {
+  dispatch({
+    type: 'resetRestoreStatus',
+  });
+};
+
+export const resetLogoutStatus = dispatch => {
+  dispatch({
+    type: 'resetLogoutStatus',
   });
 };
 
