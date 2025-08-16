@@ -3,7 +3,6 @@ import { asyncReset, logoutUser, restoreUser, useAuthDispatch, useAuthValue } fr
 import LoginForm from './LoginForm';
 import Toggleable from './Toggleable';
 import { useToast } from './Notification';
-import { STATUS } from '../utils/constants';
 
 const Login = () => {
   const authDispatch = useAuthDispatch();
@@ -65,10 +64,8 @@ const Login = () => {
   });
 
   useEffect(() => {
-    if (restoreStatus === STATUS.INITIAL) {
-      restoreUser(authDispatch);
-    }
-  }, [restoreStatus]);
+    restoreUser(authDispatch);
+  }, []);
 
   const handleLogout = (e) => {
     e.preventDefault();

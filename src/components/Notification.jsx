@@ -35,7 +35,7 @@ export const useQueryWithToast = ({
     ...queryOptions,
   });
 
-  const prevError = useRef(false);
+  const prevError = useRef(null);
   const didToast = useRef(false);
 
   useEffect(() => {
@@ -118,7 +118,7 @@ export const useToast = ({
   },
   resetFn = null,
 }) => {
-  const prevError = useRef(false);
+  const prevError = useRef(null);
   const didToast = useRef(false);
 
   const resetFnTimeoutRef = useRef(null);
@@ -133,6 +133,7 @@ export const useToast = ({
         duration: Infinity,
       });
       didToast.current = false;
+      prevError.current = null;
     }
     if (status === STATUS.FAILED && toastMsg.error !== prevError.current) {
       toast.error(
@@ -145,7 +146,7 @@ export const useToast = ({
       didToast.current = true;
 
       if (resetFn) {
-        resetFnTimeoutRef.current = setTimeout(() => resetFn(), 7000 + 100);
+        resetFnTimeoutRef.current = setTimeout(() => resetFn(), 5000 + 100);
       }
     }
     if (status === STATUS.SUCCEEDED && !didToast.current) {
@@ -158,12 +159,12 @@ export const useToast = ({
       didToast.current = true;
 
       if (resetFn) {
-        resetFnTimeoutRef.current = setTimeout(() => resetFn(), 5000 + 100);
+        resetFnTimeoutRef.current = setTimeout(() => resetFn(), 3000 + 100);
       }
     }
-    if (status === STATUS.IDLE || status === STATUS.INITIAL) {
+    if (status === STATUS.IDLE) {
       didToast.current = false;
-      prevError.current = false;
+      prevError.current = null;
     }
     return () => {
       clearTimeout(resetFnTimeoutRef.current);

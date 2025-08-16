@@ -4,9 +4,9 @@ import { STATUS } from '../utils/constants';
 
 const initialState = {
   status: {
-    login: STATUS.INITIAL,
-    restore: STATUS.INITIAL,
-    logout: STATUS.INITIAL,
+    login: STATUS.IDLE,
+    restore: STATUS.IDLE,
+    logout: STATUS.IDLE,
   },
   error: {
     login: null,
