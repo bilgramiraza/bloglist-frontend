@@ -145,7 +145,7 @@ export const useToast = ({
       didToast.current = true;
 
       if (resetFn) {
-        resetFnTimeoutRef.current = setTimeout(() => resetFn(), 5000 + 100);
+        resetFnTimeoutRef.current = setTimeout(() => resetFn(), 7000 + 100);
       }
     }
     if (status === STATUS.SUCCEEDED && !didToast.current) {
@@ -157,24 +157,22 @@ export const useToast = ({
         });
       didToast.current = true;
 
-      if (status === STATUS.IDLE || status === STATUS.INITIAL) {
-        didToast.current = false;
-      }
-
       if (resetFn) {
-        resetFnTimeoutRef.current = setTimeout(() => resetFn(), 3000 + 100);
+        resetFnTimeoutRef.current = setTimeout(() => resetFn(), 5000 + 100);
       }
     }
+    if (status === STATUS.IDLE || status === STATUS.INITIAL) {
+      didToast.current = false;
+      prevError.current = false;
+    }
     return () => {
-      if (resetFnTimeoutRef.current) {
-        clearTimeout(resetFnTimeoutRef.current);
-      }
+      clearTimeout(resetFnTimeoutRef.current);
     }
   }, [status]);
 
-  // useEffect(() => {
-  //   return () => toast.dismiss(toastOptions.id);
-  // }, []);
+  useEffect(() => {
+    return () => toast.dismiss(toastOptions.id);
+  }, []);
 };
 
 export default Notification;
